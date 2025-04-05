@@ -1,0 +1,226 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f8ff; /* AliceBlue */
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #0056b3; /* Darker blue */
+}
+
+.simulation-container {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+#rescueCanvas {
+    display: block;
+    background-color: #fff; /* Fallback, will be drawn over */
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start (right in RTL) */
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #e9ecef; /* Light grey */
+    margin-bottom: 20px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.control-group label {
+    flex-basis: 250px; /* Adjust as needed */
+    text-align: left; /* Adjust for RTL if needed */
+}
+
+.control-group input[type="range"] {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.control-group span {
+    font-weight: bold;
+    min-width: 30px; /* Ensure space for numbers */
+    text-align: right;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #28a745; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center; /* Center the button */
+}
+
+button:hover {
+    background-color: #218838; /* Darker green */
+}
+
+.results {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff8dc; /* Cornsilk */
+    width: 80%;
+    max-width: 600px;
+    text-align: right; /* Align text to the right */
+}
+
+.results p {
+    margin: 8px 0;
+}
+
+.results span {
+    font-weight: bold;
+    color: #dc3545; /* Red for emphasis */
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align score items to the end (right in RTL) */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#feedbackFace {
+    vertical-align: middle; /* Align image nicely with text */
+}
+
+#instructions {
+    font-style: italic;
+    color: #6c757d; /* Gray */
+    margin-bottom: 15px;
+    font-weight: bold;
+    min-height: 1.2em; /* Prevent layout shift when text changes */
+}
+
+
+#setup {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #e0e0e0;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+#gameArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Ensure it takes width */
+}
+
+#statusText {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff; /* Blue */
+    min-height: 1.5em; /* Prevent layout shift */
+    margin-top: 0;
+}
+
+#roundInfo {
+    font-size: 1em;
+    color: #6c757d; /* Gray */
+    margin-bottom: 10px;
+}
+
+
+.results {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: space-around; /* Space out player results */
+    align-items: flex-start;
+    width: 80%;
+    max-width: 700px; /* Adjust as needed */
+    margin-top: 10px;
+    padding-bottom: 10px; /* Add padding below */
+}
+
+.player-results {
+    border: 1px dashed #aaa;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    min-width: 200px; /* Ensure minimum width */
+    background-color: #f8f9fa; /* Light background for each player */
+    text-align: center;
+}
+
+.player-results h3 {
+    margin-top: 0;
+    color: #343a40; /* Dark gray */
+}
+
+.player-results p {
+    margin: 5px 0;
+}
+
+.player-results img {
+    vertical-align: middle;
+}
+
+#roundWinner {
+    width: 100%; /* Take full width */
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.1em;
+    color: #dc3545; /* Red */
+}
+
+#finalResult {
+     margin-top: 20px;
+     padding: 15px;
+     border: 2px solid #28a745; /* Green border */
+     border-radius: 8px;
+     background-color: #d4edda; /* Light green */
+     text-align: center;
+     width: 80%;
+     max-width: 600px;
+ }
+
+ #finalResult h2 {
+     color: #155724; /* Darker green */
+ }
+ #finalResult strong {
+     font-size: 1.2em;
+     color: #0056b3; /* Blue */
+ }
+
+button#nextRoundButton, button#newGameButton {
+    background-color: #007bff; /* Blue */
+    margin-top: 10px;
+}
+button#nextRoundButton:hover, button#newGameButton:hover {
+    background-color: #0056b3;
+}
+
+/* Style for the optimal lifeguard animation */
+.optimal-lifeguard {
+    opacity: 0.6; /* Make it semi-transparent */
+}

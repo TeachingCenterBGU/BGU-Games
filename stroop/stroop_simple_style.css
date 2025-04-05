@@ -1,0 +1,245 @@
+body {
+    font-family: Assistant, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: #f4f7f6; /* Light grey-green */
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.main-container {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 700px;
+    width: 95%;
+}
+
+/* --- Selection Screen --- */
+#selectionScreen h1 {
+    color: #00695c; /* Dark Teal */
+}
+.variant-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+.variant-buttons button {
+    padding: 12px 25px;
+    font-size: 17px;
+    border: 1px solid #00897b; /* Teal border */
+    background-color: transparent;
+    color: #00897b;
+    border-radius: 25px; /* Pill shape */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 80%; /* Make buttons wider */
+    max-width: 300px;
+}
+.variant-buttons button:hover {
+    background-color: #e0f2f1; /* Light teal background on hover */
+    color: #00695c;
+}
+
+/* --- Game Container --- */
+#gameContainer {
+    margin-top: 20px;
+}
+#variantTitle {
+    color: #00897b; /* Teal */
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+#instructionsArea {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-bottom: 25px;
+    text-align: right;
+}
+#instructionsArea h3 {
+    margin-top: 0;
+    color: #555;
+}
+#instructionsArea label {
+    margin-left: 5px; /* Swapped margin for RTL */
+    margin-right: 15px;
+}
+#instructionsArea select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+#instructionsArea button { /* Base style for buttons inside instructions */
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+    margin-right: 10px; /* Space between buttons */
+    color: white;
+}
+#startGameButton {
+     background-color: #43a047; /* Green */
+}
+#startGameButton:hover {
+    background-color: #388e3c;
+}
+.secondary-button { /* For "Back" button */
+    background-color: #6c757d; /* Grey */
+}
+.secondary-button:hover {
+    background-color: #5a6268;
+}
+
+
+/* --- Test Area --- */
+#testArea {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around; /* Space stimulus and response */
+    padding: 20px 0;
+}
+
+#stimulusDisplay {
+    font-weight: bold;
+    min-height: 70px;
+    line-height: 1.2;
+    padding: 10px;
+    margin-bottom: 20px;
+    /* Default text style */
+    font-size: 52px;
+    color: #333;
+}
+
+/* Styles for Numerical Stroop stimuli */
+.numerical-stimulus span {
+    display: inline-block;
+    margin: 0 25px; /* Increased space */
+    padding: 5px;
+    line-height: 1;
+    font-family: 'Courier New', Courier, monospace; /* Ensure consistent width */
+}
+
+#responseArea {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    min-height: 50px;
+}
+
+#responseArea button { /* Style for color buttons */
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    color: white;
+    min-width: 100px;
+}
+#responseArea button:hover { opacity: 0.9; }
+#responseArea button:active { transform: scale(0.97); }
+
+.color-button-אדום { background-color: #e74c3c; }
+.color-button-כחול { background-color: #3498db; }
+.color-button-ירוק { background-color: #2ecc71; }
+.color-button-צהוב { background-color: #f1c40f; color: #333; }
+
+#keyboardInstructions {
+    margin-top: 20px;
+    color: #00695c; /* Teal */
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#feedbackArea {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    min-height: 30px;
+}
+.feedback-correct { color: #4caf50; }
+.feedback-incorrect { color: #f44336; }
+
+#rtDisplay {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #888;
+}
+
+/* --- Results Area --- */
+#resultsArea {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+#resultsArea h2 {
+    color: #00695c; /* Dark Teal */
+}
+#resultsSummary { /* Style for the results text block */
+    margin-top: 15px;
+    text-align: right;
+    font-size: 16px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+#resultsSummary p {
+    margin: 8px 0;
+    display: flex; /* Use flexbox for alignment */
+    justify-content: space-between; /* Space out label and value */
+    align-items: center;
+}
+#resultsSummary strong { /* Label part */
+    font-weight: normal; /* Less emphasis on label */
+    color: #555;
+    margin-left: 10px; /* Space after label */
+}
+#resultsSummary span { /* Value part */
+    font-weight: bold;
+    color: #00897b; /* Teal for values */
+    background-color: #e0f2f1; /* Light background for value */
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 60px;
+    text-align: center;
+}
+#resultsExplanation {
+    text-align: right;
+}
+
+#resultsButtonsContainer button { /* Style for results buttons */
+     padding: 10px 20px;
+     font-size: 15px;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     transition: background-color 0.3s;
+     margin: 0 5px; /* Space between buttons */
+     color: white;
+}
+
+/* --- Utility --- */
+.hidden {
+    display: none !important;
+}

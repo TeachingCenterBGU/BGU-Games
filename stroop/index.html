@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הדגמת סטרופ (קלאסי ומספרי)</title>
+    <link rel="stylesheet" href="stroop_simple_style.css">
+</head>
+<body>
+    <div class="main-container">
+
+        <!-- 1. מסך בחירת גרסה -->
+        <div id="selectionScreen">
+            <h1>הדגמת אפקט סטרופ</h1>
+            <p>בחר את גרסת הניסוי:</p>
+            <div class="variant-buttons">
+                <button data-variant="classic">סטרופ קלאסי (צבע-מילה)</button>
+                <button data-variant="numerical">סטרופ מספרי (ערך מול גודל)</button>
+            </div>
+        </div>
+
+        <!-- 2. אזור המשחק (משותף) -->
+        <div id="gameContainer" class="hidden">
+            <h2 id="variantTitle"></h2>
+
+            <div id="instructionsArea">
+                <h3>הוראות:</h3>
+                <p id="instructionText"></p>
+                <label for="numTrialsSelect">מספר ניסויים:</label>
+                <select id="numTrialsSelect">
+                    <option value="10">10 (5 מכל סוג)</option>
+                    <option value="20" selected>20 (10 מכל סוג)</option>
+                    <option value="30">30 (15 מכל סוג)</option>
+                </select>
+                <button id="startGameButton">התחל בניסוי</button>
+                <button id="backToSelectionButton" class="secondary-button">חזור לבחירה</button>
+            </div>
+
+            <div id="testArea" class="hidden">
+                <div id="stimulusDisplay"></div> <!-- אזור גירוי ראשי -->
+                <div id="responseArea"></div> <!-- כפתורים או הנחיית מקלדת -->
+                <p id="keyboardInstructions" class="hidden"></p>
+                <div id="feedbackArea" class="feedback-text"></div>
+                <div id="rtDisplay">זמן תגובה: --</div>
+            </div>
+        </div>
+
+        <!-- 3. אזור התוצאות -->
+        <div id="resultsArea" class="hidden">
+            <h2>תוצאות (<span id="resultsVariantName"></span>)</h2>
+            <div id="resultsSummary">
+                <!-- תוכן התוצאות יוכנס כאן דינמית -->
+            </div>
+             <div id="resultsExplanation" style="font-size: 0.9em; margin-top: 15px; color: #555;"></div>
+             <div id="resultsButtonsContainer" style="margin-top: 25px; text-align: center;">
+                <!-- כפתורי תוצאות יווצרו כאן -->
+            </div>
+        </div>
+
+    </div>
+
+    <script src="stroop_simple_script.js"></script>
+</body>
+</html>

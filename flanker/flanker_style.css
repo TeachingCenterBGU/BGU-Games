@@ -1,0 +1,164 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #6dd5ed, #2193b0); /* Gradient background */
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px; /* Add padding for smaller screens */
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    max-width: 700px;
+    width: 95%;
+    border: 1px solid #ccc;
+}
+
+h1, h2 {
+    color: #1e88e5; /* Energetic blue */
+    margin-bottom: 15px;
+}
+
+h3 {
+    margin-top: 20px;
+    color: #d81b60; /* Pinkish red for emphasis */
+}
+
+#setup {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #e3f2fd; /* Light blue background */
+    border-radius: 8px;
+}
+#setup label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+#setup select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #bbdefb;
+    margin-right: 15px;
+}
+
+.stimulus-arrows {
+    font-size: 64px; /* Larger arrows */
+    font-weight: bold;
+    margin: 50px 0;
+    color: #2c3e50; /* Dark blue grey */
+    letter-spacing: 15px; /* Space out arrows */
+    min-height: 80px; /* Prevent layout shift */
+    line-height: 1;
+    direction: ltr; /* Force LTR for arrows display */
+    font-family: Consolas, Monaco, monospace; /* Monospace font for consistent arrow width */
+}
+
+#instructionText {
+    color: #555;
+    font-size: 1.1em; /* Slightly larger instruction text */
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 28px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px; /* Rounded buttons */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+button:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+button:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#startGameButton, #newGameButton {
+    background-color: #43a047; /* Green */
+    margin-top: 15px;
+}
+#startGameButton:hover, #newGameButton:hover {
+    background-color: #388e3c;
+}
+
+.feedback-text {
+    margin-top: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    min-height: 35px; /* Prevent layout shift */
+}
+.feedback-correct { color: #4caf50; /* Material Green */ }
+.feedback-incorrect { color: #f44336; /* Material Red */ }
+
+#resultsF {
+    margin-top: 30px;
+    text-align: right;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+.player-results {
+    border: 1px solid #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    background-color: #fafafa; /* Very light grey */
+    width: 45%; /* Two columns layout */
+    min-width: 250px; /* Ensure readability */
+    box-sizing: border-box; /* Include padding in width */
+}
+.player-results h3 {
+    margin-top: 0;
+    color: #1e88e5; /* Same blue as headers */
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.player-results p {
+    margin: 6px 0;
+    font-size: 0.95em;
+}
+.player-results span {
+    font-weight: bold;
+    color: #546e7a; /* Blue Grey */
+    display: inline-block;
+    min-width: 50px;
+    text-align: left;
+}
+.condition-detail {
+    font-size: 0.85em !important;
+    color: #666;
+    padding-right: 10px; /* Indent condition details */
+}
+.condition-detail span {
+    min-width: 40px; /* Smaller min-width */
+}
+
+
+#winnerDeclaration {
+    width: 100%; /* Span across both columns */
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+.hidden {
+    display: none;
+}
