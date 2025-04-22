@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>מודל גידול חיידקים - תחרות על סובסטרט</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; direction: rtl; }
+        .slider-container { margin: 10px; }
+    </style>
+</head>
+<body>
+    <h2>סימולציה: תחרות בין שני חיידקים על סובסטרט</h2>
+
+    <div class="slider-container">
+        μmax חיידק 1: <input type="range" id="muMax1" min="0.1" max="1" step="0.05" value="0.5">
+        <span id="muMax1Val">0.5</span>
+    </div>
+    <div class="slider-container">
+        Ks חיידק 1: <input type="range" id="ks1" min="0.01" max="5" step="0.1" value="0.5">
+        <span id="ks1Val">0.5</span>
+    </div>
+    <div class="slider-container">
+        μmax חיידק 2: <input type="range" id="muMax2" min="0.1" max="1" step="0.05" value="0.5">
+        <span id="muMax2Val">0.5</span>
+    </div>
+    <div class="slider-container">
+        Ks חיידק 2: <input type="range" id="ks2" min="0.01" max="5" step="0.1" value="0.5">
+        <span id="ks2Val">0.5</span>
+    </div>
+
+    <div id="graph"></div>
+
+    <script>
+        function monod(muMax, Ks, S) {
+            return muMax * S / (Ks + S);
+        }
+
+        function simulate(muMax1, Ks1, muMax2, Ks2) {
+            let t = [], X1 = [], X2 = [], S = [];
+            let dt = 0.1, Tmax = 20;
+            let s = 10, x1 = 0.1, x2 = 0.1;
+
+            for (let time = 0; time <= Tmax; time += dt) {
+                t.push(time);
+                X1.push(x1);
+                X2.push(x2);
+                S.push(s);
+
+                let mu1 = monod(muMax1, Ks1, s);
+                let mu2 = monod(muMax2, Ks2, s);
+
+                let dx1 = mu1 * x1 * dt;
+                let dx2 = mu2 * x2 * dt;
+                let ds = -(dx1 + dx2);
+
+                x1 += dx1;
+                x2 += dx2;
+                s = Math.max(s + ds, 0);
+            }
+
+            return { t, X1, X2, S };
+        }
+
+        function plot(muMax1, Ks1, muMax2, Ks2) {
+            const data = simulate(muMax1, Ks1, muMax2, Ks2);
+
+            const traces = [
+                { x: data.t, y: data.X1, name: 'חיידק 1', type: 'scatter' },
+                { x: data.t, y: data.X2, name: 'חיידק 2', type: 'scatter' },
+                { x: data.t, y: data.S, name: 'סובסטרט', type: 'scatter', line: { dash: 'dot' } }
+            ];
+
+            Plotly.newPlot('graph', traces, {
+                title: 'גידול חיידקים בתחרות על סובסטרט',
+                xaxis: { title: 'זמן (שעות)' },
+                yaxis: { title: 'ריכוז' }
+            });
+        }
+
+        const sliders = ['muMax1', 'ks1', 'muMax2', 'ks2'];
+        sliders.forEach(id => {
+            document.getElementById(id).addEventListener('input', update);
+        });
+
+        function update() {
+            let muMax1 = parseFloat(document.getElementById('muMax1').value);
+            let ks1 = parseFloat(document.getElementById('ks1').value);
+            let muMax2 = parseFloat(document.getElementById('muMax2').value);
+            let ks2 = parseFloat(document.getElementById('ks2').value);
+
+            document.getElementById('muMax1Val').innerText = muMax1;
+            document.getElementById('ks1Val').innerText = ks1;
+            document.getElementById('muMax2Val').innerText = muMax2;
+            document.getElementById('ks2Val').innerText = ks2;
+
+            plot(muMax1, ks1, muMax2, ks2);
+        }
+
+        update();  // רנדר ראשוני
+    </script>
+</body>
+</html>
