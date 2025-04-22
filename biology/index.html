@@ -2,7 +2,7 @@
 <html lang="he">
 <head>
     <meta charset="UTF-8">
-    <title>מודל גידול חיידקים - תחרות על סובסטרט</title>
+    <title>גידול חיידקים: חיים מול אבסולוטי</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; direction: rtl; }
@@ -10,23 +10,19 @@
     </style>
 </head>
 <body>
-    <h2>סימולציה: תחרות בין שני חיידקים על סובסטרט</h2>
+    <h2>השוואה: תאים חיים מול כמות אבסולוטית</h2>
 
     <div class="slider-container">
-        μmax חיידק 1: <input type="range" id="muMax1" min="0.1" max="1" step="0.05" value="0.5">
-        <span id="muMax1Val">0.5</span>
+        μmax: <input type="range" id="muMax" min="0.1" max="1" step="0.05" value="0.5">
+        <span id="muMaxVal">0.5</span>
     </div>
     <div class="slider-container">
-        Ks חיידק 1: <input type="range" id="ks1" min="0.01" max="5" step="0.1" value="0.5">
-        <span id="ks1Val">0.5</span>
+        Ks: <input type="range" id="ks" min="0.01" max="5" step="0.1" value="0.5">
+        <span id="ksVal">0.5</span>
     </div>
     <div class="slider-container">
-        μmax חיידק 2: <input type="range" id="muMax2" min="0.1" max="1" step="0.05" value="0.5">
-        <span id="muMax2Val">0.5</span>
-    </div>
-    <div class="slider-container">
-        Ks חיידק 2: <input type="range" id="ks2" min="0.01" max="5" step="0.1" value="0.5">
-        <span id="ks2Val">0.5</span>
+        שיעור תמותה: <input type="range" id="deathRate" min="0" max="0.5" step="0.01" value="0.1">
+        <span id="deathRateVal">0.1</span>
     </div>
 
     <div id="graph"></div>
@@ -36,65 +32,62 @@
             return muMax * S / (Ks + S);
         }
 
-        function simulate(muMax1, Ks1, muMax2, Ks2) {
-            let t = [], X1 = [], X2 = [], S = [];
+        function simulate(muMax, Ks, deathRate) {
+            let t = [], Xlive = [], Xtotal = [], S = [];
             let dt = 0.1, Tmax = 20;
-            let s = 10, x1 = 0.1, x2 = 0.1;
+            let s = 10, xlive = 0.1, xtotal = 0.1;
 
             for (let time = 0; time <= Tmax; time += dt) {
                 t.push(time);
-                X1.push(x1);
-                X2.push(x2);
+                Xlive.push(xlive);
+                Xtotal.push(xtotal);
                 S.push(s);
 
-                let mu1 = monod(muMax1, Ks1, s);
-                let mu2 = monod(muMax2, Ks2, s);
+                let mu = monod(muMax, Ks, s);
+                let growth = mu * xlive * dt;
+                let death = deathRate * xlive * dt;
+                let ds = -growth;
 
-                let dx1 = mu1 * x1 * dt;
-                let dx2 = mu2 * x2 * dt;
-                let ds = -(dx1 + dx2);
-
-                x1 += dx1;
-                x2 += dx2;
+                xtotal += growth;               // כלל התאים שגדלו (לא מושפע מתמותה)
+                xlive += growth - death;        // רק החיים, תמותה חלה עליהם
+                xlive = Math.max(xlive, 0);
                 s = Math.max(s + ds, 0);
             }
 
-            return { t, X1, X2, S };
+            return { t, Xlive, Xtotal, S };
         }
 
-        function plot(muMax1, Ks1, muMax2, Ks2) {
-            const data = simulate(muMax1, Ks1, muMax2, Ks2);
+        function plot(muMax, Ks, deathRate) {
+            const data = simulate(muMax, Ks, deathRate);
 
             const traces = [
-                { x: data.t, y: data.X1, name: 'חיידק 1', type: 'scatter' },
-                { x: data.t, y: data.X2, name: 'חיידק 2', type: 'scatter' },
-                { x: data.t, y: data.S, name: 'סובסטרט', type: 'scatter', line: { dash: 'dot' } }
+                { x: data.t, y: data.Xtotal, name: 'סה"כ תאים (אבסולוטי)', type: 'scatter', line: { color: 'blue' } },
+                { x: data.t, y: data.Xlive, name: 'תאים חיים', type: 'scatter', line: { color: 'green' } },
+                { x: data.t, y: data.S, name: 'סובסטרט', type: 'scatter', line: { dash: 'dot', color: 'red' } }
             ];
 
             Plotly.newPlot('graph', traces, {
-                title: 'גידול חיידקים בתחרות על סובסטרט',
+                title: 'גידול חיידקים: תאים חיים מול אבסולוטי',
                 xaxis: { title: 'זמן (שעות)' },
-                yaxis: { title: 'ריכוז' }
+                yaxis: { title: 'ריכוז תאים / סובסטרט' }
             });
         }
 
-        const sliders = ['muMax1', 'ks1', 'muMax2', 'ks2'];
+        const sliders = ['muMax', 'ks', 'deathRate'];
         sliders.forEach(id => {
             document.getElementById(id).addEventListener('input', update);
         });
 
         function update() {
-            let muMax1 = parseFloat(document.getElementById('muMax1').value);
-            let ks1 = parseFloat(document.getElementById('ks1').value);
-            let muMax2 = parseFloat(document.getElementById('muMax2').value);
-            let ks2 = parseFloat(document.getElementById('ks2').value);
+            let muMax = parseFloat(document.getElementById('muMax').value);
+            let ks = parseFloat(document.getElementById('ks').value);
+            let deathRate = parseFloat(document.getElementById('deathRate').value);
 
-            document.getElementById('muMax1Val').innerText = muMax1;
-            document.getElementById('ks1Val').innerText = ks1;
-            document.getElementById('muMax2Val').innerText = muMax2;
-            document.getElementById('ks2Val').innerText = ks2;
+            document.getElementById('muMaxVal').innerText = muMax;
+            document.getElementById('ksVal').innerText = ks;
+            document.getElementById('deathRateVal').innerText = deathRate;
 
-            plot(muMax1, ks1, muMax2, ks2);
+            plot(muMax, ks, deathRate);
         }
 
         update();  // רנדר ראשוני
