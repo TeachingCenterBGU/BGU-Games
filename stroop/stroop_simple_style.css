@@ -1,150 +1,214 @@
+/* --- START OF FILE stroop_variants_style.css --- */
+
 body {
-    font-family: Assistant, Arial, sans-serif;
+    font-family: Assistant, Arial, sans-serif; /* Font with good Hebrew support */
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: flex-start; /* Align top */
     min-height: 100vh;
-    background-color: #f4f7f6; /* Light grey-green */
+    background-color: #eef2f7; /* Lighter blue background */
     color: #333;
     line-height: 1.6;
     margin: 0;
     padding: 20px;
+    direction: rtl; /* Ensure RTL */
 }
 
 .main-container {
     background-color: #ffffff;
     padding: 30px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 700px;
+    max-width: 800px; /* Wider container for more complex layouts */
     width: 95%;
 }
 
 /* --- Selection Screen --- */
 #selectionScreen h1 {
-    color: #00695c; /* Dark Teal */
+    color: #0056b3; /* Darker blue */
+    margin-bottom: 15px;
+}
+#selectionScreen p {
+    margin-bottom: 25px;
+    font-size: 1.1em;
+    color: #555;
 }
 .variant-buttons {
     display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 15px;
     margin-top: 25px;
 }
 .variant-buttons button {
-    padding: 12px 25px;
-    font-size: 17px;
-    border: 1px solid #00897b; /* Teal border */
-    background-color: transparent;
-    color: #00897b;
-    border-radius: 25px; /* Pill shape */
+    padding: 12px 20px;
+    font-size: 16px;
+    border: 1px solid #007bff;
+    background-color: #f8f9fa;
+    color: #007bff;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
-    width: 80%; /* Make buttons wider */
-    max-width: 300px;
+    flex-basis: 200px; /* Give buttons some base width */
+    min-width: 180px;
 }
 .variant-buttons button:hover {
-    background-color: #e0f2f1; /* Light teal background on hover */
-    color: #00695c;
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
 }
 
 /* --- Game Container --- */
 #gameContainer {
     margin-top: 20px;
-}
-#variantTitle {
-    color: #00897b; /* Teal */
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-#instructionsArea {
-    background-color: #f9f9f9;
+    border: 1px solid #ddd;
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid #eee;
+    background-color: #fdfdfd;
+}
+#variantTitle {
+    color: #17a2b8; /* Teal color */
+    margin-bottom: 20px;
+}
+#instructionsArea {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
     margin-bottom: 25px;
-    text-align: right;
+    text-align: right; /* Align instructions text right */
 }
 #instructionsArea h3 {
     margin-top: 0;
-    color: #555;
+    color: #6c757d; /* Grey */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 #instructionsArea label {
-    margin-left: 5px; /* Swapped margin for RTL */
-    margin-right: 15px;
+    margin-left: 5px; /* Swapped margin */
+    font-weight: bold;
 }
 #instructionsArea select {
-    padding: 6px 10px;
+    padding: 5px 8px;
     border-radius: 4px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
+    margin-left: 15px; /* Swapped margin */
 }
-#instructionsArea button { /* Base style for buttons inside instructions */
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 15px;
-    margin-right: 10px; /* Space between buttons */
-    color: white;
+#instructionsArea button#startGameButton {
+     background-color: #28a745; /* Green */
+     color: white;
+     padding: 10px 25px;
+     font-size: 16px;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     transition: background-color 0.3s;
+     margin-top: 15px;
 }
-#startGameButton {
-     background-color: #43a047; /* Green */
+#instructionsArea button#startGameButton:hover {
+    background-color: #218838;
 }
-#startGameButton:hover {
-    background-color: #388e3c;
-}
-.secondary-button { /* For "Back" button */
-    background-color: #6c757d; /* Grey */
-}
-.secondary-button:hover {
-    background-color: #5a6268;
-}
-
 
 /* --- Test Area --- */
 #testArea {
-    min-height: 250px;
+    min-height: 350px; /* Increased height */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around; /* Space stimulus and response */
+    justify-content: space-between; /* Space out stimulus and response */
     padding: 20px 0;
 }
 
-#stimulusDisplay {
+#stimulusArea {
+    width: 90%; /* Limit width slightly */
+    margin: 0 auto; /* Center */
+    text-align: center;
+    margin-bottom: 30px; /* Space below stimulus */
+    position: relative; /* Needed for spatial stroop positioning */
+    min-height: 160px; /* Adjusted space for cues and stimuli */
+    border: 1px solid #eee; /* Optional: visualize area */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center;
+}
+
+#cueText {
+    font-size: 24px;
+    color: #6c757d;
+    margin-bottom: 15px;
+    height: 30px; /* Reserve space */
     font-weight: bold;
-    min-height: 70px;
+}
+
+#stimulusDisplay {
+    font-size: 48px; /* Default size */
+    font-weight: bold;
+    min-height: 70px; /* Prevent layout jumps */
     line-height: 1.2;
     padding: 10px;
-    margin-bottom: 20px;
-    /* Default text style */
-    font-size: 52px;
-    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Take full width of parent */
+    /* Position is 'static' by default, overridden by spatial */
 }
 
 /* Styles for Numerical Stroop stimuli */
-.numerical-stimulus span {
-    display: inline-block;
-    margin: 0 25px; /* Increased space */
+#stimulusDisplay .numerical-stimulus span {
+    display: inline-block; /* Keep spans inline */
+    margin: 0 20px; /* Space between digits */
     padding: 5px;
-    line-height: 1;
-    font-family: 'Courier New', Courier, monospace; /* Ensure consistent width */
+    line-height: 1; /* Important for size consistency */
+    /* Font size set dynamically by JS */
 }
+
+/* --- CORRECTED Styles for Spatial Stroop stimuli --- */
+#stimulusDisplay.spatial-stimulus {
+    position: absolute; /* Position relative to #stimulusArea */
+    width: auto; /* Don't force 100% width */
+    font-size: 36px; /* Slightly smaller for spatial */
+}
+/* Combine base class with position class */
+#stimulusDisplay.spatial-stimulus.top {
+    top: 10%; /* Position near top */
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* --- MODIFIED RULE FOR BOTTOM --- */
+#stimulusDisplay.spatial-stimulus.bottom {
+    bottom: 10px; /* Position 10px from the bottom edge */
+    left: 50%;
+    transform: translateX(-50%); /* Only horizontal centering needed */
+    /* Removed top and translateY */
+}
+/* --- END MODIFICATION --- */
+#stimulusDisplay.spatial-stimulus.left {
+    left: 10%; /* Position near left */
+    top: 50%;
+    transform: translateY(-50%);
+}
+#stimulusDisplay.spatial-stimulus.right {
+    left: 90%; /* Position near right */
+    top: 50%;
+    transform: translate(-100%, -50%); /* Adjust horizontal alignment */
+}
+/* --- End Spatial Styles --- */
 
 #responseArea {
     display: flex;
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
-    flex-wrap: wrap;
-    min-height: 50px;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    min-height: 50px; /* Reserve space */
+    width: 100%; /* Take full width */
 }
 
-#responseArea button { /* Style for color buttons */
+#responseArea button {
     padding: 12px 25px;
     font-size: 18px;
     border: none;
@@ -157,89 +221,115 @@ body {
 #responseArea button:hover { opacity: 0.9; }
 #responseArea button:active { transform: scale(0.97); }
 
+/* CSS classes for color buttons (used by JS) */
 .color-button-אדום { background-color: #e74c3c; }
 .color-button-כחול { background-color: #3498db; }
 .color-button-ירוק { background-color: #2ecc71; }
-.color-button-צהוב { background-color: #f1c40f; color: #333; }
+.color-button-צהוב { background-color: #f1c40f; color: #333; } /* Darker text for yellow */
+/* Default button style if no color class is added */
+#responseArea button:not([class*='color-button-']) {
+     background-color: #6c757d; /* Grey for non-color buttons */
+}
+
 
 #keyboardInstructions {
     margin-top: 20px;
-    color: #00695c; /* Teal */
+    color: #0056b3;
     font-weight: bold;
-    font-size: 1.1em;
 }
 
 #feedbackArea {
     margin-top: 20px;
     font-size: 20px;
     font-weight: bold;
-    min-height: 30px;
+    min-height: 30px; /* Reserve space */
 }
-.feedback-correct { color: #4caf50; }
-.feedback-incorrect { color: #f44336; }
+.feedback-correct { color: #2ecc71; }
+.feedback-incorrect { color: #e74c3c; }
 
 #rtDisplay {
     margin-top: 10px;
     font-size: 14px;
     color: #888;
+    min-height: 20px; /* Reserve space */
 }
+
 
 /* --- Results Area --- */
 #resultsArea {
     margin-top: 30px;
     padding: 25px;
-    background-color: #f9f9f9;
+    background-color: #f8f9fa;
     border-radius: 8px;
-    border: 1px solid #eee;
+    border: 1px solid #dee2e6;
+    text-align: right; /* Ensure RTL text aligns right */
 }
 #resultsArea h2 {
-    color: #00695c; /* Dark Teal */
+    color: #0056b3;
+    text-align: center; /* Center the main results header */
 }
-#resultsSummary { /* Style for the results text block */
+#resultsSummary {
     margin-top: 15px;
-    text-align: right;
     font-size: 16px;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid #eee;
 }
 #resultsSummary p {
     margin: 8px 0;
-    display: flex; /* Use flexbox for alignment */
+    display: flex; /* Use flex for alignment */
     justify-content: space-between; /* Space out label and value */
     align-items: center;
+    border-bottom: 1px dotted #eee;
+    padding-bottom: 5px;
 }
-#resultsSummary strong { /* Label part */
-    font-weight: normal; /* Less emphasis on label */
-    color: #555;
-    margin-left: 10px; /* Space after label */
-}
-#resultsSummary span { /* Value part */
+#resultsSummary p strong { /* Style the label part */
     font-weight: bold;
-    color: #00897b; /* Teal for values */
-    background-color: #e0f2f1; /* Light background for value */
-    padding: 2px 6px;
-    border-radius: 3px;
-    min-width: 60px;
-    text-align: center;
+    color: #495057;
+    margin-left: 10px; /* Space after label (RTL) */
 }
-#resultsExplanation {
-    text-align: right;
+#resultsSummary p span { /* Style the value part */
+    font-weight: bold;
+    color: #17a2b8; /* Teal for values */
+    text-align: left; /* Align value to the left */
+    min-width: 80px; /* Give value some space */
 }
 
-#resultsButtonsContainer button { /* Style for results buttons */
-     padding: 10px 20px;
-     font-size: 15px;
-     border: none;
-     border-radius: 5px;
-     cursor: pointer;
-     transition: background-color 0.3s;
-     margin: 0 5px; /* Space between buttons */
-     color: white;
+#resultsExplanation {
+    font-size: 0.9em;
+    margin-top: 20px;
+    color: #444;
+    background-color: #eef;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: right; /* Keep explanation text aligned right */
+    line-height: 1.7;
 }
+#resultsExplanation b {
+    color: #0056b3; /* Highlight effect name */
+}
+#resultsExplanation ul {
+    list-style-position: inside; /* Bullets inside text area */
+    padding-right: 0; /* Remove default padding */
+}
+#resultsExplanation li {
+    margin-bottom: 5px;
+}
+
 
 /* --- Utility --- */
 .hidden {
-    display: none !important;
+    display: none !important; /* Ensure hiding */
+}
+
+button#backToSelectionButton, button#backToSelectionButtonResults {
+    margin-top: 25px;
+    background-color: #6c757d; /* Grey */
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button#backToSelectionButton:hover, button#backToSelectionButtonResults:hover {
+    background-color: #5a6268;
 }
