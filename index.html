@@ -11,11 +11,13 @@
       background-color: #f0f0f0;
       padding: 40px;
     }
+
     h1 {
       color: #333;
-      font-size: 28px;
-      line-height: 1.6;
+      font-size: 34px; /* גודל מוגדל */
+      line-height: 1.8;
     }
+
     .logo {
       width: 360px;
       height: auto;
@@ -23,6 +25,7 @@
       display: block;
       transition: transform 0.3s ease;
     }
+
     .logo:hover {
       transform: scale(1.05);
     }
@@ -45,26 +48,47 @@
 
     .column h2 {
       color: #444;
-      font-size: 26px; /* היה 22px */
+      font-size: 26px; /* גודל מוגדל */
       margin-bottom: 20px;
     }
 
     .game-link {
       display: block;
-      margin: 15px auto;
-      padding: 12px;
-      width: 80%;
+      margin: 20px auto;
+      padding: 20px;
+      width: 90%;
       background-color: #ffffff;
-      border: 2px solid #ccc;
-      border-radius: 10px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-decoration: none;
-      color: #000;
-      transition: 0.3s;
+      color: #333;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
     }
 
     .game-link:hover {
-      background-color: #ddd;
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      background-color: #f9f9f9;
     }
+    @media (max-width: 768px) {
+      .columns {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .column {
+        width: 90%;
+        margin: 20px 0;
+      }
+
+      .game-link {
+        width: 100%;
+      }
+    }    
   </style>
 </head>
 <body>
@@ -80,16 +104,37 @@
   <div class="columns">
     <div class="column">
       <h2>סימולציות</h2>
-      <a class="game-link" href="snell1/">🔍 חוק סנל תיאוריה</a>
-      <a class="game-link" href="pendulum/">🕰️ פונקצית תמסורת מסדר שני</a>
-       <a class="game-link" href="biology/">🧫 גידול חיידקים</a>
+      <a class="game-link" href="snell1/">
+        <div style="font-size: 28px;">🔍</div>
+        חוק סנל תיאוריה
+      </a>
+      <a class="game-link" href="snell2/">
+        <div style="font-size: 28px;">🛟</div>
+        חוק סנל המחשה
+      </a>
+      <a class="game-link" href="pendulum/">
+        <div style="font-size: 28px;">🕰️</div>
+        פונקצית תמסורת מסדר שני
+      </a>
     </div>
     <div class="column">
       <h2>משחקים</h2>
-      <a class="game-link" href="snell2/">🛟 חוק סנל המחשה</a>
-      <a class="game-link" href="stroop/">🎨 מבחן סטרופ</a>
-      <a class="game-link" href="flanker/">🎯 מבחן פלאנקר</a>
-      <a class="game-link" href="prisoner/">🚔 דילמת האסיר</a>
+      <a class="game-link" href="stroop/">
+        <div style="font-size: 28px;">🎨</div>
+        מבחן סטרופ
+      </a>
+      <a class="game-link" href="flanker/">
+        <div style="font-size: 28px;">🎯</div>
+        מבחן פלאנקר
+      </a>
+      <a class="game-link" href="biology/">
+        <div style="font-size: 28px;">🧫</div>
+        גידול חיידקים
+      </a>
+      <a class="game-link" href="prisoner/">
+        <div style="font-size: 28px;">🚔</div>
+        דילמת האסיר
+      </a>
     </div>
   </div>
 
