@@ -1,594 +1,815 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Loaded. Initializing Simple Stroop script...");
+// --- START OF FILE stroop_variants_script.js ---
 
+document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
-    // Get references and check existence immediately
     const selectionScreen = document.getElementById('selectionScreen');
     const gameContainer = document.getElementById('gameContainer');
     const resultsArea = document.getElementById('resultsArea');
-    const variantButtons = document.querySelectorAll('#selectionScreen .variant-buttons button'); // More specific selector
+
+    // Correctly select the container, then listen for clicks on buttons inside it
+    const variantButtonsContainer = document.querySelector('.variant-buttons');
     const variantTitle = document.getElementById('variantTitle');
-    const instructionsArea = document.getElementById('instructionsArea');
     const instructionText = document.getElementById('instructionText');
     const numTrialsSelect = document.getElementById('numTrialsSelect');
     const startGameButton = document.getElementById('startGameButton');
+    const instructionsArea = document.getElementById('instructionsArea');
+
     const testArea = document.getElementById('testArea');
+    const stimulusArea = document.getElementById('stimulusArea');
+    const cueText = document.getElementById('cueText'); // For Task Switching
     const stimulusDisplay = document.getElementById('stimulusDisplay');
     const responseArea = document.getElementById('responseArea');
-    const keyboardInstructions = document.getElementById('keyboardInstructions');
+    const keyboardInstructions = document.getElementById('keyboardInstructions'); // Kept for potential future use
     const feedbackArea = document.getElementById('feedbackArea');
     const rtDisplay = document.getElementById('rtDisplay');
     const backToSelectionButton = document.getElementById('backToSelectionButton');
+
     const resultsVariantName = document.getElementById('resultsVariantName');
     const resultsSummary = document.getElementById('resultsSummary');
     const resultsExplanation = document.getElementById('resultsExplanation');
-    const resultsButtonsContainer = document.getElementById('resultsButtonsContainer'); // Get existing container
+    const backToSelectionButtonResults = document.getElementById('backToSelectionButtonResults');
 
-    let initError = false;
-    // Basic check for essential elements
-     [selectionScreen, gameContainer, resultsArea, variantButtons, variantTitle, instructionsArea, instructionText, numTrialsSelect, startGameButton, testArea, stimulusDisplay, responseArea, keyboardInstructions, feedbackArea, rtDisplay, backToSelectionButton, resultsVariantName, resultsSummary, resultsExplanation, resultsButtonsContainer].forEach((el, i) => {
-         const name = ["selectionScreen", "gameContainer", "resultsArea", "variantButtons", "variantTitle", "instructionsArea", "instructionText", "numTrialsSelect", "startGameButton", "testArea", "stimulusDisplay", "responseArea", "keyboardInstructions", "feedbackArea", "rtDisplay", "backToSelectionButton", "resultsVariantName", "resultsSummary", "resultsExplanation", "resultsButtonsContainer"][i];
-         // For variantButtons, check length
-         if (name === 'variantButtons' && (!el || el.length === 0)) {
-             console.error(`FATAL ERROR: No elements found for '${name}'!`);
-             initError = true;
-         } else if (name !== 'variantButtons' && !el) {
-             console.error(`FATAL ERROR: Element '${name}' not found!`);
-             initError = true;
-         } else {
-              console.log(`Element '${name}' found.`);
-         }
-    });
-
-    if (initError) {
-        alert("שגיאה קריטית: רכיב חיוני חסר בדף ה-HTML. בדוק את ה-Console.");
-        return; // Stop script execution
-    }
-
-    // --- Game State ---
-    let currentVariant = null; // 'classic' or 'numerical'
-    let gameState = 'selection';
-    let trials = [];
-    let currentTrialIndex = 0;
+    // --- Game State Variables ---
+    let currentVariant = null;
     let totalTrials = 20;
+    let currentTrialIndex = 0;
+    let stimuliList = [];
+    let resultsData = []; // Correctly initialized as an array
     let trialStartTime = 0;
-    let resultsData = {};
-    let responseListenerActive = false;
-    let keyboardListener = null;
-    let feedbackTimeout = null;
-    let itiTimeout = null;
+    let responseHandler = null; // Function to handle response for the current trial
 
-    // --- Variant Specific Settings ---
-    const settings = {
-        classic: {
-            typeName: 'סטרופ קלאסי',
-            colors: [
-                { name: 'אדום', hex: '#e74c3c' }, { name: 'כחול', hex: '#3498db' },
-                { name: 'ירוק', hex: '#2ecc71' }, { name: 'צהוב', hex: '#f1c40f' }
-            ],
-            feedbackDuration: 750, iti: 500, responseType: 'button'
-        },
-        numerical: {
-            typeName: 'סטרופ מספרי',
-            minNum: 1, maxNum: 9,
-            sizes: [{ size: '28px', physicalValue: 1 }, { size: '64px', physicalValue: 2 }],
-            feedbackDuration: 800, iti: 600, responseType: 'keyboard',
-            keys: { ArrowLeft: 'left', ArrowRight: 'right' } // Response indicates which side has the LARGER NUMERICAL VALUE
+    // --- Constants ---
+    const COLORS = {
+        "אדום": "red",
+        "כחול": "blue",
+        "ירוק": "green",
+        "צהוב": "yellow"
+    };
+    const COLOR_NAMES = Object.keys(COLORS);
+    // const COLOR_VALUES = Object.values(COLORS); // Not strictly needed if using names/classes
+
+    const EMOTIONAL_WORDS = {
+        positive: ["שמחה", "אהבה", "הצלחה", "חופש", "צחוק"],
+        negative: ["עצב", "כעס", "פחד", "כישלון", "כאב"],
+        neutral: ["שולחן", "כיסא", "קיר", "חלון", "דרך"]
+    };
+
+    // SPATIAL_WORDS map Hebrew terms to the CSS classes we'll use (matching CSS)
+    const SPATIAL_WORDS = {
+        "למעלה": "top",
+        "למטה": "bottom",
+        "ימין": "right",
+        "שמאל": "left"
+    };
+    const SPATIAL_POSITIONS = Object.keys(SPATIAL_WORDS);
+    const SPATIAL_CLASSES = Object.values(SPATIAL_WORDS); // CSS classes: "top", "bottom", "left", "right"
+
+    const SWITCH_CUES = {
+        "צבע": "name_color",
+        "מילה": "read_word"
+    };
+    const CUE_NAMES = Object.keys(SWITCH_CUES);
+
+    // --- Utility Functions ---
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+
+    const getRandomElement = (array) => array[Math.floor(Math.random() * array.length)];
+
+    const showScreen = (screenToShow) => {
+        selectionScreen.classList.add('hidden');
+        gameContainer.classList.add('hidden');
+        resultsArea.classList.add('hidden');
+        screenToShow.classList.remove('hidden');
+    };
+
+    const clearStimulus = () => {
+        stimulusDisplay.innerHTML = '';
+        stimulusDisplay.style.color = 'black'; // Reset text color
+        stimulusDisplay.style.fontSize = ''; // Reset font size
+        stimulusDisplay.className = ''; // Reset all classes
+        stimulusDisplay.style.position = ''; // Reset position style if set by spatial
+
+           // Reset stimulus area container styles that might be set by spatial
+    stimulusArea.style.position = '';
+    // stimulusArea.style.height = ''; // Maybe keep height for consistency? Test this.
+    stimulusArea.style.border = '1px solid #eee'; // Reset to default border
+
+    cueText.textContent = '';
+    feedbackArea.textContent = '';
+    feedbackArea.className = 'feedback-text'; // Reset feedback class
+    rtDisplay.textContent = 'זמן תגובה: --';
+    // responseArea.innerHTML = ''; // <--- השורה הזו הוסרה/הפכה להערה
+
+    // Detach old listener from responseArea if exists
+    if (responseHandler) {
+        responseArea.removeEventListener('click', responseHandler);
+        responseHandler = null; // Important to reset
+    }
+};
+
+    const displayFeedback = (correct, rt) => {
+        feedbackArea.textContent = correct ? 'נכון!' : 'טעות!';
+        feedbackArea.className = correct ? 'feedback-text feedback-correct' : 'feedback-text feedback-incorrect'; // Use CSS classes
+        rtDisplay.textContent = `זמן תגובה: ${rt.toFixed(0)} ms`;
+    };
+
+    // --- Variant Setup Functions ---
+
+    const setupClassicStroop = () => {
+        variantTitle.textContent = 'סטרופ קלאסי (צבע-מילה)';
+        instructionText.textContent = 'בכל ניסוי, תופיע מילה צבועה. עליך לציין את צבע הדיו של המילה, ולהתעלם ממשמעות המילה. לחץ על הכפתור המתאים לצבע הדיו.';
+        responseArea.innerHTML = ''; // Clear previous buttons
+        COLOR_NAMES.forEach(name => {
+            const btn = document.createElement('button');
+            btn.textContent = name;
+            btn.dataset.response = name; // Store the response value
+            // *** Use CSS classes for colors ***
+            btn.classList.add(`color-button-${name}`);
+            responseArea.appendChild(btn);
+        });
+        keyboardInstructions.classList.add('hidden');
+    };
+
+    const setupEmotionalStroop = () => {
+        variantTitle.textContent = 'סטרופ רגשי';
+        instructionText.textContent = 'בכל ניסוי, תופיע מילה בעלת מטען רגשי (חיובי, שלילי או ניטרלי), צבועה בצבע כלשהו. עליך לציין את צבע הדיו של המילה, ולהתעלם ממשמעות המילה. לחץ על הכפתור המתאים לצבע הדיו.';
+        setupClassicStroop(); // Uses the same response buttons as classic (with CSS classes)
+        variantTitle.textContent = 'סטרופ רגשי'; // Override title set by setupClassicStroop
+    };
+
+    const setupNumericalStroop = () => {
+        variantTitle.textContent = 'סטרופ מספרי';
+        instructionText.textContent = 'בכל ניסוי, יופיעו זוג מספרים, אחד גדול פיזית מהשני. עליך לציין איזה מספר גדול יותר בערכו המספרי, ולהתעלם מהגודל הפיזי. לחץ על הכפתור המתאים למספר הגדול יותר.';
+        responseArea.innerHTML = ''; // Clear previous buttons
+
+        const btnLeft = document.createElement('button');
+        btnLeft.textContent = 'השמאלי גדול יותר';
+        btnLeft.dataset.response = 'left';
+        responseArea.appendChild(btnLeft);
+
+        const btnRight = document.createElement('button');
+        btnRight.textContent = 'הימני גדול יותר';
+        btnRight.dataset.response = 'right';
+        responseArea.appendChild(btnRight);
+
+        // Buttons will get default grey styling from CSS
+        keyboardInstructions.classList.add('hidden');
+    };
+
+    const setupSpatialStroop = () => {
+        variantTitle.textContent = 'סטרופ מרחבי';
+        instructionText.textContent = 'בכל ניסוי, תופיע מילה המציינת מיקום ("למעלה", "למטה", "ימין", "שמאל") במיקום מסוים על המסך. עליך לציין את מיקום המילה על המסך, ולהתעלם ממשמעות המילה. לחץ על הכפתור המתאים למיקום.';
+        responseArea.innerHTML = ''; // Clear previous buttons
+        SPATIAL_POSITIONS.forEach(positionWord => { // e.g., "למעלה"
+            const btn = document.createElement('button');
+            btn.textContent = positionWord;
+            btn.dataset.response = positionWord; // Use the Hebrew word as response identifier
+            responseArea.appendChild(btn);
+        });
+         // Buttons will get default grey styling from CSS
+        keyboardInstructions.classList.add('hidden');
+        // CSS handles stimulus positioning based on classes added during runTrial
+    };
+
+     const setupSwitchingStroop = () => {
+        variantTitle.textContent = 'סטרופ עם החלפת משימות';
+        instructionText.innerHTML = `בכל ניסוי, תופיע מילה צבועה. לפני כל מילה, יופיע רמז:<br>
+                                     - אם הרמז הוא <b>"צבע"</b>: ציין את צבע הדיו של המילה.<br>
+                                     - אם הרמז הוא <b>"מילה"</b>: ציין את המילה הכתובה.<br>
+                                     לחץ על הכפתור המתאים לתשובה הנדרשת.`;
+        responseArea.innerHTML = ''; // Buttons will be set dynamically per trial
+        keyboardInstructions.classList.add('hidden');
+    };
+
+    // --- Stimulus Generation Functions ---
+
+    const generateClassicStimuli = (n) => {
+        const stimuli = [];
+        const conditions = ['congruent', 'incongruent'];
+        for (let i = 0; i < n; i++) {
+            const condition = conditions[Math.floor(i / (n / conditions.length)) % conditions.length] || conditions[0]; // Ensure balance
+            const word = getRandomElement(COLOR_NAMES);
+            let colorName;
+            if (condition === 'congruent') {
+                colorName = word;
+            } else { // incongruent
+                do {
+                    colorName = getRandomElement(COLOR_NAMES);
+                } while (colorName === word);
+            }
+            const colorValue = COLORS[colorName]; // Actual color value for display
+            stimuli.push({
+                type: 'classic',
+                condition: condition,
+                text: word,
+                color: colorValue,
+                correctAnswer: colorName // Task is to name the color (match response button data)
+            });
+        }
+        return shuffleArray(stimuli);
+    };
+
+    const generateEmotionalStimuli = (n) => {
+        const stimuli = [];
+        const wordTypes = Object.keys(EMOTIONAL_WORDS); // positive, negative, neutral
+        for (let i = 0; i < n; i++) {
+            const wordType = wordTypes[Math.floor(i / (n / wordTypes.length)) % wordTypes.length] || wordTypes[0]; // Ensure balance
+            const word = getRandomElement(EMOTIONAL_WORDS[wordType]);
+            const colorName = getRandomElement(COLOR_NAMES);
+            const colorValue = COLORS[colorName];
+            stimuli.push({
+                type: 'emotional',
+                condition: wordType, // Word type is the condition here
+                text: word,
+                color: colorValue,
+                correctAnswer: colorName // Task is to name the color
+            });
+        }
+        return shuffleArray(stimuli);
+    };
+
+     const generateNumericalStimuli = (n) => {
+        const stimuli = [];
+        const conditions = ['congruent', 'incongruent'];
+        const digits = [1, 2, 3, 4, 6, 7, 8, 9]; // Avoid 5 for clarity
+        for (let i = 0; i < n; i++) {
+            const condition = conditions[Math.floor(i / (n / conditions.length)) % conditions.length] || conditions[0]; // Ensure balance
+            let d1, d2;
+            do {
+                d1 = getRandomElement(digits);
+                d2 = getRandomElement(digits);
+            } while (d1 === d2);
+
+            // Randomly assign left/right
+            const isD1Left = Math.random() < 0.5;
+            const leftDigitVal = isD1Left ? d1 : d2;
+            const rightDigitVal = isD1Left ? d2 : d1;
+
+            const correctAnswer = leftDigitVal > rightDigitVal ? 'left' : 'right';
+
+            let leftDigitDisplay, rightDigitDisplay;
+            const largeFontSize = "2em";
+            const smallFontSize = "1em";
+
+            if (condition === 'congruent') {
+                // Larger value is physically larger
+                if (leftDigitVal > rightDigitVal) {
+                    leftDigitDisplay = `<span style="font-size: ${largeFontSize};">${leftDigitVal}</span>`;
+                    rightDigitDisplay = `<span style="font-size: ${smallFontSize};">${rightDigitVal}</span>`;
+                } else {
+                    leftDigitDisplay = `<span style="font-size: ${smallFontSize};">${leftDigitVal}</span>`;
+                    rightDigitDisplay = `<span style="font-size: ${largeFontSize};">${rightDigitVal}</span>`;
+                }
+            } else { // incongruent
+                // Smaller value is physically larger
+                 if (leftDigitVal < rightDigitVal) {
+                    leftDigitDisplay = `<span style="font-size: ${largeFontSize};">${leftDigitVal}</span>`;
+                    rightDigitDisplay = `<span style="font-size: ${smallFontSize};">${rightDigitVal}</span>`;
+                } else {
+                    leftDigitDisplay = `<span style="font-size: ${smallFontSize};">${leftDigitVal}</span>`;
+                    rightDigitDisplay = `<span style="font-size: ${largeFontSize};">${rightDigitVal}</span>`;
+                }
+            }
+            // Wrap in a container span with the CSS class, add spacing
+const htmlContent = `<span class="numerical-stimulus" style="direction: ltr; display: inline-block;">${leftDigitDisplay}    ${rightDigitDisplay}</span>`;
+
+             stimuli.push({
+            type: 'numerical',
+            condition: condition,
+            // --- START OF CORRECTION ---
+            html: htmlContent, // <<< השתמש במשתנה הנכון htmlContent
+                correctAnswer: correctAnswer // 'left' or 'right'
+            });
+        }
+        return shuffleArray(stimuli);
+    };
+
+    const generateSpatialStimuli = (n) => {
+        const stimuli = [];
+        const conditions = ['congruent', 'incongruent'];
+        for (let i = 0; i < n; i++) {
+            const condition = conditions[Math.floor(i / (n / conditions.length)) % conditions.length] || conditions[0]; // Ensure balance
+            const word = getRandomElement(SPATIAL_POSITIONS); // The text to display, e.g., "למעלה"
+            let positionWord; // The actual position where it appears, e.g., "למעלה"
+            if (condition === 'congruent') {
+                positionWord = word;
+            } else { // incongruent
+                do {
+                    positionWord = getRandomElement(SPATIAL_POSITIONS);
+                } while (positionWord === word);
+            }
+            const positionClass = SPATIAL_WORDS[positionWord]; // The CSS class: "top", "bottom", etc.
+            stimuli.push({
+                type: 'spatial',
+                condition: condition,
+                text: word, // Word displayed
+                positionClass: positionClass, // CSS class for positioning ("top", "bottom", "left", "right")
+                correctAnswer: positionWord // Task is to name the location (matches button data)
+            });
+        }
+        return shuffleArray(stimuli);
+    };
+
+    const generateSwitchingStimuli = (n) => {
+        const stimuli = [];
+        let lastTaskType = null; // Track previous task for switch cost
+        const minTrialsPerTask = 2; // Ensure at least a few repeats before allowing switch calculation
+
+        for (let i = 0; i < n; i++) {
+            // Ensure some task repetition before forcing switches if needed
+            let cue = getRandomElement(CUE_NAMES); // "צבע" or "מילה"
+
+            // Simple alternation might be better for controlled switch costs
+            if (i > 0 && i % 4 < 2 && lastTaskType) { // Example: run blocks of 2
+               cue = Object.keys(SWITCH_CUES).find(key => SWITCH_CUES[key] === lastTaskType);
+            } else {
+                cue = getRandomElement(CUE_NAMES);
+            }
+
+            const taskType = SWITCH_CUES[cue]; // "name_color" or "read_word"
+
+            const word = getRandomElement(COLOR_NAMES); // The word displayed (always a color name)
+            let colorName; // The name of the color it's displayed in
+
+             // Make most trials incongruent to ensure conflict
+             if (Math.random() < 0.8 || word === colorName) { // High chance of incongruent
+                do {
+                    colorName = getRandomElement(COLOR_NAMES);
+                } while (colorName === word);
+            } else { // Congruent
+                 colorName = word;
+            }
+
+            const colorValue = COLORS[colorName]; // Actual color value for display
+
+            // Determine if it's a switch trial (only relevant after the first few trials)
+            const isSwitch = i >= minTrialsPerTask && lastTaskType !== null && lastTaskType !== taskType;
+            // Condition is 'switch' or 'no-switch', only calculable reliably after initial trials
+            const condition = i < minTrialsPerTask ? 'no-switch' : (isSwitch ? 'switch' : 'no-switch');
+
+            let correctAnswer;
+            if (taskType === 'name_color') {
+                correctAnswer = colorName; // Response should be the ink color name
+            } else { // read_word
+                correctAnswer = word; // Response should be the word itself
+            }
+
+            stimuli.push({
+                type: 'switching',
+                condition: condition, // switch or no-switch
+                taskType: taskType, // name_color or read_word
+                cue: cue, // "צבע" or "מילה"
+                text: word,
+                color: colorValue,
+                correctAnswer: correctAnswer
+            });
+            lastTaskType = taskType; // Update for next trial
+        }
+        // Don't shuffle after generation if we want to maintain task run lengths
+        // return shuffleArray(stimuli);
+        return stimuli; // Return in generated order (might have short runs)
+    };
+
+    // --- Game Flow Functions ---
+
+    const selectVariant = (variant) => {
+        console.log(`Selecting variant: ${variant}`);
+        currentVariant = variant;
+        resultsData = []; // Reset results when selecting a new variant
+        currentTrialIndex = 0; // Reset trial index
+
+        // Call the appropriate setup function based on the variant string
+        try {
+            switch (variant) {
+                case 'classic':
+                    setupClassicStroop();
+                    break;
+                case 'emotional':
+                    setupEmotionalStroop();
+                    break;
+                case 'numerical':
+                    setupNumericalStroop();
+                    break;
+                case 'spatial':
+                    setupSpatialStroop();
+                    break;
+                case 'switching':
+                    setupSwitchingStroop();
+                    break;
+                default:
+                    // This case should not happen if buttons have correct data-variant
+                    console.error(`Invalid variant selected: ${variant}`);
+                    alert("שגיאה: גרסה לא תקינה נבחרה.");
+                    currentVariant = null; // Reset variant
+                    return; // Stop further processing
+            }
+
+            showScreen(gameContainer);
+            instructionsArea.classList.remove('hidden'); // Show instructions first
+            testArea.classList.add('hidden'); // Hide test area
+            backToSelectionButton.classList.remove('hidden'); // Show back button on game screen
+             console.log(`Variant ${variant} selected successfully. Showing instructions.`);
+
+        } catch (error) {
+             console.error(`Error during setup for variant ${variant}:`, error);
+             alert(`שגיאה בהכנת גרסת ${variant}. נסה שוב או בחר גרסה אחרת.`);
+             resetGame(); // Go back to selection if setup fails
         }
     };
 
-    // --- Utility Functions ---
-    function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
-    function calculateAverage(arr) { if (!arr || arr.length === 0) return 0; const sum = arr.reduce((a, b) => a + b, 0); return Math.round(sum / arr.length); }
-    function calculateAccuracy(correct, count) { if (count === 0) return 0; return ((correct / count) * 100).toFixed(1); }
 
-    function clearTimeouts() {
-        if (feedbackTimeout) clearTimeout(feedbackTimeout);
-        if (itiTimeout) clearTimeout(itiTimeout);
-        feedbackTimeout = null;
-        itiTimeout = null;
-    }
-
-    // --- Game State Management ---
-    function updateGameState(newState) {
-        console.log(`updateGameState: Switching state from ${gameState} to ${newState}`);
-        const previousState = gameState;
-        gameState = newState;
-
-        selectionScreen.classList.toggle('hidden', newState !== 'selection');
-        gameContainer.classList.toggle('hidden', newState === 'selection' || newState === 'results');
-        resultsArea.classList.toggle('hidden', newState !== 'results');
-
-        const isInstructions = newState === 'instructions';
-        const isPlaying = newState === 'playing';
-        const isResults = newState === 'results';
-        const isSelection = newState === 'selection';
-
-        instructionsArea.classList.toggle('hidden', !isInstructions);
-        testArea.classList.toggle('hidden', !isPlaying);
-        backToSelectionButton.classList.toggle('hidden', !isInstructions);
-        resultsButtonsContainer.classList.toggle('hidden', !isResults);
-
-        if (isSelection) {
-            variantTitle.textContent = '';
-            instructionText.innerHTML = '';
-        }
-        if (isResults) {
-            setupResultButtons();
-        }
-
-        if (newState !== 'playing' && keyboardListener) {
-            console.log("updateGameState: Removing keyboard listener");
-            document.removeEventListener('keydown', keyboardListener);
-            keyboardListener = null;
-        }
-        if ((previousState === 'playing' && !isPlaying) || isSelection) {
-            clearTimeouts();
-            responseListenerActive = false;
-            console.log("updateGameState: Timeouts cleared and response listener deactivated.");
-        }
-        console.log(`updateGameState: Finished setting up state ${newState}`);
-    }
-
-    // --- Variant Selection ---
-    variantButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-             const clickedButton = event.target.closest('button');
-             if (!clickedButton) return;
-             const variant = clickedButton.dataset.variant;
-             console.log(`Variant button clicked: ${variant}`);
-
-             if (settings[variant]) {
-                 currentVariant = variant;
-                 console.log(`currentVariant set to: ${currentVariant}`);
-                 resultsData = {};
-                 const prepSuccess = prepareInstructions(); // Call updated prepareInstructions
-                 if (prepSuccess) {
-                    updateGameState('instructions');
-                 } else {
-                     console.error("prepareInstructions failed, not updating game state.");
-                     currentVariant = null; // Reset if failed
-                 }
-             } else {
-                 console.error(`Variant "${variant}" not found in settings.`);
-                 alert("שגיאה: הגרסה שנבחרה אינה תקינה.");
-                 currentVariant = null;
-             }
-        });
-    });
-
-    // --- Instructions and Setup ---
-    function prepareInstructions() {
-        console.log(`--- prepareInstructions START for variant: ${currentVariant} ---`);
-        if (!currentVariant || !settings[currentVariant]) {
-             console.error(`prepareInstructions ERROR: Invalid currentVariant ('${currentVariant}') or missing settings.`);
-             if(variantTitle) variantTitle.textContent = "שגיאה";
-             if(instructionText) instructionText.innerHTML = "לא ניתן לטעון הוראות.";
-             if(startGameButton) startGameButton.disabled = true;
-             return false;
-        }
-        const config = settings[currentVariant];
-        if (!variantTitle || !instructionText || !startGameButton) {
-             console.error("prepareInstructions ERROR: Required DOM elements not found!");
-             return false;
-        }
-
-        try {
-            variantTitle.textContent = config.typeName || 'מבחן סטרופ'; // Use typeName from settings
-            instructionText.innerHTML = getVariantInstructions(currentVariant);
-            if (!instructionText.innerHTML) throw new Error("Instructions string is empty."); // Check if instructions were generated
-
-            startGameButton.disabled = false;
-            console.log("--- prepareInstructions SUCCESS ---");
-            return true;
-        } catch (error) {
-             console.error("prepareInstructions ERROR during DOM update:", error);
-             alert("שגיאה בעדכון ממשק ההוראות.");
-             variantTitle.textContent = "שגיאה";
-             instructionText.innerHTML = "לא ניתן היה לטעון את ההוראות.";
-             startGameButton.disabled = true;
-             return false;
-        }
-    }
-
-    function getVariantInstructions(variant) {
-         if (!variant || !settings[variant]) return "שגיאה: הוראות לא נמצאו.";
-         switch (variant) {
-            case 'classic': return "תופיע מילה צבועה בצבע מסוים. לחץ על הכפתור שמתאר את <strong>צבע הדיו</strong> של המילה, והתעלם ממשמעות המילה.";
-            case 'numerical': return "יופיעו שתי ספרות בגדלים פיזיים שונים. לחץ על <strong>חץ שמאלה</strong> אם הספרה השמאלית <strong>גדולה יותר בערכה</strong>, ועל <strong>חץ ימינה</strong> אם הספרה הימנית <strong>גדולה יותר בערכה</strong>. התעלם מהגודל הפיזי.";
-            default: return "הוראות לא מוגדרות עבור גרסה זו.";
-         }
-    }
-
-    // --- Game Start ---
-    startGameButton.addEventListener('click', () => {
-        console.log("--- startGameButton CLICKED! ---");
-        if (!currentVariant || !settings[currentVariant]) {
-            console.error(`startGameButton ERROR: Cannot start game, currentVariant is invalid ('${currentVariant}') or settings are missing.`);
-            alert("שגיאה: לא נבחרה גרסת ניסוי תקינה.");
-            return;
-        }
-        console.log(`startGameButton: Attempting to start variant: ${currentVariant}`);
-        totalTrials = parseInt(numTrialsSelect.value);
-        console.log(`startGameButton: Starting variant: ${currentVariant} with ${totalTrials} trials.`);
-        try {
-             resultsData = createResultsObject(currentVariant);
-             console.log("startGameButton: Results object created.");
-             createTrials(); // Generate trials
-             console.log(`startGameButton: Trials created (count: ${trials.length}).`);
-             if (trials.length === 0 && totalTrials > 0) {
-                 throw new Error(`יצירת הניסויים נכשלה או ייצרה 0 ניסויים עבור ${settings[currentVariant].typeName}.`);
-             }
-             setupResponseMechanism(); // Setup buttons or keyboard
-             console.log("startGameButton: Response mechanism setup done.");
-             updateGameState('playing'); // Switch view to playing area
-             console.log("startGameButton: Game state updated to 'playing'. Calling displayNextTrial...");
-             displayNextTrial(); // <<< START THE FIRST TRIAL >>>
-             console.log("startGameButton: displayNextTrial called successfully.");
-        } catch (error) {
-             console.error(`startGameButton ERROR starting game for variant ${currentVariant}:`, error);
-             alert(`שגיאה בהתחלת הניסוי: ${error.message}. נסה שוב או בחר גרסה אחרת.`);
-             updateGameState('instructions'); // Back to instructions on error
-        }
-    });
-
-    // --- Trial Generation ---
-    function createTrials() {
-        trials = [];
+    const startGame = () => {
+        totalTrials = parseInt(numTrialsSelect.value, 10);
         currentTrialIndex = 0;
-        console.log(`Creating trials for variant: ${currentVariant}`);
-        if (currentVariant === 'classic') {
-            createClassicTrials();
-        } else if (currentVariant === 'numerical') {
-            createNumericalTrials();
-        } else {
-            console.error(`Invalid variant for trial creation: ${currentVariant}`);
-            throw new Error("גרסה לא תקינה ליצירת ניסויים.");
-        }
-        trials = shuffleArray(trials);
-        console.log(`${trials.length} Trials created successfully.`);
-        if (trials.length === 0 && totalTrials > 0) {
-             console.warn(`Warning: 0 trials created for variant ${currentVariant} with ${totalTrials} requested.`);
-             // No need to throw error here, caught in startGameButton listener
-         }
-    }
+        resultsData = [];
+         console.log(`Starting game: ${currentVariant}, Trials: ${totalTrials}`);
 
-    function createClassicTrials() {
-        const colors = settings.classic.colors;
-        const trialsPerCondition = Math.floor(totalTrials / 2);
-        if (trialsPerCondition === 0) console.warn("Classic: trialsPerCondition is 0");
-        for (let i = 0; i < trialsPerCondition; i++) {
-            const congruentIndex = Math.floor(Math.random() * colors.length);
-            trials.push({ type: 'classic', word: colors[congruentIndex].name, color: colors[congruentIndex].hex, correctResponse: colors[congruentIndex].name, condition: 'congruent' });
-            let wordIndex, colorIndex;
-            do { wordIndex = Math.floor(Math.random() * colors.length); colorIndex = Math.floor(Math.random() * colors.length); } while (wordIndex === colorIndex);
-            trials.push({ type: 'classic', word: colors[wordIndex].name, color: colors[colorIndex].hex, correctResponse: colors[colorIndex].name, condition: 'incongruent' });
-        }
-    }
-
-    function createNumericalTrials() {
-        const { minNum, maxNum, sizes } = settings.numerical;
-        const trialsPerCondition = Math.floor(totalTrials / 2);
-        if (trialsPerCondition === 0) console.warn("Numerical: trialsPerCondition is 0");
-        for (let i = 0; i < trialsPerCondition; i++) {
-            let num1, num2;
-            do { num1 = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum; num2 = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum; } while (num1 === num2);
-            const size1Cong = (num1 > num2) ? sizes[1] : sizes[0]; const size2Cong = (num1 > num2) ? sizes[0] : sizes[1];
-            const size1Incong = (num1 > num2) ? sizes[0] : sizes[1]; const size2Incong = (num1 > num2) ? sizes[1] : sizes[0];
-            const correctResponse = (num1 > num2) ? 'left' : 'right'; // Correct response indicates which side has LARGER VALUE
-
-            if (Math.random() < 0.5) { // num1 on left
-                trials.push({ type: 'numerical', numL: num1, numR: num2, sizeL: size1Cong.size, sizeR: size2Cong.size, correctResponse: correctResponse, condition: 'congruent'});
-                trials.push({ type: 'numerical', numL: num1, numR: num2, sizeL: size1Incong.size, sizeR: size2Incong.size, correctResponse: correctResponse, condition: 'incongruent'});
-             } else { // num2 on left
-                 const correctResponseFlipped = correctResponse === 'left' ? 'right' : 'left';
-                 trials.push({ type: 'numerical', numL: num2, numR: num1, sizeL: size2Cong.size, sizeR: size1Cong.size, correctResponse: correctResponseFlipped, condition: 'congruent'});
-                 trials.push({ type: 'numerical', numL: num2, numR: num1, sizeL: size2Incong.size, sizeR: size1Incong.size, correctResponse: correctResponseFlipped, condition: 'incongruent'});
-            }
-        }
-    }
-
-    // --- Response Mechanism Setup ---
-    function setupResponseMechanism() {
-        responseArea.innerHTML = '';
-        keyboardInstructions.classList.add('hidden');
-        if (!currentVariant || !settings[currentVariant]) return; // Safety check
-        const config = settings[currentVariant];
-
-        if (config.responseType === 'button') {
-            const colorsToUse = config.colors;
-            colorsToUse.forEach(color => {
-                const button = document.createElement('button');
-                button.textContent = color.name;
-                button.dataset.responseValue = color.name;
-                button.classList.add(`color-button-${color.name}`);
-                if (color.name === 'צהוב') { button.style.color = '#333'; }
-                button.addEventListener('click', handleButtonClick);
-                responseArea.appendChild(button);
-            });
-             console.log("Button response mechanism setup.");
-        } else if (config.responseType === 'keyboard') {
-            keyboardInstructions.textContent = getKeyboardInstruction(currentVariant);
-            keyboardInstructions.classList.remove('hidden');
-            if (keyboardListener) { document.removeEventListener('keydown', keyboardListener); }
-            keyboardListener = handleKeyPress;
-            document.addEventListener('keydown', keyboardListener);
-             console.log("Keyboard response mechanism setup.");
-        }
-    }
-
-    function getKeyboardInstruction(variant) {
-        if (!variant || !settings[variant]) return "";
-         switch (variant) {
-             case 'numerical': return "השתמש במקשי החצים: ← (שמאל גדול בערכו) | → (ימין גדול בערכו)";
-             default: return ""; // Only numerical uses keyboard here
-         }
-     }
-
-    // --- Stimulus Rendering ---
-    function renderStimulus(trial) {
-        console.log("Rendering stimulus for trial:", trial);
-        stimulusDisplay.innerHTML = '';
-        stimulusDisplay.className = '';
-        stimulusDisplay.style.cssText = '';
-
-        if (!trial || !trial.type) {
-            console.error("Invalid trial data in renderStimulus:", trial);
-            feedbackArea.textContent = "שגיאה בהצגת הגירוי.";
-            feedbackArea.className = 'feedback-text feedback-incorrect';
-            currentTrialIndex++;
-            feedbackTimeout = setTimeout(displayNextTrial, 1500);
-            return;
-        }
-
+        // Generate stimuli based on the selected variant
         try {
-            switch (trial.type) {
+            switch (currentVariant) {
                 case 'classic':
-                    stimulusDisplay.textContent = trial.word;
-                    stimulusDisplay.style.color = trial.color;
+                    stimuliList = generateClassicStimuli(totalTrials);
+                    break;
+                case 'emotional':
+                    stimuliList = generateEmotionalStimuli(totalTrials);
                     break;
                 case 'numerical':
-                    stimulusDisplay.classList.add('numerical-stimulus');
-                    const spanL = document.createElement('span'); spanL.textContent = trial.numL; spanL.style.fontSize = trial.sizeL;
-                    const spanR = document.createElement('span'); spanR.textContent = trial.numR; spanR.style.fontSize = trial.sizeR;
-                    stimulusDisplay.appendChild(spanL); stimulusDisplay.appendChild(spanR);
+                    stimuliList = generateNumericalStimuli(totalTrials);
                     break;
-                default:
-                    throw new Error(`Unknown trial type: ${trial.type}`);
+                case 'spatial':
+                    stimuliList = generateSpatialStimuli(totalTrials);
+                    break;
+                case 'switching':
+                    stimuliList = generateSwitchingStimuli(totalTrials);
+                    break;
+                 default:
+                    console.error("Cannot start game, invalid currentVariant:", currentVariant);
+                    return;
             }
-            console.log("Stimulus rendered.");
+             console.log("Stimuli generated:", stimuliList);
+
+             if (!stimuliList || stimuliList.length === 0) {
+                 console.error("Stimulus generation failed or resulted in empty list.");
+                 alert("שגיאה ביצירת הגירויים. נסה שוב.");
+                 return;
+             }
+
+            instructionsArea.classList.add('hidden');
+            testArea.classList.remove('hidden');
+            runTrial();
+
         } catch (error) {
-             console.error("Error during specific stimulus rendering:", error);
-             feedbackArea.textContent = "שגיאה בהצגת הגירוי.";
-             feedbackArea.className = 'feedback-text feedback-incorrect';
-             currentTrialIndex++;
-             feedbackTimeout = setTimeout(displayNextTrial, 1500);
+            console.error(`Error during stimulus generation for ${currentVariant}:`, error);
+            alert(`שגיאה ביצירת גירויים עבור גרסת ${currentVariant}. נסה שוב.`);
+            // Optionally reset or go back
         }
-    }
+    };
 
-    // --- Trial Execution ---
-    function displayNextTrial() {
-        clearTimeouts();
-        console.log(`--- displayNextTrial START for index: ${currentTrialIndex} (Total: ${trials.length}) ---`);
+    const runTrial = () => {
+        clearStimulus(); // Clear previous trial elements and styles
 
-        if (currentTrialIndex >= trials.length) {
-            console.log("displayNextTrial: No more trials, calling showResults.");
-            showResults();
+        if (currentTrialIndex >= totalTrials) {
+            endGame();
             return;
         }
 
-        const trial = trials[currentTrialIndex];
-        if (!currentVariant || !settings[currentVariant]) { console.error(`displayNextTrial ERROR: Invalid variant/settings.`); updateGameState('instructions'); return; }
-        const config = settings[currentVariant];
-        if (!trial) { console.error(`displayNextTrial ERROR: Trial data missing for index ${currentTrialIndex}.`); currentTrialIndex++; displayNextTrial(); return; }
+        const currentStimulus = stimuliList[currentTrialIndex];
+        console.log(`Running Trial ${currentTrialIndex + 1}`, currentStimulus);
 
-        feedbackArea.textContent = '';
-        feedbackArea.className = 'feedback-text';
-        rtDisplay.textContent = 'זמן תגובה: --';
-        stimulusDisplay.style.visibility = 'hidden'; // Hide before timeout
+        // --- Display Stimulus based on type ---
 
-        console.log(`displayNextTrial: Setting ITI timeout for ${config.iti}ms`);
-        itiTimeout = setTimeout(() => {
-            console.log(`--- displayNextTrial ITI TIMEOUT CALLBACK --- (State: ${gameState})`);
-            if (gameState !== 'playing') { console.log("displayNextTrial Callback: State is not 'playing', exiting."); return; }
-            console.log("displayNextTrial Callback: Rendering stimulus...");
-             try {
-                renderStimulus(trial);
-                stimulusDisplay.style.visibility = 'visible'; // Show after rendering
-                trialStartTime = performance.now();
-                responseListenerActive = true;
-                console.log("displayNextTrial Callback: Stimulus visible, listener active.");
-            } catch(error) {
-                 console.error("Error rendering stimulus in callback:", error);
-                 // Try to recover by moving to next trial after showing error
-                 feedbackArea.textContent = "שגיאה בהצגת הגירוי.";
-                 feedbackArea.className = 'feedback-text feedback-incorrect';
-                 currentTrialIndex++;
-                 feedbackTimeout = setTimeout(displayNextTrial, 1500);
-             }
-        }, config.iti);
+        // Set base text and color (if applicable)
+        if (currentStimulus.text) {
+            stimulusDisplay.textContent = currentStimulus.text;
+        }
+        if (currentStimulus.color) {
+             stimulusDisplay.style.color = currentStimulus.color;
+        }
+        if (currentStimulus.html) { // For numerical stroop using styled spans
+             stimulusDisplay.innerHTML = currentStimulus.html;
+             stimulusDisplay.style.fontSize = '2.5em'; // Set a base size for the container
+        }
 
-        console.log("--- displayNextTrial END (Timeout scheduled) ---");
-    }
+        // Apply type-specific display adjustments
+        if (currentStimulus.type === 'classic' || currentStimulus.type === 'emotional') {
+            stimulusDisplay.style.fontSize = '48px'; // Use size from CSS
+        }
+        else if (currentStimulus.type === 'numerical') {
+            // Font size is handled by spans inside the HTML
+             stimulusDisplay.style.fontSize = ''; // Don't override span sizes
+             // The wrapping span with class 'numerical-stimulus' is added in generateNumericalStimuli
+        }
+        else if (currentStimulus.type === 'spatial') {
+            stimulusDisplay.textContent = currentStimulus.text; // Set the word
+            stimulusDisplay.className = `spatial-stimulus ${currentStimulus.positionClass}`; // Add base and specific position class
+            // CSS rules like #stimulusDisplay.spatial-stimulus.top will handle positioning
+        }
+        else if (currentStimulus.type === 'switching') {
+            cueText.textContent = `משימה: ${currentStimulus.cue}`; // Show the cue
+            stimulusDisplay.style.color = currentStimulus.color;
+            stimulusDisplay.style.fontSize = '48px';
 
-    // --- Response Handling ---
-    function handleButtonClick(event) {
-        if (gameState !== 'playing' || !responseListenerActive) return;
-        const responseValue = event.target.dataset.responseValue;
-        processResponse(responseValue);
-    }
+            // Dynamically set response buttons based on task type
+            responseArea.innerHTML = ''; // Clear existing buttons
+            let options = [];
+            if (currentStimulus.taskType === 'name_color') {
+                 options = COLOR_NAMES; // Options are the possible colors
+            } else { // read_word
+                 options = COLOR_NAMES; // Options are the possible words (which are color names)
+            }
 
-    function handleKeyPress(event) {
-        if (gameState !== 'playing' || !responseListenerActive) return;
-        if (!currentVariant || !settings[currentVariant]) return;
-        const config = settings[currentVariant];
-        if (config.keys && config.keys[event.key]) {
-           const responseValue = config.keys[event.key];
-           processResponse(responseValue, event.key);
-       } else {
-           // console.log("Ignoring irrelevant key press:", event.key);
-       }
-   }
+            shuffleArray(options).forEach(option => { // Shuffle button order
+                 const btn = document.createElement('button');
+                 btn.textContent = option;
+                 btn.dataset.response = option; // Response value is the color/word name
 
-    function processResponse(responseValue, keyPressed = null) {
-        if (!responseListenerActive) { console.log("ProcessResponse called but listener was inactive."); return; }
-        responseListenerActive = false;
-        clearTimeouts();
+                 // Apply color class only if the task is 'name_color' for visual cue
+                 if (currentStimulus.taskType === 'name_color') {
+                     btn.classList.add(`color-button-${option}`);
+                 }
+                 // Otherwise, buttons get default grey styling from CSS
 
-        const endTime = performance.now();
-        const reactionTime = Math.round(endTime - trialStartTime);
-        if (!trials || currentTrialIndex >= trials.length) { console.error("ProcessResponse error: Invalid trial index or trials array."); return; }
-        const trial = trials[currentTrialIndex];
-        if (!currentVariant || !settings[currentVariant]) { console.error("ProcessResponse error: Invalid current variant or settings."); return; }
-        const config = settings[currentVariant];
+                 responseArea.appendChild(btn);
+             });
+        }
 
-        let isCorrect = false;
-        try {
-             switch (currentVariant) {
-                 case 'classic': isCorrect = responseValue === trial.correctResponse; break;
-                 case 'numerical': isCorrect = responseValue === trial.correctResponse; break; // responseValue is 'left'/'right'
-                 default: console.warn("Unknown variant in correctness check");
-             }
-        } catch (error) { console.error("Error calculating correctness:", error); isCorrect = false; }
+        // --- Set up response listener for this specific trial ---
+        // Use event delegation on responseArea
+        responseHandler = (event) => {
+             // Check if the clicked element is a button directly inside responseArea
+            const targetButton = event.target.closest('button');
+             if (targetButton && responseArea.contains(targetButton)) {
+                 const userResponse = targetButton.dataset.response;
+                 if (userResponse !== undefined) { // Ensure the button has a response value
+                    // Immediately remove listener to prevent multiple clicks for the same trial
+                    responseArea.removeEventListener('click', responseHandler);
+                    responseHandler = null; // Nullify the handler reference
+                    handleResponse(userResponse);
+                 }
+            }
+        };
+        responseArea.addEventListener('click', responseHandler);
 
-        console.log(`Trial ${currentTrialIndex + 1} Resp: ${responseValue} (Key: ${keyPressed}), CorrectResp: ${trial.correctResponse}, Correct: ${isCorrect}, RT: ${reactionTime}ms`);
-        rtDisplay.textContent = `זמן תגובה: ${reactionTime}ms`;
 
-        recordResult(trial, isCorrect, reactionTime);
+        // Start Timer
+        trialStartTime = performance.now();
+    };
 
-        feedbackArea.textContent = isCorrect ? 'נכון!' : 'טעות!';
-        feedbackArea.className = `feedback-text feedback-${isCorrect ? 'correct' : 'incorrect'}`;
+    const handleResponse = (userResponse) => {
+        const reactionTime = performance.now() - trialStartTime;
+        if (currentTrialIndex >= stimuliList.length) {
+             console.warn("handleResponse called after trials finished.");
+             return;
+        }
+        const currentStimulus = stimuliList[currentTrialIndex];
+        const correct = userResponse === currentStimulus.correctAnswer;
+         console.log(`Trial ${currentTrialIndex + 1} Response: ${userResponse}, Correct: ${correct}, RT: ${reactionTime.toFixed(0)}`);
 
+
+        // Record Data
+        resultsData.push({
+            trialIndex: currentTrialIndex,
+            // stimulus: currentStimulus, // Avoid storing large objects if not needed for calculation
+            condition: currentStimulus.condition,
+            taskType: currentStimulus.taskType || null, // For switching
+            response: userResponse,
+            correct: correct,
+            rt: reactionTime,
+            correctAnswer: currentStimulus.correctAnswer // Store correct answer for easier debugging/review
+        });
+
+        // Display Feedback
+        displayFeedback(correct, reactionTime);
+
+        // Move to next trial after a short delay
         currentTrialIndex++;
+        // Disable response area during feedback to prevent accidental clicks
+        responseArea.style.pointerEvents = 'none';
+        setTimeout(() => {
+             responseArea.style.pointerEvents = 'auto'; // Re-enable response area
+             runTrial(); // Start next trial
+             }, 1200); // 1.2 second delay for feedback viewing
+    };
 
-        const feedbackDur = config ? config.feedbackDuration : 750;
-        feedbackTimeout = setTimeout(() => {
-             console.log("Feedback timeout done, calling displayNextTrial");
-            displayNextTrial();
-        }, feedbackDur);
-    }
+    const endGame = () => {
+        console.log("Game ended. Calculating results...");
+        console.log("Raw Results Data:", resultsData);
+        displayResults();
+        showScreen(resultsArea);
+        testArea.classList.add('hidden'); // Hide test area
+        backToSelectionButton.classList.add('hidden'); // Hide back button from game screen
+    };
 
-    // --- Result Recording & Calculation ---
-    function createResultsObject(variant) {
-        let data = { all: { rt: [], correct: 0, count: 0 } };
-        if (variant === 'classic' || variant === 'numerical') {
-            data.congruent = { rt: [], correct: 0, count: 0 };
-            data.incongruent = { rt: [], correct: 0, count: 0 };
-        }
-        // Add other variant structures here if needed later
-        return data;
-    }
+    // --- Results Calculation and Display ---
 
-    function recordResult(trial, isCorrect, rt) {
-         if (!resultsData || !resultsData.all || !trial) return;
-         const condition = trial.condition; // 'congruent' or 'incongruent'
+    const calculateResults = () => {
+        const numTotal = resultsData.length;
+        if (numTotal === 0) return { accuracy: 0, avgRT: 0, effect: 0, explanation: "לא הושלמו ניסויים.", avgRtByCondition: {} };
 
-         resultsData.all.count++;
-         if (isCorrect) { resultsData.all.correct++; resultsData.all.rt.push(rt); }
+        const correctTrials = resultsData.filter(r => r.correct);
+        const numCorrect = correctTrials.length;
+        const accuracy = (numCorrect / numTotal) * 100;
+        const avgRT = numCorrect > 0 ? (correctTrials.reduce((sum, r) => sum + r.rt, 0) / numCorrect) : 0;
 
-         if (resultsData[condition]) {
-             resultsData[condition].count++;
-             if (isCorrect) { resultsData[condition].correct++; resultsData[condition].rt.push(rt); }
-         } else {
-              console.warn(`Result condition "${condition}" not found in resultsData structure for variant "${currentVariant}"`);
-         }
-    }
-
-    function formatResults() {
-        let html = `<p><strong>סה"כ ניסויים:</strong><span>${resultsData.all.count}</span></p>`;
-        html += `<p><strong>דיוק כולל:</strong><span>${calculateAccuracy(resultsData.all.correct, resultsData.all.count)}%</span></p>`;
-        html += `<p><strong>זמן תגובה ממוצע (נכון):</strong><span>${calculateAverage(resultsData.all.rt)} ms</span></p>`;
-        html += `<hr style="border-top: 1px dashed #ccc; margin: 10px 0;">`;
-
+        let effect = 0;
         let explanation = "";
+        let avgRtByCondition = {}; // Store average RT per condition
 
-        if (currentVariant === 'classic' || currentVariant === 'numerical') {
-            const congRT = calculateAverage(resultsData.congruent.rt);
-            const incongRT = calculateAverage(resultsData.incongruent.rt);
-            const congAcc = calculateAccuracy(resultsData.congruent.correct, resultsData.congruent.count);
-            const incongAcc = calculateAccuracy(resultsData.incongruent.correct, resultsData.incongruent.count);
-            const effect = (congRT > 0 && incongRT > 0) ? incongRT - congRT : 0;
-            html += `<p><strong>תואם (Congruent):</strong> RT=<span>${congRT} ms</span>, Acc=<span>${congAcc}%</span></p>`;
-            html += `<p><strong>לא תואם (Incongruent):</strong> RT=<span>${incongRT} ms</span>, Acc=<span>${incongAcc}%</span></p>`;
-            html += `<p><strong>אפקט סטרופ (הפרש RT):</strong><span style="color:#d81b60; font-weight:bold;">${effect} ms</span></p>`;
-             explanation = `אפקט סטרופ בא לידי ביטוי בזמן תגובה ארוך יותר ו/או דיוק נמוך יותר בתנאים הלא-תואמים, כאשר המידע הלא-רלוונטי (משמעות המילה או גודל פיזי) מפריע לעיבוד המידע הרלוונטי (צבע דיו או ערך מספרי).`;
-        }
-        return { summary: html, explanation: explanation };
-    }
+        // Calculate variant-specific effects using ONLY CORRECT trials
+        try { // Add try-catch for robustness in calculations
+            const rtByCondition = correctTrials.reduce((acc, r) => {
+                const conditionKey = r.condition || 'unknown'; // Use condition (e.g., 'congruent', 'incongruent', 'positive', 'switch')
+                if (!acc[conditionKey]) acc[conditionKey] = { sum: 0, count: 0 };
+                acc[conditionKey].sum += r.rt;
+                acc[conditionKey].count++;
+                return acc;
+            }, {});
 
-    // --- Show Final Results ---
-    function showResults() {
-        console.log("Showing results for variant:", currentVariant);
-        if (!resultsData || !resultsData.all) {
-             console.error("Results data is missing or invalid.");
-             resultsSummary.innerHTML = "<p>שגיאה באיסוף התוצאות.</p>";
-             resultsExplanation.textContent = "";
-        } else {
-             const { summary, explanation } = formatResults();
-             resultsVariantName.textContent = settings[currentVariant]?.typeName || currentVariant; // Use typeName
-             resultsSummary.innerHTML = summary;
-             resultsExplanation.textContent = explanation;
-        }
-        updateGameState('results'); // Update state *after* content is ready
-    }
+            for (const condition in rtByCondition) {
+                if (rtByCondition[condition].count > 0) {
+                    avgRtByCondition[condition] = rtByCondition[condition].sum / rtByCondition[condition].count;
+                }
+            }
+             console.log("Average RT by Condition:", avgRtByCondition);
 
-     // --- כפתורים במסך תוצאות ---
-     function setupResultButtons() {
-         if (!resultsButtonsContainer) return;
-         resultsButtonsContainer.innerHTML = ''; // Clear previous
 
-         const retryButton = document.createElement('button');
-         retryButton.textContent = 'נסה שוב (אותה גרסה)';
-         retryButton.style.marginRight = '10px';
-         retryButton.style.backgroundColor = '#ffc107'; retryButton.style.color = '#333';
-         retryButton.addEventListener('click', () => {
-             console.log("Retry button clicked");
-             if (currentVariant) {
-                 prepareInstructions(); // Prepare instructions again
-                 updateGameState('instructions');
-             } else { goBackToSelection(); }
-         });
-         resultsButtonsContainer.appendChild(retryButton);
+            if (currentVariant === 'classic' || currentVariant === 'numerical' || currentVariant === 'spatial') {
+                const rtCongruent = avgRtByCondition['congruent'] || 0;
+                const rtIncongruent = avgRtByCondition['incongruent'] || 0;
+                if (rtCongruent > 0 && rtIncongruent > 0) {
+                    effect = rtIncongruent - rtCongruent;
+                    explanation = `<b>אפקט סטרופ (${currentVariant === 'classic' ? 'קלאסי' : currentVariant === 'numerical' ? 'מספרי' : 'מרחבי'})</b>:
+                                  ההפרש בזמן התגובה בין ניסויים לא-תואמים (Incongruent) לניסויים תואמים (Congruent).
+                                  ערך חיובי מצביע על הפרעה הנגרמת מהמידע הלא-רלוונטי למשימה (למשל, משמעות המילה בצבע, הגודל הפיזי במספרים, או משמעות מילת המיקום).
+                                  זמן תגובה גבוה יותר בתנאי הלא-תואם הוא הממצא הקלאסי.`;
+                } else {
+                    explanation = "לא היו מספיק תגובות נכונות בשני התנאים (תואם ולא-תואם) לחישוב אפקט סטרופ מהימן.";
+                }
+            } else if (currentVariant === 'emotional') {
+                const rtNeutral = avgRtByCondition['neutral'] || 0;
+                const rtPositive = avgRtByCondition['positive'] || 0;
+                const rtNegative = avgRtByCondition['negative'] || 0;
+                const emotionalRTs = [rtPositive, rtNegative].filter(rt => rt > 0);
+                const rtEmotionalAvg = emotionalRTs.length > 0 ? emotionalRTs.reduce((a, b) => a + b, 0) / emotionalRTs.length : 0;
 
-         const backButton = document.createElement('button');
-         backButton.textContent = 'חזור לבחירת גרסה';
-         backButton.style.backgroundColor = '#6c757d';
-         backButton.addEventListener('click', goBackToSelection);
-         resultsButtonsContainer.appendChild(backButton);
-     }
+                if (rtNeutral > 0 && rtEmotionalAvg > 0) {
+                    effect = rtEmotionalAvg - rtNeutral; // Emotional interference effect
+                    explanation = `<b>אפקט סטרופ רגשי</b>:
+                                   ההפרש בזמן התגובה הממוצע לזיהוי צבע של מילים רגשיות (חיוביות/שליליות) לעומת מילים ניטרליות.
+                                   ערך חיובי מצביע על הפרעה רגשית: זיהוי הצבע איטי יותר עבור מילים בעלות מטען רגשי, ככל הנראה משום שמשמעות המילה מעובדת באופן אוטומטי ומושכת קשב.
+                                   ניתן גם להשוות בנפרד מילים חיוביות ושליליות לניטרליות.`;
+                } else {
+                    explanation = "לא היו מספיק תגובות נכונות בתנאים הניטרליים והרגשיים לחישוב אפקט סטרופ רגשי מהימן.";
+                }
+            } else if (currentVariant === 'switching') {
+                const rtSwitch = avgRtByCondition['switch'] || 0;
+                const rtNoSwitch = avgRtByCondition['no-switch'] || 0; // Trials where task was same as previous
+                if (rtSwitch > 0 && rtNoSwitch > 0) {
+                    effect = rtSwitch - rtNoSwitch; // Switch Cost
+                    explanation = `<b>עלות החלפה (Switch Cost)</b>:
+                                   ההפרש בזמן התגובה בין ניסויים שבהם המשימה התחלפה (למשל, מ'צבע' ל'מילה') לבין ניסויים שבהם המשימה נשארה זהה.
+                                   ערך חיובי מצביע על המאמץ הקוגניטיבי ("עלות") הנדרש לשינוי סט מנטלי והחלפת המשימה הפעילה.`;
 
-    // --- Back Button Logic ---
-    function goBackToSelection() {
-        console.log("goBackToSelection function CALLED!");
-        try {
-             updateGameState('selection');
-             if(variantTitle) variantTitle.textContent = '';
-             if(instructionText) instructionText.innerHTML = '';
-             if(stimulusDisplay) stimulusDisplay.innerHTML = '';
-             if(responseArea) responseArea.innerHTML = '';
-             if(feedbackArea) feedbackArea.textContent = '';
-             if(rtDisplay) rtDisplay.textContent = 'זמן תגובה: --';
-             if(keyboardInstructions) keyboardInstructions.classList.add('hidden');
-             resultsData = {};
-             currentVariant = null;
-             trials = [];
-             currentTrialIndex = 0;
-             console.log("State updated to selection, relevant state reset.");
+                     // Calculate average RT per task type as well
+                     const rtByTask = correctTrials.reduce((acc, r) => {
+                         const taskKey = r.taskType || 'unknown';
+                         if (!acc[taskKey]) acc[taskKey] = { sum: 0, count: 0 };
+                         acc[taskKey].sum += r.rt;
+                         acc[taskKey].count++;
+                         return acc;
+                     }, {});
+
+                    const avgRtColor = (rtByTask['name_color']?.count > 0) ? rtByTask['name_color'].sum / rtByTask['name_color'].count : 0;
+                    const avgRtWord = (rtByTask['read_word']?.count > 0) ? rtByTask['read_word'].sum / rtByTask['read_word'].count : 0;
+
+                     if (avgRtColor > 0 || avgRtWord > 0) {
+                         explanation += `<div class="switch-cost-detail"><strong>זמני תגובה לפי משימה:</strong><ul>`;
+                         if (avgRtColor > 0) explanation += `<li>משימת צבע (Name Color): ${avgRtColor.toFixed(0)} ms</li>`;
+                         if (avgRtWord > 0) explanation += `<li>משימת מילה (Read Word): ${avgRtWord.toFixed(0)} ms</li>`;
+                         explanation += `</ul></div>`;
+                         // Often, reading the word is faster/more automatic than naming the color.
+                     }
+
+                } else {
+                    explanation = "לא היו מספיק תגובות נכונות בתנאי החלפה ואי-החלפה לחישוב מהימן של עלות ההחלפה.";
+                }
+            }
         } catch (error) {
-             console.error("Error during goBackToSelection:", error);
-             alert("שגיאה בחזרה למסך הבחירה.");
+            console.error("Error during results calculation:", error);
+            explanation = "אירעה שגיאה במהלך חישוב התוצאות.";
         }
-    }
-    if (backToSelectionButton) { backToSelectionButton.addEventListener('click', goBackToSelection); }
+
+        return {
+            accuracy: accuracy.toFixed(1),
+            avgRT: avgRT.toFixed(0),
+            effect: effect.toFixed(0),
+            explanation: explanation,
+            avgRtByCondition: avgRtByCondition // Include for detailed display
+        };
+    };
+
+    const displayResults = () => {
+        resultsVariantName.textContent = variantTitle.textContent; // Use the title set earlier
+        const results = calculateResults();
+
+        // Use the structure from CSS with strong for labels and span for values
+        let resultsHtml = `
+            <p><strong>מספר ניסויים:</strong> <span>${totalTrials}</span></p>
+            <p><strong>דיוק:</strong> <span>${results.accuracy}%</span></p>
+            <p><strong>זמן תגובה ממוצע (נכונות):</strong> <span>${results.avgRT} ms</span></p>
+        `;
+
+        // Add effect details
+        if (results.effect !== undefined && results.explanation.includes("<b>")) { // Add effect only if calculation was likely successful
+             let effectLabel = "אפקט סטרופ";
+              if (currentVariant === 'switching') effectLabel = "עלות החלפה";
+              else if (currentVariant === 'emotional') effectLabel = "הפרעה רגשית (ממוצע רגשי - ניטרלי)";
+              else if (currentVariant === 'numerical') effectLabel = "אפקט סטרופ מספרי";
+              else if (currentVariant === 'spatial') effectLabel = "אפקט סטרופ מרחבי";
+
+            resultsHtml += `<p><strong>${effectLabel}:</strong> <span>${results.effect} ms</span></p>`;
+        }
+
+         // Optionally display RT per condition for more detail
+         if (results.avgRtByCondition && Object.keys(results.avgRtByCondition).length > 0) {
+             resultsHtml += `<div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px;"><strong>זמני תגובה לפי תנאי:</strong>`;
+             for (const condition in results.avgRtByCondition) {
+                 // Make condition names more readable if needed
+                 let conditionDisplay = condition;
+                 if (condition === 'congruent') conditionDisplay = 'תואם';
+                 else if (condition === 'incongruent') conditionDisplay = 'לא-תואם';
+                 else if (condition === 'positive') conditionDisplay = 'חיובי';
+                 else if (condition === 'negative') conditionDisplay = 'שלילי';
+                 else if (condition === 'neutral') conditionDisplay = 'ניטרלי';
+                 else if (condition === 'switch') conditionDisplay = 'החלפה';
+                 else if (condition === 'no-switch') conditionDisplay = 'ללא החלפה';
+
+                 resultsHtml += `<p style="font-size: 0.9em; justify-content: start;">
+                                 <strong style="min-width: 100px;">${conditionDisplay}:</strong>
+                                 <span style="text-align: right;">${results.avgRtByCondition[condition].toFixed(0)} ms</span>
+                                </p>`;
+             }
+             resultsHtml += `</div>`;
+         }
+
+        resultsSummary.innerHTML = resultsHtml;
+        resultsExplanation.innerHTML = results.explanation; // Show explanation
+    };
+
+    const resetGame = () => {
+         console.log("Resetting game state and returning to selection.");
+        clearStimulus();
+        currentVariant = null;
+        stimuliList = [];
+        resultsData = [];
+        currentTrialIndex = 0;
+        // Reset dropdown to default
+        numTrialsSelect.value = "20";
+        // Ensure all screens except selection are hidden
+        gameContainer.classList.add('hidden');
+        resultsArea.classList.add('hidden');
+        // Ensure areas within gameContainer are reset
+        instructionsArea.classList.remove('hidden');
+        testArea.classList.add('hidden');
+        backToSelectionButton.classList.add('hidden');
+
+        showScreen(selectionScreen); // Go back to selection screen
+    };
 
     // --- Initial Setup ---
-    // Run initial state setup only if no critical errors occurred
-    if (!initError) {
-         console.log("Running initial updateGameState('selection').");
-         updateGameState('selection');
-    } else {
-         console.error("Skipping initial updateGameState due to initialization errors.");
-    }
-    console.log("Stroop Simple script loaded and initialization attempt finished.");
+    const init = () => {
+        console.log("Initializing Stroop Variants App...");
+        showScreen(selectionScreen); // Start at selection screen
 
-}); // סוף DOMContentLoaded
+        // Add event listener for variant selection using event delegation on the container
+        variantButtonsContainer.addEventListener('click', (event) => {
+            // Ensure the click was on a button with a data-variant attribute
+            const button = event.target.closest('button[data-variant]');
+            if (button) {
+                const variant = button.dataset.variant;
+                console.log(`Variant button clicked: ${variant}`);
+                selectVariant(variant); // Call the corrected selection function
+            }
+        });
+
+        // Add event listener for start game button
+        startGameButton.addEventListener('click', startGame);
+
+        // Add event listeners for back buttons
+        backToSelectionButton.addEventListener('click', resetGame);
+        backToSelectionButtonResults.addEventListener('click', resetGame);
+        console.log("Initialization complete. Waiting for user interaction.");
+    };
+
+    // --- Run Initialization ---
+    init();
+
+});
+
+// --- END OF FILE stroop_variants_script.js ---
