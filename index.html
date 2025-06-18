@@ -1,3 +1,4 @@
+<!-- נוספו הערות בצדדים להסבר -->
 <!DOCTYPE html>
 <html lang="he">
 <head>
@@ -15,7 +16,7 @@
 
     h1 {
       color: #333;
-      font-size: 34px; /* גודל מוגדל */
+      font-size: 34px;
       line-height: 1.8;
     }
 
@@ -39,7 +40,7 @@
     }
 
     .column {
-      width: 40%;
+      width: 30%;
       background-color: white;
       padding: 20px;
       margin: 10px;
@@ -49,7 +50,7 @@
 
     .column h2 {
       color: #444;
-      font-size: 26px; /* גודל מוגדל */
+      font-size: 26px;
       margin-bottom: 20px;
     }
 
@@ -75,22 +76,18 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
       background-color: #f9f9f9;
     }
-    
-    @media (max-width: 768px) {
-      .columns {
-        flex-direction: column;
-        align-items: center;
-      }
 
+    @media (max-width: 1000px) {
       .column {
         width: 90%;
         margin: 20px 0;
       }
 
-      .game-link {
-        width: 100%;
+      .columns {
+        flex-direction: column;
+        align-items: center;
       }
-    }    
+    }
   </style>
 </head>
 <body>
@@ -106,41 +103,31 @@
   <div class="columns">
     <div class="column">
       <h2>סימולציות</h2>
-      <a class="game-link" href="snell1/">
-        <div style="font-size: 28px;">🔍</div>
-        חוק סנל תיאוריה
-      </a>
-      <a class="game-link" href="pendulum/">
-        <div style="font-size: 28px;">🕰️</div>
-        פונקצית תמסורת מסדר שני
-      </a>
-        <a class="game-link" href="biology/">
-        <div style="font-size: 28px;">🧫</div>
-        גידול חיידקים
-      </a>
+      <a class="game-link" href="snell1/"><div style="font-size: 28px;">🔍</div>חוק סנל תיאוריה</a>
+      <a class="game-link" href="pendulum/"><div style="font-size: 28px;">🕰️</div>פונקצית תמסורת מסדר שני</a>
+      <a class="game-link" href="biology/"><div style="font-size: 28px;">🧫</div>גידול חיידקים</a>
     </div>
+
     <div class="column">
       <h2>משחקים</h2>
-        <a class="game-link" href="investments/">
-        <div style="font-size: 28px;">📈</div>
-        משחק ההשקעות
+      <a class="game-link" href="investments/"><div style="font-size: 28px;">📈</div>משחק ההשקעות</a>
+      <a class="game-link" href="snell2/"><div style="font-size: 28px;">🛟</div>חוק סנל המחשה</a>
+      <a class="game-link" href="stroop/"><div style="font-size: 28px;">🎨</div>מבחן סטרופ</a>
+      <a class="game-link" href="flanker/"><div style="font-size: 28px;">🎯</div>מבחן פלאנקר</a>
+      <a class="game-link" href="prisoner/"><div style="font-size: 28px;">🚔</div>דילמת האסיר</a>
+    </div>
+
+    <div class="column">
+      <h2>בוטים</h2>
+      <a class="game-link" href="https://chatgpt.com/g/g-67d0140a6bcc819194d7b835d763e727-mstr-khvmtsvt-mynv" target="_blank">
+        <div style="font-size: 28px;">🤖</div>מאסטר חומצות אמינו
       </a>
-        <a class="game-link" href="snell2/">
-        <div style="font-size: 28px;">🛟</div>
-        חוק סנל המחשה
+      <!-- כאן תוכל להוסיף עוד קישורים בעתיד -->
+      <!-- דוגמה:
+      <a class="game-link" href="https://chatgpt.com/g/..." target="_blank">
+        <div style="font-size: 28px;">🤖</div>בוט נוסף
       </a>
-      <a class="game-link" href="stroop/">
-        <div style="font-size: 28px;">🎨</div>
-        מבחן סטרופ
-      </a>
-      <a class="game-link" href="flanker/">
-        <div style="font-size: 28px;">🎯</div>
-        מבחן פלאנקר
-      </a>
-      <a class="game-link" href="prisoner/">
-        <div style="font-size: 28px;">🚔</div>
-        דילמת האסיר
-      </a>
+      -->
     </div>
   </div>
 
