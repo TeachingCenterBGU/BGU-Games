@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מחולל כרטיסיות זיכרון</title>
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
         .box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 500px; width: 90%; }
@@ -15,17 +15,19 @@
         .btn.primary { border: none; background-color: #4CAF50; color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); }
         .btn.primary:hover { background-color: #45a049; transform: translateY(-2px); }
         input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-        #status { margin-top: 15px; font-weight: bold; }
+        #status { margin-top: 15px; font-weight: bold; min-height: 20px; }
+        .error { color: red; }
+        .success { color: green; }
     </style>
 </head>
 <body>
 
 <div class="box">
     <h1>מחולל כרטיסיות</h1>
-    <p>העלי קובץ Excel או CSV (עמודה A: שאלה, עמודה B: תשובה), והמערכת תיצור עבורך קובץ HTML מוכן לשימוש.</p>
+    <p>העלי קובץ Excel או CSV.<br><small>(עמודה A = שאלה, עמודה B = תשובה)</small></p>
     
     <div class="upload-btn-wrapper">
-        <button class="btn primary">בחרי קובץ אקסל</button>
+        <button class="btn primary">בחרי קובץ אקסל/CSV</button>
         <input type="file" id="uploadInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
     </div>
     
@@ -33,8 +35,7 @@
 </div>
 
 <script>
-    // זוהי התבנית של קובץ הכרטיסיות הסופי.
-    // אנו נשתיל את הנתונים במקום הטקסט: {{DATA_PLACEHOLDER}}
+    // תבנית הקוד שתושתל בקובץ החדש
     const templatePart1 = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -106,47 +107,78 @@
     function handleFile(e) {
         const file = e.target.files[0];
         const statusDiv = document.getElementById('status');
+        statusDiv.className = "";
         
         if (!file) return;
 
-        statusDiv.innerText = "מעבד קובץ...";
+        // בדיקה שהספרייה נטענה
+        if (typeof XLSX === 'undefined') {
+            statusDiv.innerText = "שגיאה: ספריית Excel לא נטענה. בדקי את חיבור האינטרנט ורענני את הדף.";
+            statusDiv.className = "error";
+            return;
+        }
+
+        statusDiv.innerText = "קורא קובץ...";
         
         const reader = new FileReader();
+        
         reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            
-            // לוקח את הגליון הראשון
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            
-            // המרה ל-JSON (מניח שאין כותרות, או מתעלם מהן אם יש צורך)
-            // header: 1 מביא מערך של מערכים
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-            
-            // עיבוד הנתונים: הפיכת שורות למבנה של {question: "...", answer: "..."}
-            const processedData = [];
-            jsonData.forEach(row => {
-                if(row.length >= 2 && row[0] && row[1]) {
-                     // מתעלם משורות ריקות או שורות עם פחות מ-2 עמודות
-                    processedData.push({
-                        question: row[0].toString(),
-                        answer: row[1].toString()
-                    });
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // לוקח את הגליון הראשון
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // המרה ל-JSON (מערך של מערכים)
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                const processedData = [];
+                
+                // מעבר על השורות
+                for(let i=0; i<jsonData.length; i++) {
+                    const row = jsonData[i];
+                    // בדיקה אם יש לפחות 2 תאים בשורה
+                    if(row.length >= 2 && row[0] != null && row[1] != null) {
+                        // המרה לסטרינג כדי למנוע בעיות עם מספרים
+                        let q = row[0].toString();
+                        let a = row[1].toString();
+                        
+                        // דילוג על שורת כותרת אם קיימת (אם כתוב בדיוק 'שאלה' ו'תשובה')
+                        if (i === 0 && (q.includes("שאלה") || q.includes("Question"))) continue;
+
+                        processedData.push({
+                            question: q,
+                            answer: a
+                        });
+                    }
                 }
-            });
 
-            if (processedData.length === 0) {
-                statusDiv.innerText = "שגיאה: לא נמצאו נתונים תקינים בקובץ.";
-                return;
+                if (processedData.length === 0) {
+                    throw new Error("לא נמצאו שורות תקינות בקובץ. וודאי שעמודה A ועמודה B מלאות.");
+                }
+
+                statusDiv.innerText = `נמצאו ${processedData.length} כרטיסיות! יוצר קובץ...`;
+                statusDiv.className = "success";
+
+                // יצירת הקובץ הסופי
+                const finalHTML = templatePart1 + JSON.stringify(processedData) + templatePart2;
+                downloadFile(finalHTML, "flashcards_ready.html");
+                
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerText = "שגיאה בעיבוד הקובץ: " + err.message;
+                statusDiv.className = "error";
+                alert("שגיאה: " + err.message);
             }
-
-            // יצירת הקובץ הסופי
-            const finalHTML = templatePart1 + JSON.stringify(processedData) + templatePart2;
-            
-            downloadFile(finalHTML, "my_flashcards.html");
-            statusDiv.innerText = "הקובץ נוצר בהצלחה!";
         };
+        
+        reader.onerror = function() {
+            statusDiv.innerText = "שגיאה בקריאת הקובץ מהמחשב.";
+            statusDiv.className = "error";
+        };
+
         reader.readAsArrayBuffer(file);
     }
 
