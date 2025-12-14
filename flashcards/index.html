@@ -4,50 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מחולל כרטיסיות זיכרון</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
         .box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 500px; width: 90%; }
         h1 { color: #333; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 30px; }
-        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; margin-bottom: 20px; }
-        .btn { border: 2px solid gray; color: gray; background-color: white; padding: 8px 20px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn.primary { border: none; background-color: #4CAF50; color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); }
-        .btn.primary:hover { background-color: #45a049; transform: translateY(-2px); }
-        input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-        #status { margin-top: 15px; font-weight: bold; min-height: 20px; }
-        .error { color: red; }
+        p { color: #666; margin-bottom: 30px; font-size: 0.9rem; }
+        
+        .step { margin-bottom: 20px; padding: 15px; border-radius: 10px; background-color: #fafafa; border: 1px solid #eee; }
+        .step-title { font-weight: bold; margin-bottom: 10px; display: block; color: #555; }
+        
+        /* עיצוב כפתור העלאה */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 10px 25px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .custom-file-upload:hover { background-color: #0069d9; }
+        input[type="file"] { display: none; }
+
+        /* עיצוב כפתור הורדה */
+        #downloadBtn {
+            display: none; /* מוסתר בהתחלה */
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            margin: 0 auto;
+        }
+        #downloadBtn:hover { background-color: #218838; transform: scale(1.05); }
+
+        #status { margin-top: 10px; font-weight: bold; min-height: 20px; }
         .success { color: green; }
+        .error { color: red; }
     </style>
 </head>
 <body>
 
 <div class="box">
     <h1>מחולל כרטיסיות</h1>
-    <p>העלי קובץ Excel או CSV.<br><small>(עמודה A = שאלה, עמודה B = תשובה)</small></p>
+    <p>המערכת תיצור קובץ HTML עצמאי שניתן לשלוח לסטודנטים.</p>
     
-    <div class="upload-btn-wrapper">
-        <button class="btn primary">בחרי קובץ אקסל/CSV</button>
-        <input type="file" id="uploadInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+    <div class="step">
+        <span class="step-title">שלב 1: טעינת שאלות</span>
+        <label for="fileInput" class="custom-file-upload">
+            📂 בחרי קובץ Excel
+        </label>
+        <input type="file" id="fileInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+        <div id="status">ממתין לקובץ...</div>
     </div>
-    
-    <div id="status"></div>
+
+    <div class="step">
+        <span class="step-title">שלב 2: יצירת המשחק</span>
+        <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידי את המשחק המוכן</button>
+    </div>
 </div>
 
 <script>
-    // תבנית הקוד שתושתל בקובץ החדש
-    const templatePart1 = `<!DOCTYPE html>
+    let processedCards = null; // משתנה לשמירת הנתונים המעובדים
+
+    // האזנה לבחירת קובץ
+    document.getElementById('fileInput').addEventListener('change', handleFile, false);
+
+    function handleFile(e) {
+        const file = e.target.files[0];
+        const statusDiv = document.getElementById('status');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        // איפוס מצב
+        downloadBtn.style.display = "none";
+        statusDiv.className = "";
+        processedCards = null;
+
+        if (!file) return;
+
+        statusDiv.innerText = "קורא קובץ...";
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // קריאת הגליון הראשון
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // המרה ל-JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                const validData = [];
+                
+                // סינון ועיבוד השורות
+                for(let i=0; i<jsonData.length; i++) {
+                    const row = jsonData[i];
+                    // מוודאים שיש לפחות שני תאים עם תוכן
+                    if(row.length >= 2 && row[0] != null && row[1] != null) {
+                        let q = row[0].toString().trim();
+                        let a = row[1].toString().trim();
+                        
+                        // דילוג על כותרות נפוצות
+                        if (i === 0 && (q === "שאלה" || q === "Question" || q === "question")) continue;
+                        if (q === "" || a === "") continue;
+
+                        validData.push({ question: q, answer: a });
+                    }
+                }
+
+                if (validData.length === 0) {
+                    throw new Error("לא נמצאו נתונים תקינים. וודאי שעמודה A היא השאלה ועמודה B היא התשובה.");
+                }
+
+                // הצלחה! שמירת הנתונים והצגת כפתור ההורדה
+                processedCards = validData;
+                statusDiv.innerText = `✅ נטענו בהצלחה ${validData.length} כרטיסיות!`;
+                statusDiv.className = "success";
+                downloadBtn.style.display = "block"; // חשיפת הכפתור השני
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerText = "❌ שגיאה: " + err.message;
+                statusDiv.className = "error";
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function downloadGame() {
+        if (!processedCards) return;
+
+        // תבנית הקובץ הסופי (HTML בתוך מחרוזת)
+        const htmlContent = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כרטיסיות זיכרון</title>
+    <title>כרטיסיות תרגול</title>
     <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\\\(', '\\\\)']], displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']] }
     };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <\/script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
         .container { perspective: 1000px; width: 80%; max-width: 600px; height: 400px; position: relative; }
@@ -64,130 +174,93 @@
         #resetBtn:hover { background-color: #e68a00; transform: translateY(-2px); }
         .progress { margin-top: 15px; color: #666; font-size: 0.9rem; }
         .hint { margin-top: 10px; font-size: 0.8rem; color: #888; }
-        .face::-webkit-scrollbar { width: 8px; }
-        .face::-webkit-scrollbar-track { background: transparent; }
-        .face::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 4px; }
         mjx-container { font-size: 110% !important; }
     </style>
 </head>
 <body>
     <div class="container" onclick="flipCard()">
         <div class="card" id="card">
-            <div class="face front"><div id="questionText">טוען שאלה...</div></div>
-            <div class="face back"><div id="answerText">טוען תשובה...</div></div>
+            <div class="face front"><div id="questionText">טוען...</div></div>
+            <div class="face back"><div id="answerText">טוען...</div></div>
         </div>
     </div>
     <div class="progress" id="progressText"></div>
     <div class="controls">
-        <button id="resetBtn" onclick="resetGame(event)">איפוס (התחלה מחדש)</button>
+        <button id="resetBtn" onclick="resetGame(event)">איפוס</button>
         <button id="nextBtn" onclick="nextCard(event)">הבא (Enter)</button>
     </div>
-    <div class="hint">ניתן להשתמש במקש רווח להפוך, וב-Enter למעבר</div>
+    <div class="hint">רווח להפוך, Enter למעבר</div>
     <script>
-        const cardsData = `;
-    
-    const templatePart2 = `;
+        const cardsData = ${JSON.stringify(processedCards)};
         let deck = [];
         let currentCardIndex = -1;
-        let isFlipped = false;
-        function initGame() { deck = Array.from(Array(cardsData.length).keys()); shuffleDeck(); nextCard(); }
-        function shuffleDeck() { for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; } }
-        function updateProgress() { const remaining = deck.length; const total = cardsData.length; document.getElementById('progressText').innerText = \`כרטיסייה \${total - remaining} מתוך \${total}\`; }
-        function nextCard(event) { if (event) event.stopPropagation(); if (deck.length === 0) { alert("סיימת את כל הכרטיסיות! המשחק יתאפס כעת."); initGame(); return; } const cardElement = document.getElementById('card'); cardElement.classList.remove('flipped'); isFlipped = false; currentCardIndex = deck.pop(); const qText = cardsData[currentCardIndex].question; const aText = cardsData[currentCardIndex].answer; setTimeout(() => { document.getElementById('questionText').innerHTML = qText; document.getElementById('answerText').innerHTML = aText; if (window.MathJax) { MathJax.typesetPromise([document.getElementById('card')]).catch((err) => console.log(err)); } updateProgress(); }, 150); }
-        function flipCard() { const cardElement = document.getElementById('card'); cardElement.classList.toggle('flipped'); isFlipped = !isFlipped; }
-        function resetGame(event) { if (event) event.stopPropagation(); if (confirm("האם להתחיל מחדש ולערבב את הכרטיסיות?")) { initGame(); } }
-        document.addEventListener('keydown', function(event) { if (event.code === 'Space') { event.preventDefault(); flipCard(); } else if (event.code === 'Enter') { event.preventDefault(); nextCard(); } });
+        
+        function initGame() { 
+            deck = Array.from(Array(cardsData.length).keys()); 
+            shuffleDeck(); 
+            nextCard(); 
+        }
+        
+        function shuffleDeck() { 
+            for (let i = deck.length - 1; i > 0; i--) { 
+                const j = Math.floor(Math.random() * (i + 1)); 
+                [deck[i], deck[j]] = [deck[j], deck[i]]; 
+            } 
+        }
+        
+        function updateProgress() { 
+            const remaining = deck.length; 
+            const total = cardsData.length; 
+            document.getElementById('progressText').innerText = \`כרטיסייה \${total - remaining} מתוך \${total}\`; 
+        }
+        
+        function nextCard(event) { 
+            if (event) event.stopPropagation(); 
+            if (deck.length === 0) { 
+                alert("כל הכבוד! סיימת את כל הכרטיסיות."); 
+                initGame(); 
+                return; 
+            } 
+            const cardElement = document.getElementById('card'); 
+            cardElement.classList.remove('flipped'); 
+            
+            currentCardIndex = deck.pop(); 
+            
+            setTimeout(() => { 
+                document.getElementById('questionText').innerHTML = cardsData[currentCardIndex].question; 
+                document.getElementById('answerText').innerHTML = cardsData[currentCardIndex].answer; 
+                if (window.MathJax) { 
+                    MathJax.typesetPromise([document.getElementById('card')]).catch((err) => console.log(err)); 
+                } 
+                updateProgress(); 
+            }, 200); 
+        }
+        
+        function flipCard() { 
+            document.getElementById('card').classList.toggle('flipped'); 
+        }
+        
+        function resetGame(event) { 
+            if (event) event.stopPropagation(); 
+            if (confirm("להתחיל מחדש?")) initGame(); 
+        }
+        
+        document.addEventListener('keydown', function(event) { 
+            if (event.code === 'Space') { event.preventDefault(); flipCard(); } 
+            else if (event.code === 'Enter') { event.preventDefault(); nextCard(); } 
+        });
+        
         window.onload = initGame;
     <\/script>
 </body>
 </html>`;
 
-    document.getElementById('uploadInput').addEventListener('change', handleFile, false);
-
-    function handleFile(e) {
-        const file = e.target.files[0];
-        const statusDiv = document.getElementById('status');
-        statusDiv.className = "";
-        
-        if (!file) return;
-
-        // בדיקה שהספרייה נטענה
-        if (typeof XLSX === 'undefined') {
-            statusDiv.innerText = "שגיאה: ספריית Excel לא נטענה. בדקי את חיבור האינטרנט ורענני את הדף.";
-            statusDiv.className = "error";
-            return;
-        }
-
-        statusDiv.innerText = "קורא קובץ...";
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                
-                // לוקח את הגליון הראשון
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                // המרה ל-JSON (מערך של מערכים)
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-                
-                const processedData = [];
-                
-                // מעבר על השורות
-                for(let i=0; i<jsonData.length; i++) {
-                    const row = jsonData[i];
-                    // בדיקה אם יש לפחות 2 תאים בשורה
-                    if(row.length >= 2 && row[0] != null && row[1] != null) {
-                        // המרה לסטרינג כדי למנוע בעיות עם מספרים
-                        let q = row[0].toString();
-                        let a = row[1].toString();
-                        
-                        // דילוג על שורת כותרת אם קיימת (אם כתוב בדיוק 'שאלה' ו'תשובה')
-                        if (i === 0 && (q.includes("שאלה") || q.includes("Question"))) continue;
-
-                        processedData.push({
-                            question: q,
-                            answer: a
-                        });
-                    }
-                }
-
-                if (processedData.length === 0) {
-                    throw new Error("לא נמצאו שורות תקינות בקובץ. וודאי שעמודה A ועמודה B מלאות.");
-                }
-
-                statusDiv.innerText = `נמצאו ${processedData.length} כרטיסיות! יוצר קובץ...`;
-                statusDiv.className = "success";
-
-                // יצירת הקובץ הסופי
-                const finalHTML = templatePart1 + JSON.stringify(processedData) + templatePart2;
-                downloadFile(finalHTML, "flashcards_ready.html");
-                
-            } catch (err) {
-                console.error(err);
-                statusDiv.innerText = "שגיאה בעיבוד הקובץ: " + err.message;
-                statusDiv.className = "error";
-                alert("שגיאה: " + err.message);
-            }
-        };
-        
-        reader.onerror = function() {
-            statusDiv.innerText = "שגיאה בקריאת הקובץ מהמחשב.";
-            statusDiv.className = "error";
-        };
-
-        reader.readAsArrayBuffer(file);
-    }
-
-    function downloadFile(content, fileName) {
-        const blob = new Blob([content], {type: "text/html;charset=utf-8"});
+        // יצירת הקובץ להורדה
+        const blob = new Blob([htmlContent], {type: "text/html;charset=utf-8"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = fileName;
+        a.download = "flashcards_game.html";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
