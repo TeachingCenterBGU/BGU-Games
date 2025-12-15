@@ -159,7 +159,7 @@
 
         <div id="status">ממתין לקובץ...</div>
 
-        <button class="btn example-btn" onclick="loadExample()">אין לכם קובץ? 🧪 הורידו משחק לדוגמה (חומצות אמינו)</button>
+        <button class="btn example-btn" onclick="loadExample()">אין לכם קובץ? 🧪 הורידו משחק לדוגמה (20 חומצות אמינו)</button>
     </div>
 
     <div class="step">
@@ -174,17 +174,30 @@
 
 <script>
     let processedCards = null;
+    let isExample = false;
 
-    // מאגר נתונים לדוגמה - חומצות אמינו
+    // מאגר 20 חומצות האמינו
     const exampleData = [
         { question: "A", answer: "Alanine (אלנין)<br>C₃H₇NO₂" },
-        { question: "R", answer: "Arginine (ארגינין)<br>C₆H₁₄N₄O₂" },
+        { question: "R", answer: "Arginine (ארגינין)<br>C₆H₁₄N₄O₂<br>בסיסית, מטען חיובי" },
         { question: "N", answer: "Asparagine (אספרגין)<br>C₄H₈N₂O₃" },
-        { question: "D", answer: "Aspartic Acid (חומצה אספרטית)<br>C₄H₇NO₄" },
-        { question: "C", answer: "Cysteine (ציסטאין)<br>C₃H₇NO₂S" },
-        { question: "G", answer: "Glycine (גליצין)<br>$NH_2CH_2COOH$" }, // דוגמה לשימוש ב-LaTeX
-        { question: "H", answer: "Histidine (היסטידין)<br>מטען חיובי ב-pH פיזיולוגי" },
-        { question: "K", answer: "Lysine (ליזין)<br>חומצה אמינית בסיסית" }
+        { question: "D", answer: "Aspartic Acid (חומצה אספרטית)<br>C₄H₇NO₄<br>חומצית, מטען שלילי" },
+        { question: "C", answer: "Cysteine (ציסטאין)<br>מכילה גופרית, יוצרת קשרי S-S" },
+        { question: "E", answer: "Glutamic Acid (חומצה גלוטמית)<br>C₅H₉NO₄<br>חומצית, מטען שלילי" },
+        { question: "Q", answer: "Glutamine (גלוטמין)<br>C₅H₁₀N₂O₃" },
+        { question: "G", answer: "Glycine (גליצין)<br>החומצה הקטנה ביותר ($H$ בשייר)" }, 
+        { question: "H", answer: "Histidine (היסטידין)<br>בסיסית, חיונית לתינוקות" },
+        { question: "I", answer: "Isoleucine (איזולאוצין)<br>הידרופובית, איזומר של לאוצין" },
+        { question: "L", answer: "Leucine (לאוצין)<br>הידרופובית, שייר מסועף" },
+        { question: "K", answer: "Lysine (ליזין)<br>בסיסית, מטען חיובי" },
+        { question: "M", answer: "Methionine (מתיונין)<br>מכילה גופרית ($S$), קודון התחלה" },
+        { question: "F", answer: "Phenylalanine (פנילאלנין)<br>ארומטית (טבעת בנזן)" },
+        { question: "P", answer: "Proline (פרולין)<br>מבנה טבעתי מיוחד (Imine)" },
+        { question: "S", answer: "Serine (סרין)<br>מכילה קבוצת הידרוקסיל ($OH$)" },
+        { question: "T", answer: "Threonine (תראונין)<br>מכילה קבוצת הידרוקסיל ($OH$)" },
+        { question: "W", answer: "Tryptophan (טריפטופן)<br>הגדולה ביותר, ארומטית" },
+        { question: "Y", answer: "Tyrosine (טירוזין)<br>ארומטית, מכילה $OH$" },
+        { question: "V", answer: "Valine (ואלין)<br>הידרופובית, שייר מסועף" }
     ];
 
     document.getElementById('fileInput').addEventListener('change', handleFile, false);
@@ -199,13 +212,14 @@
     // פונקציה לטעינת הדוגמה
     function loadExample() {
         processedCards = exampleData;
+        isExample = true;
         const statusDiv = document.getElementById('status');
         const downloadBtn = document.getElementById('downloadBtn');
         
         // איפוס קובץ אם נבחר קודם
         document.getElementById('fileInput').value = ""; 
 
-        statusDiv.innerText = "✅ נטענו נתוני דוגמה: חומצות אמינו.";
+        statusDiv.innerText = "✅ נטענו נתוני דוגמה: 20 חומצות האמינו.";
         statusDiv.className = "success";
         downloadBtn.style.display = "block";
         
@@ -222,6 +236,7 @@
         downloadBtn.style.display = "none";
         statusDiv.className = "";
         processedCards = null;
+        isExample = false;
 
         if (!file) return;
 
@@ -275,7 +290,7 @@
         if (!processedCards) return;
         
         // בחירת שם לקובץ בהתאם לתוכן (דוגמה או קובץ משתמש)
-        const filename = (processedCards === exampleData) ? "amino_acids_game.html" : "flashcards_game.html";
+        const filename = isExample ? "amino_acids_game.html" : "flashcards_game.html";
 
         const htmlContent = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -415,7 +430,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "${filename}";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
