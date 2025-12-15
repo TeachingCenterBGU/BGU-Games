@@ -37,8 +37,8 @@
         }
         .logo-container img {
             /* גודל מוגדל כפי שביקשת */
-            max-width: 300px; 
-            max-height: 180px;
+            max-width: 500px; 
+            max-height: 300px;
             border-radius: 10px;
             display: block;
             margin: 0 auto;
@@ -120,17 +120,17 @@
     </div>
 
     <h1>מחולל כרטיסיות</h1>
-    <p>העלי קובץ אקסל והמערכת תיצור משחק למידה מעוצב.</p>
+    <p>העלו קובץ אקסל והמערכת תיצור משחק למידה מעוצב.</p>
     
     <div class="step">
         <span class="step-title">שלב 1: טעינת שאלות</span>
         <label for="fileInput" class="custom-file-upload">
-            📂 בחרי קובץ Excel / CSV
+            📂 בחרו קובץ Excel / CSV
         </label>
         <input type="file" id="fileInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
         
         <div class="encoding-selector">
-            <label for="encodingSelect">הטקסט יצא ג'יבריש? נסי לשנות כאן:</label><br>
+            <label for="encodingSelect">הטקסט יצא ג'יבריש? נסו לשנות כאן:</label><br>
             <select id="encodingSelect">
                 <option value="UTF-8">UTF-8 (רוב הקבצים החדשים)</option>
                 <option value="windows-1255">Windows-1255 (אקסל בעברית ישן)</option>
@@ -143,7 +143,7 @@
 
     <div class="step">
         <span class="step-title">שלב 2: יצירת המשחק</span>
-        <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידי את המשחק המוכן</button>
+        <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידו את המשחק המוכן</button>
     </div>
 </div>
 
@@ -217,7 +217,7 @@
 
             } catch (err) {
                 console.error(err);
-                statusDiv.innerText = "❌ שגיאה: " + err.message + "\n(נסי לשנות את סוג הקידוד בתפריט למעלה)";
+                statusDiv.innerText = "❌ שגיאה: " + err.message + "\n(נסו לשנות את סוג הקידוד בתפריט למעלה)";
                 statusDiv.className = "error";
             }
         };
@@ -261,8 +261,8 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            max-width: 200px;
-            max-height: 120px;
+            max-width: 400px;
+            max-height: 240px;
             opacity: 0.9;
             z-index: 10;
         }
