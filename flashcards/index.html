@@ -36,7 +36,6 @@
             margin-bottom: 20px;
         }
         .logo-container img {
-            /* גודל מוגדל כפי שביקשת */
             max-width: 400px; 
             max-height: 300px;
             border-radius: 10px;
@@ -71,7 +70,6 @@
         .custom-file-upload:hover { background-color: #72b2bd; transform: scale(1.05); }
         input[type="file"] { display: none; }
 
-        /* עיצוב לתפריט בחירת הקידוד */
         .encoding-selector {
             margin-top: 20px;
             text-align: center;
@@ -91,21 +89,38 @@
             max-width: 250px;
         }
 
-        #downloadBtn {
-            display: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            background-color: var(--primary-color);
-            color: white;
+        /* עיצוב כפתורים */
+        .btn {
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(255, 143, 171, 0.4);
             transition: 0.3s;
+            font-size: 1.1rem;
+            padding: 12px 30px;
+            margin: 5px;
+        }
+
+        #downloadBtn {
+            display: none;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 143, 171, 0.4);
+            width: 80%;
             margin: 0 auto;
         }
         #downloadBtn:hover { background-color: #ff7597; transform: scale(1.05); }
+
+        /* כפתור לדוגמה */
+        .example-btn {
+            background-color: transparent;
+            border: 2px solid #bbb;
+            color: #666;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            margin-top: 15px;
+        }
+        .example-btn:hover { background-color: #eee; color: #333; }
 
         #status { margin-top: 15px; font-weight: 600; min-height: 25px; font-size: 0.95rem; white-space: pre-wrap; }
         .success { color: #28a745; }
@@ -119,7 +134,7 @@
         <img src="logo.jpg" alt="לוגו היחידה" onerror="this.style.display='none'">
     </div>
 
-<h1>מחולל כרטיסיות</h1>
+    <h1>מחולל כרטיסיות</h1>
     <p>
         העלו קובץ אקסל והמערכת תיצור משחק למידה מעוצב.<br>
         <strong>טור A - צד השאלות | טור B - צד התשובות</strong><br>
@@ -143,11 +158,13 @@
         </div>
 
         <div id="status">ממתין לקובץ...</div>
+
+        <button class="btn example-btn" onclick="loadExample()">אין לכם קובץ? 🧪 הורידו משחק לדוגמה (חומצות אמינו)</button>
     </div>
 
     <div class="step">
         <span class="step-title">שלב 2: יצירת המשחק</span>
-        <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידו את המשחק המוכן</button>
+        <button id="downloadBtn" class="btn" onclick="downloadGame()">⬇️ הורידו את המשחק המוכן</button>
     </div>
     <p>
         את הקובץ ניתן לשלוח ישירות לסטודנטים<br>
@@ -158,10 +175,20 @@
 <script>
     let processedCards = null;
 
-    // האזנה לבחירת קובץ
+    // מאגר נתונים לדוגמה - חומצות אמינו
+    const exampleData = [
+        { question: "A", answer: "Alanine (אלנין)<br>C₃H₇NO₂" },
+        { question: "R", answer: "Arginine (ארגינין)<br>C₆H₁₄N₄O₂" },
+        { question: "N", answer: "Asparagine (אספרגין)<br>C₄H₈N₂O₃" },
+        { question: "D", answer: "Aspartic Acid (חומצה אספרטית)<br>C₄H₇NO₄" },
+        { question: "C", answer: "Cysteine (ציסטאין)<br>C₃H₇NO₂S" },
+        { question: "G", answer: "Glycine (גליצין)<br>$NH_2CH_2COOH$" }, // דוגמה לשימוש ב-LaTeX
+        { question: "H", answer: "Histidine (היסטידין)<br>מטען חיובי ב-pH פיזיולוגי" },
+        { question: "K", answer: "Lysine (ליזין)<br>חומצה אמינית בסיסית" }
+    ];
+
     document.getElementById('fileInput').addEventListener('change', handleFile, false);
     
-    // האזנה לשינוי בתפריט הקידוד - מפעיל מחדש את הקריאה אם כבר נבחר קובץ
     document.getElementById('encodingSelect').addEventListener('change', () => {
         const fileInput = document.getElementById('fileInput');
         if (fileInput.files.length > 0) {
@@ -169,13 +196,29 @@
         }
     });
 
+    // פונקציה לטעינת הדוגמה
+    function loadExample() {
+        processedCards = exampleData;
+        const statusDiv = document.getElementById('status');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        // איפוס קובץ אם נבחר קודם
+        document.getElementById('fileInput').value = ""; 
+
+        statusDiv.innerText = "✅ נטענו נתוני דוגמה: חומצות אמינו.";
+        statusDiv.className = "success";
+        downloadBtn.style.display = "block";
+        
+        // גלילה לכפתור ההורדה
+        downloadBtn.scrollIntoView({behavior: "smooth"});
+    }
+
     function handleFile(e) {
         const file = e.target.files[0];
         const statusDiv = document.getElementById('status');
         const downloadBtn = document.getElementById('downloadBtn');
         const encodingType = document.getElementById('encodingSelect').value;
         
-        // איפוס
         downloadBtn.style.display = "none";
         statusDiv.className = "";
         processedCards = null;
@@ -188,12 +231,8 @@
         
         reader.onload = function(e) {
             try {
-                // המרה ישירה לטקסט, הדפדפן מטפל בקידוד
                 const data = e.target.result;
-                
-                // קריאה באמצעות הספרייה כטקסט
                 const workbook = XLSX.read(data, {type: 'string'});
-                
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
@@ -218,8 +257,7 @@
                 }
 
                 processedCards = validData;
-                // הצגת השאלה הראשונה כדוגמה כדי שהמשתמש יראה אם זה ג'יבריש
-                statusDiv.innerText = `✅ נטענו ${validData.length} כרטיסיות!\n\nהנה דוגמה לכרטיסייה הראשונה (האם זה קריא?):\n"${validData[0].question}"`;
+                statusDiv.innerText = `✅ נטענו ${validData.length} כרטיסיות!\n\nהנה דוגמה לכרטיסייה הראשונה:\n"${validData[0].question}"`;
                 statusDiv.className = "success";
                 downloadBtn.style.display = "block";
 
@@ -230,15 +268,15 @@
             }
         };
 
-        // כאן הקסם: שימוש ב-readAsText עם הקידוד שהמשתמש בחר
-        // זה הרבה יותר אמין מאשר ניחוש אוטומטי של הספרייה בקבצי CSV
         reader.readAsText(file, encodingType);
     }
 
     function downloadGame() {
         if (!processedCards) return;
+        
+        // בחירת שם לקובץ בהתאם לתוכן (דוגמה או קובץ משתמש)
+        const filename = (processedCards === exampleData) ? "amino_acids_game.html" : "flashcards_game.html";
 
-        // בניית הקובץ הסופי
         const htmlContent = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -264,7 +302,6 @@
             overflow: hidden; 
         }
         
-        /* עיצוב הלוגו במשחק עצמו */
         .game-logo {
             position: absolute;
             top: 20px;
@@ -278,7 +315,7 @@
         .container { perspective: 1000px; width: 90%; max-width: 600px; height: 400px; position: relative; }
         .card { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); cursor: pointer; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
         .card.flipped { transform: rotateX(180deg); }
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; text-align: center; border-radius: 20px; font-size: 1.6rem; color: #333; overflow-y: auto; background-color: white; border: 1px solid rgba(0,0,0,0.05); }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; text-align: center; border-radius: 20px; font-size: 1.6rem; color: #333; overflow-y: auto; background-color: white; border: 1px solid rgba(0,0,0,0.05); white-space: pre-wrap; }
         .front { background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%); }
         .back { background: linear-gradient(135deg, #fff9f9 0%, #fff0f0 100%); transform: rotateX(180deg); }
         
@@ -378,7 +415,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "flashcards_game.html";
+        a.download = "${filename}";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
