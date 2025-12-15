@@ -3,78 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מחולל כרטיסיות זיכרון</title>
+    <title>מחולל כרטיסיות זיכרון מוסדי</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 500px; width: 90%; }
-        h1 { color: #333; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 30px; font-size: 0.9rem; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; color: #333; }
+        .box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 600px; width: 90%; position: relative; }
         
-        .step { margin-bottom: 20px; padding: 15px; border-radius: 10px; background-color: #fafafa; border: 1px solid #eee; }
-        .step-title { font-weight: bold; margin-bottom: 10px; display: block; color: #555; }
+        /* לוגו במחולל */
+        #generatorLogo { max-height: 80px; margin-bottom: 20px; display: none; }
         
-        /* עיצוב כפתור העלאה */
+        h1 { color: #2c3e50; margin-bottom: 5px; font-size: 1.8rem; }
+        p { color: #7f8c8d; margin-bottom: 30px; font-size: 0.95rem; }
+        
+        .step { margin-bottom: 20px; padding: 20px; border-radius: 12px; background-color: #fff; border: 1px solid #e1e4e8; transition: 0.3s; text-align: right; }
+        .step:hover { border-color: #3498db; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .step-title { font-weight: 800; margin-bottom: 12px; display: block; color: #34495e; font-size: 1.1rem; }
+        
+        /* כפתורים */
         .custom-file-upload {
-            display: inline-block;
-            padding: 10px 25px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: 0.3s;
+            display: inline-block; padding: 10px 20px; cursor: pointer;
+            background-color: #eef2f7; color: #2c3e50; border: 1px solid #ced4da;
+            border-radius: 6px; font-weight: 600; transition: 0.2s; font-size: 0.9rem;
         }
-        .custom-file-upload:hover { background-color: #0069d9; }
+        .custom-file-upload:hover { background-color: #dfe6ed; }
         input[type="file"] { display: none; }
 
-        /* עיצוב כפתור הורדה */
         #downloadBtn {
-            display: none; /* מוסתר בהתחלה */
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            margin: 0 auto;
+            display: none; width: 100%; padding: 14px; font-size: 1.1rem;
+            background-color: #27ae60; color: white; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(39, 174, 96, 0.2);
+            transition: 0.2s; margin-top: 10px;
         }
-        #downloadBtn:hover { background-color: #218838; transform: scale(1.05); }
+        #downloadBtn:hover { background-color: #219150; transform: translateY(-2px); }
 
-        #status { margin-top: 10px; font-weight: bold; min-height: 20px; }
-        .success { color: green; }
-        .error { color: red; }
+        #status { margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
+        .success { color: #27ae60; }
+        .error { color: #c0392b; }
+        
+        .preview-img { max-height: 50px; vertical-align: middle; margin-right: 10px; border-radius: 4px; display: none;}
     </style>
 </head>
 <body>
 
 <div class="box">
+    <img id="generatorLogo" src="" alt="Logo">
     <h1>מחולל כרטיסיות</h1>
-    <p>המערכת תיצור קובץ HTML עצמאי שניתן לשלוח לסטודנטים.</p>
+    <p>יצירת משחק זיכרון אינטראקטיבי מקבצי Excel/CSV</p>
     
     <div class="step">
-        <span class="step-title">שלב 1: טעינת שאלות</span>
+        <span class="step-title">1. העלאת לוגו מוסד (אופציונלי)</span>
+        <label for="logoInput" class="custom-file-upload">
+            🖼️ בחרי קובץ תמונה
+        </label>
+        <input type="file" id="logoInput" accept="image/*" />
+        <img id="logoPreview" class="preview-img" />
+        <span id="logoStatus" style="font-size: 0.8rem; color: gray;"></span>
+    </div>
+
+    <div class="step">
+        <span class="step-title">2. טעינת שאלות ותשובות</span>
         <label for="fileInput" class="custom-file-upload">
-            📂 בחרי קובץ Excel
+            📂 בחרי קובץ Excel או CSV
         </label>
         <input type="file" id="fileInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
         <div id="status">ממתין לקובץ...</div>
     </div>
 
-    <div class="step">
-        <span class="step-title">שלב 2: יצירת המשחק</span>
-        <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידי את המשחק המוכן</button>
-    </div>
+    <button id="downloadBtn" onclick="downloadGame()">⬇️ הורידי את המשחק המוכן</button>
 </div>
 
 <script>
-    let processedCards = null; // משתנה לשמירת הנתונים המעובדים
+    let processedCards = null;
+    let logoBase64 = null; // משתנה לשמירת הלוגו
 
-    // האזנה לבחירת קובץ
+    // --- טיפול בלוגו ---
+    document.getElementById('logoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            logoBase64 = e.target.result; // שמירת התמונה כקוד Base64
+            
+            // הצגה במחולל עצמו
+            const genLogo = document.getElementById('generatorLogo');
+            genLogo.src = logoBase64;
+            genLogo.style.display = 'block';
+            
+            // הצגה מקדימה קטנה ליד הכפתור
+            const preview = document.getElementById('logoPreview');
+            preview.src = logoBase64;
+            preview.style.display = 'inline-block';
+            
+            document.getElementById('logoStatus').innerText = "הלוגו נטען בהצלחה ויצורף למשחק.";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // --- טיפול בקובץ נתונים ---
     document.getElementById('fileInput').addEventListener('change', handleFile, false);
 
     function handleFile(e) {
@@ -82,7 +108,6 @@
         const statusDiv = document.getElementById('status');
         const downloadBtn = document.getElementById('downloadBtn');
         
-        // איפוס מצב
         downloadBtn.style.display = "none";
         statusDiv.className = "";
         processedCards = null;
@@ -92,60 +117,73 @@
         statusDiv.innerText = "קורא קובץ...";
         
         const reader = new FileReader();
-        
-        reader.onload = function(e) {
+        const isCSV = file.name.toLowerCase().endsWith('.csv');
+
+        // פונקציה לעיבוד הנתונים אחרי שהם נקראו
+        const processWorkbook = (workbook) => {
             try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                
-                // קריאת הגליון הראשון
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                
-                // המרה ל-JSON
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
                 
                 const validData = [];
-                
-                // סינון ועיבוד השורות
                 for(let i=0; i<jsonData.length; i++) {
                     const row = jsonData[i];
-                    // מוודאים שיש לפחות שני תאים עם תוכן
                     if(row.length >= 2 && row[0] != null && row[1] != null) {
                         let q = row[0].toString().trim();
                         let a = row[1].toString().trim();
-                        
-                        // דילוג על כותרות נפוצות
-                        if (i === 0 && (q === "שאלה" || q === "Question" || q === "question")) continue;
+                        if (i === 0 && (q.includes("שאלה") || q.toLowerCase().includes("question"))) continue;
                         if (q === "" || a === "") continue;
-
                         validData.push({ question: q, answer: a });
                     }
                 }
 
-                if (validData.length === 0) {
-                    throw new Error("לא נמצאו נתונים תקינים. וודאי שעמודה A היא השאלה ועמודה B היא התשובה.");
-                }
+                if (validData.length === 0) throw new Error("לא נמצאו נתונים תקינים.");
 
-                // הצלחה! שמירת הנתונים והצגת כפתור ההורדה
                 processedCards = validData;
-                statusDiv.innerText = `✅ נטענו בהצלחה ${validData.length} כרטיסיות!`;
+                statusDiv.innerText = `✅ נטענו ${validData.length} שאלות!`;
                 statusDiv.className = "success";
-                downloadBtn.style.display = "block"; // חשיפת הכפתור השני
-
+                downloadBtn.style.display = "block";
             } catch (err) {
-                console.error(err);
                 statusDiv.innerText = "❌ שגיאה: " + err.message;
                 statusDiv.className = "error";
             }
         };
-        reader.readAsArrayBuffer(file);
+
+        // לוגיקה מפוצלת: CSV קוראים כטקסט (UTF-8), אקסל כבינארי
+        if (isCSV) {
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    // המרה ידנית באמצעות SheetJS, מכריחים לקרוא כטקסט
+                    const workbook = XLSX.read(text, {type: 'string'});
+                    processWorkbook(workbook);
+                } catch(err) {
+                    statusDiv.innerText = "שגיאה בקריאת CSV.";
+                }
+            };
+            reader.readAsText(file, "UTF-8"); // כאן הקסם שפותר את הג'יבריש
+        } else {
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    processWorkbook(workbook);
+                } catch(err) {
+                    statusDiv.innerText = "שגיאה בקריאת קובץ Excel.";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
     }
 
+    // --- יצירת והורדת המשחק ---
     function downloadGame() {
         if (!processedCards) return;
 
-        // תבנית הקובץ הסופי (HTML בתוך מחרוזת)
+        // הכנת תגית הלוגו למשחק (אם הועלה לוגו)
+        const logoHTML = logoBase64 ? `<img src="${logoBase64}" class="game-logo" alt="Logo">` : '';
+
         const htmlContent = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -159,13 +197,18 @@
     <\/script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .container { perspective: 1000px; width: 80%; max-width: 600px; height: 400px; position: relative; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; position: relative; }
+        
+        /* לוגו בתוך המשחק */
+        .game-logo { position: absolute; top: 20px; right: 20px; max-height: 60px; z-index: 10; opacity: 0.9; }
+        
+        .container { perspective: 1000px; width: 80%; max-width: 600px; height: 400px; position: relative; margin-top: 20px; }
         .card { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); cursor: pointer; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .card.flipped { transform: rotateX(180deg); }
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; text-align: center; border-radius: 20px; font-size: 1.5rem; color: #333; overflow-y: auto; background-color: white; }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; text-align: center; border-radius: 20px; font-size: 1.6rem; color: #333; overflow-y: auto; background-color: white; line-height: 1.4; }
         .front { background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%); border: 2px solid #b3e0ff; }
         .back { background: linear-gradient(135deg, #ffffff 0%, #fff0f0 100%); border: 2px solid #ffcccc; transform: rotateX(180deg); }
+        
         .controls { margin-top: 30px; display: flex; gap: 20px; }
         button { padding: 12px 24px; font-size: 1rem; border: none; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: inherit; font-weight: 600; }
         #nextBtn { background-color: #4CAF50; color: white; }
@@ -175,9 +218,17 @@
         .progress { margin-top: 15px; color: #666; font-size: 0.9rem; }
         .hint { margin-top: 10px; font-size: 0.8rem; color: #888; }
         mjx-container { font-size: 110% !important; }
+        
+        /* התאמה לנייד */
+        @media (max-width: 600px) {
+            .container { height: 60vh; width: 90%; }
+            .face { font-size: 1.2rem; padding: 15px; }
+            .game-logo { max-height: 40px; top: 10px; right: 10px; }
+        }
     </style>
 </head>
 <body>
+    ${logoHTML}
     <div class="container" onclick="flipCard()">
         <div class="card" id="card">
             <div class="face front"><div id="questionText">טוען...</div></div>
@@ -255,7 +306,6 @@
 </body>
 </html>`;
 
-        // יצירת הקובץ להורדה
         const blob = new Blob([htmlContent], {type: "text/html;charset=utf-8"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
