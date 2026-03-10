@@ -1,9 +1,7 @@
-  <!-- נוספו הערות בצדדים להסבר -->
 <!DOCTYPE html>
 <html lang="he">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -14,23 +12,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- כותרת לדפדפן -->
    <title>בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב</title>
   
-    <!-- כותרת ותיאור לשיתוף בווטסאפ, פייסבוק וכו' -->
     <meta property="og:title" content="בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב">
     <meta property="og:description" content="אוסף משחקים, סימולציות ובוטים מבוססי בינה מלאכותית מבית היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב.">
     <meta property="og:url" content="https://miptsa.github.io/BGU-Games/">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://miptsa.github.io/BGU-Games/logo.png"> <!-- אם יש לוגו באתר שלך -->
-
-    <!-- תמיכה בטוויטר גם אם רלוונטי -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב">
-    <meta name="twitter:description" content="אוסף משחקים, סימולציות ובוטים מבית BGU">
-    <meta name="twitter:image" content="https://miptsa.github.io/BGU-Games/logo.png">
-  
-
+    <meta property="og:image" content="https://miptsa.github.io/BGU-Games/logo.png">
 
   <style>
     body {
@@ -39,12 +27,14 @@
       text-align: center;
       background-color: #fdfdfb;
       padding: 40px;
+      margin: 0;
     }
 
     h1 {
       color: #333;
       font-size: 30px;
-      line-height: 1.8;
+      line-height: 1.4;
+      margin-bottom: 30px;
     }
 
     .logo {
@@ -61,76 +51,106 @@
       transform: scale(1.05);
     }
 
+    /* עיצוב כפתור הקווים המנחים החדש */
+    .guidelines-wrapper {
+        margin: 20px 0 40px;
+    }
+
+    .guidelines-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        background-color: #00467F; /* כחול ב"ג */
+        color: white;
+        padding: 18px 40px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 22px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 70, 127, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .guidelines-btn:hover {
+        background-color: #005ea8;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 70, 127, 0.3);
+    }
+
     .columns {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
-      margin-top: 40px;
+      margin-top: 20px;
     }
 
     .column {
       width: 45%;
-      background-color: white;
-      padding: 20px;
+      padding: 10px;
       margin: 10px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       background-color: #e6f4fa;
     }
 
-    .column h2 {
-      color: #444;
-      font-size: 26px;
+    .category-card {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 24px 16px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      text-align: right; /* יישור לימין בתוך הכרטיס */
+    }
+
+    .category-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #333;
+      text-align: center;
       margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
     }
 
     .game-link {
       display: block;
-      margin: 20px auto;
-      padding: 20px;
+      margin: 15px auto;
+      padding: 15px;
       width: 90%;
       background-color: #ffffff;
-      border: none;
+      border: 1px solid #eee;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       text-decoration: none;
       color: #333;
-      transition: transform 0.2s, box-shadow 0.2s;
-      font-size: 21px;
+      transition: all 0.2s;
+      font-size: 19px;
       font-weight: bold;
-      text-align: center;
-          }
-      .category-card {
-          background-color: #ffffff;
-          border: 1px solid #ddd;
-          border-radius: 16px;
-          padding: 24px 16px;
-          margin-bottom: 32px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-    
-      .category-title {
-        font-size: 24px;
-        font-weight: 800;
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e0e0e0;
-      }
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .game-link:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-      background-color: #f9f9f9;
+      transform: translateX(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      background-color: #f0f9ff;
+      border-color: #00467F;
+    }
+
+    .description-text {
+        font-size: 15px;
+        font-weight: normal;
+        color: #666;
+        margin-top: 5px;
+        display: block;
     }
 
     @media (max-width: 1000px) {
       .column {
-        width: 90%;
-        margin: 20px 0;
+        width: 95%;
+        margin: 10px 0;
       }
-
       .columns {
         flex-direction: column;
         align-items: center;
@@ -150,116 +170,115 @@
     אוניברסיטת בן גוריון בנגב!
   </h1>
 
+<div class="guidelines-wrapper">
+    <a href="guidelines.html" class="guidelines-btn">
+        <span>📜</span>
+        קווים מנחים להוראה וללמידה מרחוק
+    </a>
+</div>
+
 <div class="columns">
-  <!-- טור 1: סימולציות + משחקים -->
+  
   <div class="column">
     
+    <div class="category-card" style="border-top: 5px solid #00467F;">
+        <h3 class="category-title">🌐 למידה מרחוק בתמיכת AI</h3>
+        
+        <a class="game-link" href="#">
+            <div style="font-size: 24px;">🎧</div>
+            <div>
+                הפודקאסט של הקורס (NotebookLM)
+                <span class="description-text">הפיכת מאמרי הקורס לשיחה קולית מרתקת לסטודנטים.</span>
+            </div>
+        </a>
+
+        <a class="game-link" href="#">
+            <div style="font-size: 24px;">🎯</div>
+            <div>
+                מחולל מחוונים (Rubrics)
+                <span class="description-text">יצירת קריטריונים ברורים להערכה בשיעורי זום ומטלות בית.</span>
+            </div>
+        </a>
+
+        <a class="game-link" href="#">
+            <div style="font-size: 24px;">💡</div>
+            <div>
+                מפצח המושגים
+                <span class="description-text">שימוש ב-AI ליצירת אנלוגיות למושגים מורכבים בלמידה עצמית.</span>
+            </div>
+        </a>
+    </div>
+
     <div class="category-card">
       <h3 class="category-title">💡 דפים אינטראקטיביים</h3>
       <a class="game-link" href="https://claude.ai/public/artifacts/e43c7bc6-ccb4-4986-8cce-fd54919df2f9">
-        <div style="font-size: 28px;">📖</div>שפינוזה
+        <div style="font-size: 24px;">📖</div>שפינוזה
       </a>
     </div>    
+
     <div class="category-card">
       <h3 class="category-title">🔬 סימולציות</h3>
       <a class="game-link" href="snell1/">
-        <div style="font-size: 28px;">🔍</div>חוק סנל תיאוריה
+        <div style="font-size: 24px;">🔍</div>חוק סנל תיאוריה
       </a>
       <a class="game-link" href="pendulum/">
-        <div style="font-size: 28px;">🕰️</div>פונקציית תמסורת מסדר שני
+        <div style="font-size: 24px;">🕰️</div>פונקציית תמסורת מסדר שני
       </a>
       <a class="game-link" href="biology/">
-        <div style="font-size: 28px;">🧫</div>גידול חיידקים
+        <div style="font-size: 24px;">🧫</div>גידול חיידקים
       </a>
     </div>
+
+  </div>
+
+
+  <div class="column">
 
     <div class="category-card">
       <h3 class="category-title">🎮 משחקים</h3>
       <a class="game-link" href="syllogism1/">
-        <div style="font-size: 28px;">🧩</div>מבוך ההסקים 1
-      </a>
-      <a class="game-link" href="syllogism2/">
-        <div style="font-size: 28px;">🪟</div>מבוך ההסקים 2 - גרסת הפילוסופים
+        <div style="font-size: 24px;">🧩</div>מבוך ההסקים 1
       </a>
       <a class="game-link" href="investments/">
-        <div style="font-size: 28px;">📈</div>משחק ההשקעות
-      </a>
-      <a class="game-link" href="snell2/">
-        <div style="font-size: 28px;">🛟</div>חוק סנל המחשה
+        <div style="font-size: 24px;">📈</div>משחק ההשקעות
       </a>
       <a class="game-link" href="stroop/">
-        <div style="font-size: 28px;">🎨</div>מבחן סטרופ
-      </a>
-      <a class="game-link" href="flanker/">
-        <div style="font-size: 28px;">🎯</div>מבחן פלאנקר
+        <div style="font-size: 24px;">🎨</div>מבחן סטרופ
       </a>
       <a class="game-link" href="prisoner/">
-        <div style="font-size: 28px;">🚔</div>דילמת האסיר
+        <div style="font-size: 24px;">🚔</div>דילמת האסיר
+      </a>
+    </div>
+
+    <div class="category-card">
+      <h3 class="category-title">📖 בוטים ללמידה</h3>
+      <a class="game-link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
+        <div style="font-size: 24px;">✍️</div>סוציו-רייט – שיפור כתיבה
+      </a>
+      <a class="game-link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
+        <div style="font-size: 24px;">🧠</div>כתיבה אקדמית: מיזוג רעיונות
+      </a>
+      <a class="game-link" href="flashcards/">
+        <div style="font-size: 24px;">📑</div>מחולל כרטיסיות שינון
+      </a>
+    </div>
+
+    <div class="category-card">
+      <h3 class="category-title">🎭 משחקי תפקידים</h3>
+      <a class="game-link" href="https://chatgpt.com/g/g-6831913efa1c8191b24341a0c4455ccd-dy-bvt" target="_blank">
+        <div style="font-size: 24px;">🗣️</div>הדיבוט – אימון דיבייטים
+      </a>
+      <a class="game-link" href="https://chatgpt.com/g/g-67ea6551f1488191bcdb892d610fe23b-symvltvr-shl-dylmvt-pdgvgyvt" target="_blank">
+        <div style="font-size: 24px;">📚</div>סימולטור דילמות פדגוגיות
       </a>
     </div>
 
   </div>
-
-
-<div class="column">
-
-  <!--בניית כרטיסיות -->
-  <div class="category-card">
-    <h3 class="category-title">🗂️ בניית כרטיסיות שינון</h3>
-    <a class="game-link" href="flashcards/">
-      <div style="font-size: 28px;">📑</div>מחולל כרטיסיות
-    </a>
-    
-  </div>
-  
-  <!-- בוטים לשינון -->
-  <div class="category-card">
-    <h3 class="category-title">📌 בוטים לשינון</h3>
-    <a class="game-link" href="https://chatgpt.com/g/g-67d0140a6bcc819194d7b835d763e727-mstr-khvmtsvt-mynv" target="_blank">
-      <div style="font-size: 28px;">🤖</div>מאסטר חומצות אמינו
-    </a>
-    <a class="game-link" href="https://chatgpt.com/g/g-67d2a71649108191b5164043ebc7a1ce-crystal-systems-bravais-guide" target="_blank">
-      <div style="font-size: 28px;">🧊</div>שינון מערכות גבישיות
-    </a>
-  </div>
-
-  <!-- בוטים ללמידה -->
-  <div class="category-card">
-    <h3 class="category-title">📖 בוטים ללמידה</h3>
-    <a class="game-link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
-      <div style="font-size: 28px;">✍️</div>סוציו-רייט – שיפור כתיבה
-    </a>
-    <a class="game-link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
-      <div style="font-size: 28px;">🧠</div>כתיבה אקדמית: מיזוג רעיונות
-    </a>
-    <a class="game-link" href="https://chatgpt.com/g/g-67ff5331b76081918cba6eaa0237e3ac-vzr-lktybt-sqyrt-sprvt-qdmyt-d-r-y-l-lyn" target="_blank">
-      <div style="font-size: 28px;">📖</div>סקירת ספרות אקדמית
-    </a>
-
-  </div>
-
-  <!-- בוטים של משחקי תפקידים -->
-  <div class="category-card">
-    <h3 class="category-title">🎭 בוטים של משחקי תפקידים</h3>
-    <a class="game-link" href="https://chatgpt.com/g/g-6831913efa1c8191b24341a0c4455ccd-dy-bvt" target="_blank">
-      <div style="font-size: 28px;">🗣️</div>הדיבוט – אימון דיבייטים
-    </a>
-    <a class="game-link" href="https://chatgpt.com/g/g-68358f808f108191b7453aec978c2d2c-svtsyv-lvgvs" target="_blank">
-      <div style="font-size: 28px;">🎙️</div>סוציו-לוגוס – דיבייט כסוציולוג
-    </a>
-        <a class="game-link" href="https://chatgpt.com/g/g-683f030a290081919cd99b844d5454f2-simu-coach" target="_blank">
-      <div style="font-size: 28px;">🧑‍💼</div>Simu-Coach – קבלת החלטות בניהול
-    </a>
-    <a class="game-link" href="https://chatgpt.com/g/g-67ea6551f1488191bcdb892d610fe23b-symvltvr-shl-dylmvt-pdgvgyvt" target="_blank">
-      <div style="font-size: 28px;">📚</div>דילמות פדגוגיות
-    </a>
-  </div>
 </div>
 
+<footer style="margin-top: 40px; color: #888; font-size: 14px;">
+    © היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026
+</footer>
 
 </body>
 </html>
-
-
-
-
