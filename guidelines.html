@@ -387,13 +387,24 @@
     background: var(--white);
   }
 
-  /* ─── RESPONSIVE ─── */
-    @media (max-width: 600px) {
-        .header-inner { 
-         /* בנייד הלוגו קטן יותר, אז מספיק 90px או 100px */
-                                                     padding: 100px 20px 32px; 
-        }
-    }   
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .header-inner { 
+    /* הגדלנו ל-150px כדי לוודא שהכותרת מתחילה משמעותית מתחת ללוגו */
+    padding: 150px 20px 32px; 
+    text-align: center;
+  }
+  
+  .logo-img { 
+    height: 55px; /* הקטנו מעט את הלוגו כדי שלא יתפוס חצי מסך */
+    left: 20px; 
+    top: 20px; 
+  }
+
+  .header-title {
+    font-size: 26px; /* הקטנה קלה של הפונט כדי שלא יתפרס על יותר מדי שורות */
+  }
+} 
 </style>
 </head>
 <body>
