@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קווים מנחים להוראה וללמידה מרחוק</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #E8631A;
+    --orange-light: #F5873A;
+    --orange-pale: #FEF0E7;
+    --orange-dark: #C04E10;
+    --gray-100: #F7F7F7;
+    --gray-200: #EFEFEF;
+    --gray-300: #DEDEDE;
+    --gray-400: #B8B8B8;
+    --gray-600: #6B6B6B;
+    --gray-800: #2E2E2E;
+    --gray-900: #1A1A1A;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'calibri', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 80px
+    );
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 52px 32px 44px;
+    position: relative;
+  }
+  .header-tag {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .header-title {
+    font-family: 'calibri', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .header-title span { color: var(--orange-light); }
+  .header-subtitle {
+    font-size: 15px;
+    color: var(--gray-400);
+    font-weight: 300;
+    max-width: 560px;
+  }
+
+  /* ─── LAYOUT ─── */
+  .main-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 64px;
+  }
+
+  /* ─── INTRO CARD ─── */
+  .intro-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    margin-bottom: 36px;
+    border-right: 5px solid var(--orange);
+    box-shadow: var(--shadow-sm);
+  }
+  .intro-card p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--gray-800);
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  .section-block {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 28px;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+  }
+  .section-header:hover { background: var(--gray-100); }
+  .section-header.open { border-bottom-color: var(--gray-200); }
+  .section-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--orange);
+    color: var(--white);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .section-title-text {
+    font-family: 'calibri', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--gray-900);
+    flex: 1;
+  }
+  .chevron {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--gray-400);
+    transition: transform 0.3s, color 0.2s;
+  }
+  .section-header.open .chevron {
+    transform: rotate(180deg);
+    color: var(--orange);
+  }
+  .section-body {
+    padding: 0 28px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s ease, padding 0.3s;
+  }
+  .section-body.open {
+    max-height: 4000px;
+    padding: 24px 28px 28px;
+  }
+
+  /* ─── TABS (for top-level sections that have sub-tabs) ─── */
+  .tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--gray-200);
+    padding-bottom: 0;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'calibri', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-600);
+    padding: 10px 18px 12px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    border-radius: 6px 6px 0 0;
+  }
+  .tab-btn:hover { color: var(--orange); }
+  .tab-btn.active {
+    color: var(--orange);
+    border-bottom-color: var(--orange);
+    font-weight: 700;
+  }
+  .tab-pane { display: none; animation: fadeIn 0.25s ease; }
+  .tab-pane.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── CONTENT ELEMENTS ─── */
+  .content-intro {
+    font-size: 15px;
+    color: var(--gray-800);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    background: var(--orange-pale);
+    border-radius: 8px;
+    padding: 16px 20px;
+    border-right: 4px solid var(--orange-light);
+  }
+
+  ol.styled-list, ul.styled-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  ol.styled-list { counter-reset: item; }
+  ol.styled-list li {
+    counter-increment: item;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.7;
+    transition: box-shadow 0.2s, background 0.2s;
+  }
+  ol.styled-list li:hover { background: var(--orange-pale); box-shadow: var(--shadow-sm); }
+  ol.styled-list li::before {
+    content: counter(item);
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--orange);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+
+  ul.styled-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 15px;
+    line-height: 1.7;
+    transition: box-shadow 0.2s, background 0.2s;
+  }
+  ul.styled-list li:hover { background: var(--orange-pale); box-shadow: var(--shadow-sm); }
+  ul.styled-list li::before {
+    content: '←';
+    flex-shrink: 0;
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .item-text strong {
+    color: var(--orange-dark);
+    font-weight: 700;
+  }
+  .item-text a {
+    color: var(--orange);
+    text-decoration: underline;
+    word-break: break-word;
+  }
+  .item-text a:hover { color: var(--orange-dark); }
+
+  /* ─── CONTACT CARDS ─── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .contact-card {
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 20px;
+    border-top: 3px solid var(--orange);
+    transition: box-shadow 0.2s;
+  }
+  .contact-card:hover { box-shadow: var(--shadow-md); }
+  .contact-card .contact-role {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+  }
+  .contact-card .contact-desc {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .contact-card a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--orange);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .contact-card a:hover { text-decoration: underline; }
+
+  /* ─── LINKS SECTION ─── */
+  .links-section {
+    margin-top: 16px;
+  }
+  .links-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .link-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--gray-100);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+  }
+  .link-item:hover { background: var(--orange-pale); }
+  .link-item a {
+    font-size: 14px;
+    color: var(--orange);
+    text-decoration: underline;
+  }
+  .link-item::before { content: '🔗'; font-size: 13px; }
+
+  /* ─── QUIZ ─── */
+  .quiz-block {
+    background: var(--gray-900);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-top: 36px;
+    color: var(--white);
+  }
+  .quiz-block h3 {
+    font-family: 'calibri', serif;
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: var(--orange-light);
+  }
+  .quiz-q {
+    margin-bottom: 20px;
+  }
+  .quiz-q p {
+    font-size: 15px;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: 'calibri', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .quiz-opt:hover { background: rgba(232, 99, 26, 0.25); border-color: var(--orange-light); }
+  .quiz-opt.correct { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #bbf7d0; }
+  .quiz-opt.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #fecaca; }
+  .quiz-feedback {
+    margin-top: 10px;
+    font-size: 13px;
+    min-height: 18px;
+    color: var(--orange-light);
+  }
+
+  /* ─── SUMMARY ─── */
+  .summary-section {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    color: var(--white);
+    margin-top: 40px;
+  }
+  .summary-section h2 {
+    font-family: 'calibri', serif;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .summary-section p { font-size: 15px; line-height: 1.8; opacity: 0.92; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 28px;
+    font-size: 13px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--gray-200);
+    background: var(--white);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .header-inner { padding: 36px 20px 32px; }
+    .main-wrap { padding: 24px 16px 48px; }
+    .intro-card { padding: 22px 20px; }
+    .section-header { padding: 18px 18px; }
+    .section-body.open { padding: 18px 18px 22px; }
+    .section-title-text { font-size: 16px; }
+    .quiz-block { padding: 22px 18px; }
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar-wrap {
+    background: var(--gray-200);
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--orange);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <span class="header-tag">אוניברסיטת בן-גוריון בנגב</span>
+    <h1 class="header-title">קווים מנחים להוראה<br><span>וללמידה מרחוק</span> בסמסטר הקרוב</h1>
+    <p class="header-subtitle">מסמך מנחה לסגל ההוראה – סמסטר אביב תשפ"ו</p>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main-wrap">
+
+  <!-- INTRO -->
+  <div class="intro-card">
+    <p>המסמך מציע קווים מנחים להוראה בסמסטר הקרוב, מתוך הבנה שהחזרה ללימודים מתקיימת בתנאים מורכבים ומתמשכים. מטרתו לסייע למרצות ולמרצים לייצר מסגרת לימודית ברורה, רגישה, וגמישה, התומכת בלמידה ובהשתתפות של כלל הסטודנטים והסטודנטיות.</p>
+  </div>
+
+  <!-- TABS NAV (top level) -->
+  <div class="tabs-nav" id="main-tabs">
+    <button class="tab-btn active" data-tab="t1">1.1 שיעור ראשון</button>
+    <button class="tab-btn" data-tab="t2">1.2 התאמת שיעורים</button>
+    <button class="tab-btn" data-tab="t3">1.3 קבלת משוב</button>
+    <button class="tab-btn" data-tab="t4">1.4 משאבי לימוד</button>
+    <button class="tab-btn" data-tab="t5">1.5 יצירת קשר</button>
+  </div>
+
+  <!-- TAB 1.1 -->
+  <div class="tab-pane active" id="t1">
+    <div class="section-block">
+      <div style="padding: 8px 28px 4px; display:flex; align-items:center; gap:10px;">
+        <span class="section-num" style="background:var(--orange)">1.1</span>
+        <span class="section-title-text">הנחיות לשיעור הראשון</span>
+      </div>
+      <div style="padding: 16px 28px 28px;">
+        <div class="content-intro">
+          החזרה לשגרת הוראה ולמידה עשויה להיות מורכבת לנוכח המשך המלחמה. מומלץ לפתוח את השיעור הראשון בהתייחסות קצרה למצב, להבהיר לסטודנטים ולסטודנטיות כי אתם מודעים לקשיים האפשריים, ולציין כי תעשו ככל שביכולתכם לסייע להם בלמידה. בנוסף, כדאי להגדיר כבר במפגש הראשון את הציפיות בנוגע לאופן ההתנהלות בשיעור ובמהלך הקורס, ולהציג בקצרה כיצד יתנהל הקורס.
+        </div>
+        <ol class="styled-list">
+          <li><span class="item-text">הגדירו כיצד אתם מצפים מהסטודנטים להשתתף בשיעור – בדיבור, בצ'אט, באמצעות הרמת יד, ובאיזו מידה אתם מעודדים פתיחת מצלמות.</span></li>
+          <li><span class="item-text">הבהירו האם נדרשת השתתפות פעילה, ומה מצופה מן הסטודנטים במהלך השיעור.</span></li>
+          <li><span class="item-text">הציגו את משאבי הלמידה בקורס שיכולים לסייע בצמצום פערים או בהשלמת חומר במקרה של היעדרות.</span></li>
+          <li><span class="item-text">הבהירו את מדיניות השימוש בבינה מלאכותית בשיעורים ובמשימות.</span></li>
+          <li><span class="item-text">עדכנו מהי דרך התקשורת המומלצת עם צוות הקורס בין השיעורים וכיצד יתקיימו שעות הקבלה.</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1.2 -->
+  <div class="tab-pane" id="t2">
+    <div class="section-block">
+      <div style="padding: 8px 28px 4px; display:flex; align-items:center; gap:10px;">
+        <span class="section-num">1.2</span>
+        <span class="section-title-text">התאמת השיעורים ללמידה מרחוק</span>
+      </div>
+      <div style="padding: 16px 28px 28px;">
+        <div class="content-intro">
+          מתוך הבנה שחלק מהסטודנטים והסטודנטיות יתמודדו עם קשיי ריכוז וויסות עצמי בלמידה מרחוק, אנו ממליצים:
+        </div>
+        <ol class="styled-list">
+          <li><span class="item-text"><strong>לבנות שיעור דינמי</strong> שבו עוברים כל 20–25 דקות בין סוגי פעילויות כך שהתפקיד של הסטודנט משתנה לאורך השיעור, והוא לא ישקע בעמדה פסיבית לאורך זמן.</span></li>
+          <li><span class="item-text"><strong>לשלב יותר מהלכים אינטראקטיביים בשיעור.</strong> לשלב סטודנטים וסטודנטיות בפיתוח של הרעיונות. גם בחלקים של פיתוח מורכב, נסו ליצור הזדמנויות לשלב את הכיתה למשל באמצעות העלאת השערות, מתן הסבר לתופעות וכדומה.</span></li>
+          <li><span class="item-text"><strong>לשלב יותר פעילויות שמצריכות שליפה מהזיכרון</strong> לאורך השיעור. פעולות כאלה נמצאו כמועילות לבניית זיכרון ארוך טווח של הלומדים. ניתן לבצע זאת <a href="https://moodle.bgu.ac.il/moodle/course/view.php?id=4&section=20" target="_blank">בעזרת שאלונים דיגיטליים (Wooclap)</a> או <a href="https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0066150" target="_blank">בעזרת השאלון בזום</a> עם שאלות רב-ברירה, או תוך כדי השיחה בשיעור – לבקש מהסטודנטים להיזכר בנושאים שונים, בהגדרות, ברעיונות שנלמדו בשיעורים קודמים.</span></li>
+          <li><span class="item-text"><strong>לשלב שאלות שמאפשרות ליישם</strong> דברים שנלמדו לאורך השיעור וכך לחזק הבנה.</span></li>
+          <li><span class="item-text"><strong>לסמן במהלך השיעור</strong> את הנקודות המרכזיות ואת החלקים שבהם נדרש ריכוז מלא, לשלב סיכומי ביניים, ולסייע לסטודנטים בעיבוד החומר ובמעבר בין נושאים.</span></li>
+          <li><span class="item-text">ליצור הזדמנויות <strong>לדיאלוג ישיר בין סטודנטים מחוץ למליאה:</strong> לבקש מהסטודנטים ומהסטודנטיות לחשוב בזוגות על נושא מסוים או לנסות לפתור יחד שאלה. הזדמנויות אלה יסייעו גם בתהליך בניית תחושת הסטודנט כחלק מקהילה לומדת. ניתן לחלק אותם לקבוצות ולהשתמש באופציה של <a href="https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0062540" target="_blank">חלוקה לחדרי דיון בזום</a>.</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1.3 -->
+  <div class="tab-pane" id="t3">
+    <div class="section-block">
+      <div style="padding: 8px 28px 4px; display:flex; align-items:center; gap:10px;">
+        <span class="section-num">1.3</span>
+        <span class="section-title-text">קבלת משוב על תהליך ההוראה והלמידה</span>
+      </div>
+      <div style="padding: 16px 28px 28px;">
+        <ol class="styled-list">
+          <li>
+            <span class="item-text">
+              <strong>העברת משוב ב–2–3 שיעורים ראשונים:</strong> אנו ממליצים לבקש מהסטודנטים משוב מהיר וקצר בסוף השיעור (מעין פתק יציאה שממלאים ב–2 הדקות האחרונות של השיעור). אפשר לשאול שאלות פתוחות ו/או סגורות על התחושות שלהם בלמידה בזום ועל פעולות שיכולות לסייע להם בלמידה. בסיום שיעור אפשר לבקש מהסטודנטים לענות בקצרה:
+              <ul style="margin-top:8px; padding-right:16px; list-style: disc; color: var(--gray-700);">
+                <li>מה היה ברור לי היום?</li>
+                <li>מה עדיין לא ברור?</li>
+                <li>מה יכול לסייע לי לקראת השיעור הבא?</li>
+              </ul>
+            </span>
+          </li>
+          <li>
+            <span class="item-text">
+              <strong>משובים במהלך הסמסטר:</strong> אנו ממליצים לתכנן שילוב של משובים בשתי נקודות זמן לאורך הקורס. כך נוכל לקבל תמונה מכל הכיתה (ולא רק בשיח עם הוועד). חשוב להתייחס לנקודות מרכזיות שעולות במשובים באחד השיעורים הסמוכים.
+            </span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1.4 -->
+  <div class="tab-pane" id="t4">
+    <div class="section-block">
+      <div style="padding: 8px 28px 4px; display:flex; align-items:center; gap:10px;">
+        <span class="section-num">1.4</span>
+        <span class="section-title-text">הרחבת מגוון משאבי הלימוד (הקלטות ועוד)</span>
+      </div>
+      <div style="padding: 16px 28px 28px;">
+        <div class="content-intro">
+          בתקופה זו, חשוב במיוחד להציע לסטודנטים ולסטודנטיות יותר מדרך אחת לגשת לחומרי הלמידה. מגוון משאבים מאפשר גמישות רבה יותר בלמידה, מסייע בהשלמת פערים, ותומך בסטודנטים ובסטודנטיות המתקשים להשתתף באופן רציף בכל המפגשים. בנוסף על הקלטת השיעורים אנו ממליצים:
+        </div>
+        <ol class="styled-list">
+          <li><span class="item-text"><strong>להכין סיכום קצר</strong> של עיקרי הרעיונות שנלמדו בשיעור ולהעלות למודל בסיום השיעור.</span></li>
+          <li><span class="item-text"><strong>לסייע בהשלמת פערי ידע</strong> והכנה לשיעור באמצעות סרטונים וחומרי קריאה.</span></li>
+          <li><span class="item-text"><strong>לשתף סרטונים והרצאות:</strong> מומלץ להכין סרטונים המציגים הסברים של נושאי יסוד בקורס וסרטונים של הדגמת פתרון תרגילים. כאשר אין אפשרות להקליט מראש, ניתן להעלות לאתר המודל הקלטות משנים קודמות.</span></li>
+          <li><span class="item-text">מי שמעוניין לצלם סרטונים באולפן הווידאו החדש, מוזמן לפנות ליחידה: <a href="/cdn-cgi/l/email-protection#375550444342535e5877555042195654195e5b"><span class="__cf_email__" data-cfemail="11737662656475787e517376643f70723f787d">[email&#160;protected]</span></a></span></li>
+        </ol>
+
+        <div class="links-section">
+          <h4>הנחיות שימושיות</h4>
+          <div class="link-item"><a href="https://moodle.bgu.ac.il/moodle/pluginfile.php/3362204/mod_resource/content/2/Course%20Media--how%20to%20import%20videos%20from%20one%20course%20to%20another.pdf" target="_blank">כיצד לפרסם באתר המודל הקלטות משנים קודמות?</a></div>
+          <div class="link-item"><a href="https://moodle.bgu.ac.il/moodle/pluginfile.php/3376743/mod_resource/content/3/Course%20Media--collaborate%20video.pdf" target="_blank">כיצד לשתף חבר/ת סגל בסרטון שהקלטתי?</a></div>
+          <div class="link-item"><a href="https://moodle.bgu.ac.il/moodle/pluginfile.php/3362237/mod_resource/content/4/Course%20Media--editing%20tools.pdf" target="_blank">כיצד לערוך סרטונים במודל? (הסבר PDF)</a></div>
+          <div class="link-item"><a href="https://mediaserver.bgu.ac.il/Moodle_Media-Intro/Studio/Media_Studio.html" target="_blank">כיצד לערוך סרטונים במודל? (סרטון הדרכה)</a></div>
+          <div class="link-item"><a href="https://in.bgu.ac.il/academicdev/DocLib/Pages/%D7%94%D7%99%D7%A2%D7%A8%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%95%D7%A8%D7%90%D7%94-%D7%91%D7%96%D7%9E%D7%9F-%D7%97%D7%99%D7%A8%D7%95%D7%9D/%D7%A0%D7%99%D7%94%D7%95%D7%9C%20%D7%90%D7%AA%D7%A8%20%D7%94%D7%9E%D7%95%D7%93%D7%9C.pdf" target="_blank">הנחיות לניהול אתר המודל</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1.5 -->
+  <div class="tab-pane" id="t5">
+    <div class="section-block">
+      <div style="padding: 8px 28px 4px; display:flex; align-items:center; gap:10px;">
+        <span class="section-num">1.5</span>
+        <span class="section-title-text">יצירת קשר</span>
+      </div>
+      <div style="padding: 16px 28px 28px;">
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-role">ייעוץ אישי פדגוגי</div>
+            <div class="contact-desc">להתלבטויות פדגוגיות לגבי מבנה שיעור, הנעה ללמידה, והגברת מעורבות בהוראה בזום.</div>
+            <a href="/cdn-cgi/l/email-protection#fe8a9b9f9d96979099d39d9b908a9b8cbe9c998bd09f9dd09792">✉ <span class="__cf_email__" data-cfemail="02766763616a6b6c652f61676c766770426065772c63612c6b6e">[email&#160;protected]</span></a>
+          </div>
+          <div class="contact-card">
+            <div class="contact-role">מוקד לסיוע טכנולוגי בהוראה</div>
+            <div class="contact-desc">לשאלות טכניות בנוגע לשימוש במודל, זום, הקלטות וכלים דיגיטליים.</div>
+            <a href="/cdn-cgi/l/email-protection#8eebe2ebeffce0ceece9fba0efeda0e7e2">✉ <span class="__cf_email__" data-cfemail="4d2821282c3f230d2f2a38632c2e632421">[email&#160;protected]</span></a>
+          </div>
+          <div class="contact-card">
+            <div class="contact-role">צילום באולפן היחידה</div>
+            <div class="contact-desc">לתיאום צילום סרטונים לקורס.</div>
+            <a href="/cdn-cgi/l/email-protection#157772666160717c7a557772603b74763b7c79">✉ <span class="__cf_email__" data-cfemail="d7b5b0a4a3a2b3beb897b5b0a2f9b6b4f9bebb">[email&#160;protected]</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SUMMARY -->
+  <div class="summary-section">
+    <h2>סיכום</h2>
+    <p>
+      המסמך מציע כלים מעשיים לסגל ההוראה לקראת סמסטר הנלמד בתנאים מורכבים. עיקרי ההמלצות: פתיחה אמפתית של הקורס, בניית שיעורים דינמיים ואינטראקטיביים, קבלת משוב שוטף מהסטודנטים, ומגוון משאבי לימוד נגישים. כל אחת מחמש הסעיפים מציעה הנחיות קונקרטיות הניתנות ליישום מיידי. ניתן לפנות לגורמי הסיוע המפורטים בסעיף 1.5 לקבלת ייעוץ פדגוגי וסיוע טכנולוגי.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  קווים מנחים להוראה וללמידה מרחוק | אוניברסיטת בן-גוריון בנגב | תשפ"ו
+</footer>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
