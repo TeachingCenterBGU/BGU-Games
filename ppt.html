@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סדנת AI - גלריית מצגות אינטראקטיבית</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00cec9;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 { color: var(--primary-color); font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; color: #636e72; }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .ai-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e1e4e8;
+        }
+
+        .card-header {
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        .tool-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .prompt-box {
+            background: #f8f9fa;
+            border-right: 5px solid var(--secondary-color);
+            padding: 15px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .prompt-label {
+            font-weight: bold;
+            color: #636e72;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .slide-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background: #000;
+        }
+
+        .slide-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* עיצוב הכפתור */
+        .btn-try {
+            display: block;
+            text-align: center;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .btn-try:hover {
+            background: #5649c1;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>הכנת מצגות בעידן ה-AI</h1>
+        <p>סקירת תוצרים חיים והפרומפטים שמאחוריהם</p>
+    </header>
+
+    <div class="gallery">
+
+        <div class="ai-card">
+            <div class="card-header">
+                <span class="tool-name">Gamma App</span>
+                <div class="prompt-box">
+                    <span class="prompt-label">הפרומפט ששימש ליצירה:</span>
+                    "Create a presentation about the history of space exploration, focused on the Apollo missions, professional and dark theme."
+                </div>
+            </div>
+            <div class="slide-wrapper">
+                <iframe src="YOUR_GAMMA_EMBED_URL"></iframe>
+            </div>
+            <a href="https://gamma.app" target="_blank" class="btn-try">לניסיון הכלי בחינם ←</a>
+        </div>
+
+        <div class="ai-card">
+            <div class="card-header">
+                <span class="tool-name">Canva Magic Design</span>
+                <div class="prompt-box">
+                    <span class="prompt-label">הפרומפט ששימש ליצירה:</span>
+                    "מצגת לשיעור היסטוריה על המהפכה התעשייתית, כולל תמונות ריאליסטיות וציר זמן."
+                </div>
+            </div>
+            <div class="slide-wrapper">
+                <iframe src="YOUR_CANVA_EMBED_URL"></iframe>
+            </div>
+            <a href="https://www.canva.com" target="_blank" class="btn-try">לניסיון הכלי בחינם ←</a>
+        </div>
+
+    </div>
+
+</body>
+</html>
