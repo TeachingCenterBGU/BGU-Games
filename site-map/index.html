@@ -6,8 +6,7 @@
 <title>מורה נבוכים — מערכות מחשוב בהוראה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet"><style>
 :root{
   --ink:#16181d;
   --ink-2:#4a5058;
@@ -28,16 +27,16 @@ body{
   font-family:'Assistant',system-ui,sans-serif;font-size:17px;line-height:1.65;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,h4{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:700;line-height:1.2;margin:0}
+h1,h2,h3,h4{font-family:'Assistant',system-ui,sans-serif;font-weight:700;line-height:1.2;margin:0}
 a{color:var(--navy)}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.mono{font-family:'Assistant',system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ---------- masthead ---------- */
 .masthead{border-bottom:1px solid var(--line);background:var(--paper)}
 .masthead .wrap{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
-.brand{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:22px;letter-spacing:-.01em;cursor:pointer}
+.brand{font-family:'Assistant',system-ui,sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em;cursor:pointer}
 .brand span{color:var(--orange)}
 .masthead .unit{font-size:13px;color:var(--ink-3);margin-inline-start:auto}
 .searchbox{position:relative;flex:1 1 240px;max-width:320px}
@@ -61,7 +60,7 @@ a{color:var(--navy)}
   background:var(--navy);border:2px solid #5a86ae;transition:background .18s,border-color .18s;
 }
 .phase:hover::before,.phase:focus-visible::before{background:#fff;border-color:#fff}
-.phase-name{font-family:'Frank Ruhl Libre',serif;font-size:18px;font-weight:700;display:block}
+.phase-name{font-family:'Assistant',system-ui,sans-serif;font-size:18px;font-weight:700;display:block}
 .phase-meta{font-size:12.5px;color:#9fb6cc;display:block;margin-top:2px}
 .phase-bar{height:3px;background:#28527d;margin-top:9px;max-width:88%}
 .phase-bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s ease}
@@ -70,7 +69,7 @@ a{color:var(--navy)}
 /* hard-deadline pins */
 .pins{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid #24486e}
 .pin{display:flex;align-items:center;gap:11px;background:#12293f;border:1px solid #24486e;border-radius:var(--radius);padding:9px 14px}
-.pin b{font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--orange);font-weight:600;line-height:1}
+.pin b{font-family:'Assistant',system-ui,sans-serif;font-size:22px;color:var(--orange);font-weight:600;line-height:1}
 .pin span{font-size:13px;color:#c3d4e4;line-height:1.35}
 .pins-note{font-size:12.5px;color:#8aa6c1;margin:12px 0 0}
 
@@ -83,7 +82,7 @@ a{color:var(--navy)}
 }
 .track:hover{border-color:var(--navy);transform:translateY(-2px)}
 .track:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
-.track-label{font-family:'Frank Ruhl Libre',serif;font-size:19px;font-weight:700;display:block;color:var(--ink)}
+.track-label{font-family:'Assistant',system-ui,sans-serif;font-size:19px;font-weight:700;display:block;color:var(--ink)}
 .track-sub{font-size:13.5px;color:var(--ink-3);display:block;margin-top:5px}
 .track.urgent{background:var(--orange-soft);border-color:#f2c99e}
 .track.urgent:hover{border-color:var(--orange)}
@@ -111,7 +110,7 @@ main{padding:0 0 90px}
 .topic-body{display:none;padding:0 20px 22px;border-top:1px solid var(--line);margin-top:-1px}
 .topic.open .topic-body{display:block}
 .field{margin-top:18px}
-.field-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+.field-label{font-family:'Assistant',system-ui,sans-serif;font-size:11px;letter-spacing:.08em;
   color:var(--orange);text-transform:uppercase;display:block;margin-bottom:5px}
 .field p{margin:0;color:var(--ink-2)}
 .field ol{margin:0;padding-inline-start:20px;color:var(--ink-2)}
@@ -131,7 +130,7 @@ main{padding:0 0 90px}
 
 /* ---------- checklists ---------- */
 .ck-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-.ck-count{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink-2)}
+.ck-count{font-family:'Assistant',system-ui,sans-serif;font-size:14px;color:var(--ink-2)}
 .ck-track{flex:1;min-width:120px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden}
 .ck-track i{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
 .ck-tools{display:flex;gap:8px}
@@ -144,7 +143,7 @@ main{padding:0 0 90px}
 .item-main{flex:1;min-width:0}
 .item-text{cursor:pointer;display:block}
 .item.done .item-text{color:var(--ink-3);text-decoration:line-through}
-.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+.tag{display:inline-block;font-family:'Assistant',system-ui,sans-serif;font-size:10.5px;letter-spacing:.06em;
   padding:2px 7px;border-radius:2px;vertical-align:2px;margin-inline-start:8px}
 .tag.hard{background:var(--orange);color:#fff}
 .tag.cond{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
@@ -161,7 +160,7 @@ main{padding:0 0 90px}
 
 /* ---------- search results ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
-.hit button{background:none;border:0;font-family:'Frank Ruhl Libre',serif;font-size:17px;font-weight:700;
+.hit button{background:none;border:0;font-family:'Assistant',system-ui,sans-serif;font-size:17px;font-weight:700;
   color:var(--ink);cursor:pointer;padding:0;text-align:right}
 .hit button:hover{color:var(--navy)}
 .hit .where{font-size:13px;color:var(--ink-3);margin-top:2px}
