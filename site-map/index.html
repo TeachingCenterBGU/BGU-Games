@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מורה נבוכים — מערכות מחשוב בהוראה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Assistant:wght@300;400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16181d;
+  --ink-2:#4a5058;
+  --ink-3:#7b838d;
+  --paper:#ffffff;
+  --surface:#f1f4f6;
+  --line:#dde3e8;
+  --navy:#16324f;
+  --orange:#e8730c;
+  --orange-soft:#fdf0e4;
+  --radius:3px;
+  --wrap:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Assistant',system-ui,sans-serif;font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:700;line-height:1.2;margin:0}
+a{color:var(--navy)}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--line);background:var(--paper)}
+.masthead .wrap{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+.brand{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:22px;letter-spacing:-.01em;cursor:pointer}
+.brand span{color:var(--orange)}
+.masthead .unit{font-size:13px;color:var(--ink-3);margin-inline-start:auto}
+.searchbox{position:relative;flex:1 1 240px;max-width:320px}
+.searchbox input{
+  width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:var(--radius);
+  font-family:inherit;font-size:15px;background:var(--surface);color:var(--ink);
+}
+.searchbox input:focus{outline:2px solid var(--navy);outline-offset:1px;background:var(--paper)}
+
+/* ---------- rail (signature) ---------- */
+.rail-shell{background:var(--navy);color:#fff;padding:34px 0 30px}
+.rail-lede{font-size:14px;color:#a8bdd2;margin:0 0 22px;letter-spacing:.02em}
+.rail{position:relative;display:flex;gap:0;align-items:stretch}
+.rail::before{
+  content:"";position:absolute;top:11px;right:0;left:0;height:2px;
+  background:linear-gradient(to left,#2e5f8e,#2e5f8e);
+}
+.phase{flex:1;position:relative;padding-top:30px;text-align:right;padding-inline-end:18px;cursor:pointer;background:none;border:0;color:inherit;font-family:inherit}
+.phase::before{
+  content:"";position:absolute;top:5px;right:0;width:14px;height:14px;border-radius:50%;
+  background:var(--navy);border:2px solid #5a86ae;transition:background .18s,border-color .18s;
+}
+.phase:hover::before,.phase:focus-visible::before{background:#fff;border-color:#fff}
+.phase-name{font-family:'Frank Ruhl Libre',serif;font-size:18px;font-weight:700;display:block}
+.phase-meta{font-size:12.5px;color:#9fb6cc;display:block;margin-top:2px}
+.phase-bar{height:3px;background:#28527d;margin-top:9px;max-width:88%}
+.phase-bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s ease}
+.phase:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* hard-deadline pins */
+.pins{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid #24486e}
+.pin{display:flex;align-items:center;gap:11px;background:#12293f;border:1px solid #24486e;border-radius:var(--radius);padding:9px 14px}
+.pin b{font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--orange);font-weight:600;line-height:1}
+.pin span{font-size:13px;color:#c3d4e4;line-height:1.35}
+.pins-note{font-size:12.5px;color:#8aa6c1;margin:12px 0 0}
+
+/* ---------- tracks ---------- */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin:38px 0 8px}
+.track{
+  display:block;text-align:right;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--radius);padding:20px 20px 18px;cursor:pointer;font-family:inherit;
+  transition:border-color .15s,transform .15s;position:relative;
+}
+.track:hover{border-color:var(--navy);transform:translateY(-2px)}
+.track:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.track-label{font-family:'Frank Ruhl Libre',serif;font-size:19px;font-weight:700;display:block;color:var(--ink)}
+.track-sub{font-size:13.5px;color:var(--ink-3);display:block;margin-top:5px}
+.track.urgent{background:var(--orange-soft);border-color:#f2c99e}
+.track.urgent:hover{border-color:var(--orange)}
+
+/* ---------- generic view ---------- */
+main{padding:0 0 90px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.crumb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font-family:inherit;
+  font-size:14px;color:var(--ink-3);cursor:pointer;padding:0;margin:30px 0 14px}
+.crumb:hover{color:var(--navy)}
+.view-head{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px}
+.view-head h2{font-size:32px}
+.view-head p{margin:8px 0 0;color:var(--ink-2);font-size:16px;max-width:62ch}
+
+/* ---------- topic cards ---------- */
+.topic{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;background:var(--paper)}
+.topic-head{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;
+  font-family:inherit;text-align:right;padding:17px 20px;cursor:pointer}
+.topic-head h3{font-size:19px;flex:1}
+.topic-head:focus-visible{outline:2px solid var(--navy);outline-offset:-2px}
+.chev{color:var(--ink-3);font-size:13px;transition:transform .2s}
+.topic.open .chev{transform:rotate(180deg)}
+.topic-body{display:none;padding:0 20px 22px;border-top:1px solid var(--line);margin-top:-1px}
+.topic.open .topic-body{display:block}
+.field{margin-top:18px}
+.field-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  color:var(--orange);text-transform:uppercase;display:block;margin-bottom:5px}
+.field p{margin:0;color:var(--ink-2)}
+.field ol{margin:0;padding-inline-start:20px;color:var(--ink-2)}
+.field ol li{margin-bottom:5px}
+.when{font-weight:600;color:var(--ink)}
+.callout{background:var(--surface);border-inline-start:3px solid var(--navy);
+  padding:11px 15px;margin-top:18px;font-size:15.5px;color:var(--ink-2);border-radius:0 var(--radius) var(--radius) 0}
+.callout.warn{background:var(--orange-soft);border-inline-start-color:var(--orange)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:20px}
+.btn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+  padding:10px 18px;border-radius:var(--radius);font-weight:600;font-size:15px}
+.btn:hover{background:#0f2439}
+.btn.ghost{background:none;color:var(--navy);border:1px solid var(--line);font-weight:400}
+.btn.ghost:hover{border-color:var(--navy);background:var(--surface)}
+.support{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:14.5px;color:var(--ink-2)}
+.support b{color:var(--ink)}
+
+/* ---------- checklists ---------- */
+.ck-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.ck-count{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink-2)}
+.ck-track{flex:1;min-width:120px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden}
+.ck-track i{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
+.ck-tools{display:flex;gap:8px}
+.ck-tools button{background:none;border:1px solid var(--line);border-radius:var(--radius);
+  font-family:inherit;font-size:13.5px;color:var(--ink-2);padding:6px 12px;cursor:pointer}
+.ck-tools button:hover{border-color:var(--navy);color:var(--navy)}
+.item{display:flex;gap:13px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:flex-start}
+.item:last-child{border-bottom:0}
+.item input[type=checkbox]{width:19px;height:19px;margin-top:3px;flex:none;accent-color:var(--navy);cursor:pointer}
+.item-main{flex:1;min-width:0}
+.item-text{cursor:pointer;display:block}
+.item.done .item-text{color:var(--ink-3);text-decoration:line-through}
+.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+  padding:2px 7px;border-radius:2px;vertical-align:2px;margin-inline-start:8px}
+.tag.hard{background:var(--orange);color:#fff}
+.tag.cond{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
+.item-link{background:none;border:0;font-family:inherit;font-size:13.5px;color:var(--navy);
+  cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
+
+/* ---------- help ---------- */
+.help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.help-card{border:1px solid var(--line);border-radius:var(--radius);padding:19px}
+.help-card h3{font-size:17px;margin-bottom:6px}
+.help-card .scope{font-size:14.5px;color:var(--ink-2);margin:0 0 12px}
+.help-card .contact{font-size:15px;margin:3px 0}
+.help-card .hours{font-size:13px;color:var(--ink-3);margin-top:9px}
+
+/* ---------- search results ---------- */
+.hit{border-bottom:1px solid var(--line);padding:13px 2px}
+.hit button{background:none;border:0;font-family:'Frank Ruhl Libre',serif;font-size:17px;font-weight:700;
+  color:var(--ink);cursor:pointer;padding:0;text-align:right}
+.hit button:hover{color:var(--navy)}
+.hit .where{font-size:13px;color:var(--ink-3);margin-top:2px}
+.empty{color:var(--ink-3);padding:26px 0}
+
+footer{border-top:1px solid var(--line);padding:22px 0;font-size:13px;color:var(--ink-3)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media(max-width:720px){
+  .rail{flex-direction:column;gap:16px}
+  .rail::before{top:0;bottom:0;right:6px;left:auto;width:2px;height:auto}
+  .phase{padding-top:0;padding-inline-end:0;padding-inline-start:0;padding-right:30px}
+  .phase::before{top:4px;right:0}
+  .phase-bar{max-width:100%}
+  .view-head h2{font-size:26px}
+}
+@media print{
+  .masthead,.rail-shell,.tracks,.crumb,.ck-tools,footer,.topic-head .chev{display:none!important}
+  .view{display:none!important}
+  .view.on{display:block!important}
+  body{font-size:12pt}
+  .item{break-inside:avoid}
+  .topic-body{display:block!important}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555;word-break:break-all}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand" onclick="go('#/')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')go('#/')">
+      מורה <span>נבוכים</span>
+    </div>
+    <div class="searchbox">
+      <label class="sr" for="q">חיפוש בנושאים ובמערכות</label>
+      <input id="q" type="search" placeholder="חיפוש: כספת, ערעור, סילבוס…" autocomplete="off">
+    </div>
+    <div class="unit" id="unit"></div>
+  </div>
+</header>
+
+<!-- SIGNATURE: ציר הסמסטר -->
+<section class="rail-shell" id="railShell">
+  <div class="wrap">
+    <p class="rail-lede">ציר הסמסטר — ההתקדמות שלך נשמרת במכשיר הזה בלבד</p>
+    <nav class="rail" id="rail" aria-label="שלבי הסמסטר"></nav>
+    <div class="pins" id="pins"></div>
+    <p class="pins-note">שני אלה הם הדדליינים הקשיחים היחידים. כל השאר — המלצות שאפשר להזיז.</p>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <section id="view-home" class="view on">
+    <div class="tracks" id="tracks"></div>
+  </section>
+
+  <section id="view-section" class="view">
+    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <div class="view-head"><h2 id="sec-title"></h2><p id="sec-intro"></p></div>
+    <div id="sec-body"></div>
+  </section>
+
+  <section id="view-checklist" class="view">
+    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <div class="view-head"><h2 id="ck-title"></h2><p id="ck-intro"></p></div>
+    <div class="ck-bar">
+      <span class="ck-count" id="ck-count"></span>
+      <span class="ck-track"><i id="ck-fill"></i></span>
+      <span class="ck-tools">
+        <button onclick="window.print()">הדפסה / שמירה כ-PDF</button>
+        <button id="ck-reset">איפוס לסמסטר חדש</button>
+      </span>
+    </div>
+    <div id="ck-body"></div>
+  </section>
+
+  <section id="view-help" class="view">
+    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <div class="view-head">
+      <h2>למי פונים</h2>
+      <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
+    </div>
+    <div class="help-grid" id="help-body"></div>
+  </section>
+
+  <section id="view-search" class="view">
+    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <div class="view-head"><h2>תוצאות חיפוש</h2><p id="q-echo"></p></div>
+    <div id="search-body"></div>
+  </section>
+
+  <section id="view-error" class="view">
+    <div class="view-head"><h2>הקובץ לא נטען</h2></div>
+    <p>הדפדפן לא הצליח לקרוא את <code>content.json</code>. אם פתחת את הקובץ בלחיצה כפולה, הדפדפן חוסם קריאת קבצים מקומיים.</p>
+    <p>הרצה מקומית: <code class="mono">python3 -m http.server</code> בתיקייה, ואז פתיחה בכתובת <code class="mono">localhost:8000</code>. באתר עצמו זה יעבוד רגיל.</p>
+  </section>
+
+</main>
+
+<footer><div class="wrap">
+  <span id="foot-owner"></span>
+  <span id="foot-date"></span>
+</div></footer>
+
+<script>
+'use strict';
+const KEY='mn-checklist-v1';
+let D=null, state=load();
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const link=id=>D.links.find(l=>l.id===id);
+const topic=id=>D.topics.find(t=>t.id===id);
+const supp=id=>D.support.find(s=>s.id===id);
+
+/* ---- analytics hook ----------------------------------------------------
+   כל קליק יוצא מדווח לפי מזהה הקישור (link_id) ולא לפי הכתובת.
+   כשהאוניברסיטה תחליף URL — הרצף ההיסטורי בדוחות נשמר.
+   להפעלה: הוסיפי סקריפט של GoatCounter / Plausible / Umami ובטלי את ההערה. */
+function trackLinkClick(linkId, title){
+  // if (window.goatcounter) goatcounter.count({path:'link/'+linkId, title:title, event:true});
+  // if (window.plausible)   plausible('link', {props:{id:linkId}});
+  if (window.__mnDebug) console.log('[link]', linkId, title);
+}
+document.addEventListener('click', e=>{
+  const a = e.target.closest('a[data-link-id]');
+  if (a) trackLinkClick(a.dataset.linkId, a.dataset.linkTitle||'');
+});
+
+/* ---- routing ---- */
+function go(hash){ if(location.hash===hash) route(); else location.hash=hash; }
+function show(id){ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id===id)); }
+
+function route(){
+  if(!D) return;
+  const h=(location.hash||'#/').replace(/^#\//,'');
+  const [kind,id]=h.split('/');
+  document.getElementById('railShell').style.display = (kind==='')?'':'none';
+  if(kind==='') { show('view-home'); }
+  else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
+  else if(kind==='section'){ renderSection(id); show('view-section'); }
+  else if(kind==='checklist'){ renderChecklist(id); show('view-checklist'); }
+  else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
+  else { show('view-home'); }
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', route);
+
+/* ---- home ---- */
+function phaseStats(ckId){
+  const c=D.checklists.find(x=>x.id===ckId); if(!c) return null;
+  const done=c.items.filter(i=>state[ckId+'/'+i.id]).length;
+  return {done, total:c.items.length};
+}
+function renderRail(){
+  const order=[
+    {ck:'before-semester', name:'לפני הסמסטר'},
+    {ck:'first-week',      name:'השבוע הראשון'},
+    {ck:'during-semester', name:'במהלך הסמסטר'},
+    {ck:'end-semester',    name:'סיום הסמסטר'}
+  ];
+  document.getElementById('rail').innerHTML = order.map(p=>{
+    const s=phaseStats(p.ck)||{done:0,total:0};
+    const pct = s.total? Math.round(s.done/s.total*100):0;
+    return `<button class="phase" onclick="go('#/checklist/${p.ck}')">
+      <span class="phase-name">${esc(p.name)}</span>
+      <span class="phase-meta mono">${s.done}/${s.total} הושלמו</span>
+      <span class="phase-bar"><i style="width:${pct}%"></i></span>
+    </button>`;
+  }).join('');
+
+  const hard=[];
+  D.topics.forEach(t=>{
+    if(t.deadline && t.deadline.type==='relative'){
+      hard.push({n:Math.abs(t.deadline.offset_hours), unit:'שעות', label:t.deadline.label, id:t.id, title:t.title});
+    }
+  });
+  document.getElementById('pins').innerHTML = hard.map(p=>
+    `<a class="pin" href="#/checklist/${p.id==='exam-deposit'?'end-semester':'end-semester'}" style="text-decoration:none">
+       <b>${p.n}</b><span>${esc(p.title)}<br>${esc(p.label)}</span></a>`).join('');
+}
+function renderHome(){
+  document.getElementById('tracks').innerHTML = D.tracks.map(t=>{
+    const [kind,id]=t.target.split(':');
+    let sub='';
+    if(kind==='checklist'){ const s=phaseStats(id); sub = s? `${s.done} מתוך ${s.total} הושלמו`:''; }
+    if(kind==='section' && id==='start-here'){ sub = D.topics.filter(x=>x.section==='start-here').length+' נושאים'; }
+    if(id==='help'){ sub='מדור בחינות, מודל, פדגוגיה'; }
+    return `<button class="track ${t.id==='urgent'?'urgent':''}" onclick="go('#/${kind}/${id}')">
+      <span class="track-label">${esc(t.label)}</span>
+      <span class="track-sub">${esc(sub)}</span></button>`;
+  }).join('');
+  renderRail();
+}
+
+/* ---- topic card ---- */
+function topicHTML(t){
+  const pl=link(t.primary_link), sp=supp(t.support_id);
+  const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
+  return `<article class="topic" id="t-${t.id}">
+    <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
+      <h3>${esc(t.title)}</h3><span class="chev">▾</span>
+    </button>
+    <div class="topic-body">
+      <div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>
+      <div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>
+      <div class="field"><span class="field-label">איך</span><ol>${t.how.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
+      ${t.highlight?`<div class="callout">${esc(t.highlight)}</div>`:''}
+      ${t.warning?`<div class="callout warn"><b>שימו לב:</b> ${esc(t.warning)}</div>`:''}
+      <div class="actions">
+        ${pl?`<a class="btn" href="${esc(pl.url)}" target="_blank" rel="noopener"
+              data-link-id="${esc(pl.id)}" data-link-title="${esc(pl.title)}">${esc(pl.title)} ↗</a>`:''}
+        ${secs.map(l=>`<a class="btn ghost" href="${esc(l.url)}" target="_blank" rel="noopener"
+              data-link-id="${esc(l.id)}" data-link-title="${esc(l.title)}">${esc(l.title)} ↗</a>`).join('')}
+      </div>
+      ${sp?`<p class="support">נתקעת? <b>${esc(sp.name)}</b>
+        ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
+        ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
+        ${sp.hours?`<br><span style="color:var(--ink-3);font-size:13px">${esc(sp.hours)}</span>`:''}</p>`:''}
+    </div></article>`;
+}
+
+/* ---- section view ---- */
+const SECTION_META={
+  'start-here':{title:'מתחילים כאן',intro:'ארבעת הדברים שצריך לסדר לפני שנוגעים בתוכן הקורס: הרשאות, גישה למערכות, מודל, והשנתון שמגדיר מה מותר להניח שהסטודנטים כבר יודעים.'}
+};
+function renderSection(id){
+  const meta=SECTION_META[id]||{title:id,intro:''};
+  document.getElementById('sec-title').textContent=meta.title;
+  document.getElementById('sec-intro').textContent=meta.intro;
+  const ts=D.topics.filter(t=>t.section===id);
+  document.getElementById('sec-body').innerHTML = ts.length? ts.map(topicHTML).join('')
+    : '<p class="empty">אין עדיין נושאים בפרק הזה.</p>';
+}
+
+/* ---- checklist view ---- */
+function renderChecklist(id){
+  const c=D.checklists.find(x=>x.id===id);
+  if(!c){ go('#/'); return; }
+  document.getElementById('ck-title').textContent=c.title;
+  document.getElementById('ck-intro').textContent=c.intro||'';
+  document.getElementById('ck-body').innerHTML = c.items.map(i=>{
+    const k=c.id+'/'+i.id, done=!!state[k], t=i.topic_id?topic(i.topic_id):null;
+    return `<div class="item ${done?'done':''}" data-k="${esc(k)}">
+      <input type="checkbox" id="cb-${esc(k)}" ${done?'checked':''} aria-label="${esc(i.text)}">
+      <div class="item-main">
+        <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
+          ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
+          ${i.conditional?`<span class="tag cond">${esc(i.conditional)}</span>`:''}
+        </label>
+        ${t?`<button class="item-link" onclick="openTopic('${esc(t.id)}','${esc(t.section)}')">איך עושים את זה →</button>`:''}
+      </div></div>`;
+  }).join('');
+  document.getElementById('ck-body').querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const row=cb.closest('.item'), k=row.dataset.k;
+      if(cb.checked) state[k]=1; else delete state[k];
+      row.classList.toggle('done',cb.checked); save(); tally(c);
+    });
+  });
+  document.getElementById('ck-reset').onclick=()=>{
+    if(!confirm('לאפס את כל הסימונים בצ׳קליסט "'+c.title+'"?')) return;
+    c.items.forEach(i=>delete state[c.id+'/'+i.id]); save(); renderChecklist(c.id);
+  };
+  tally(c);
+}
+function tally(c){
+  const done=c.items.filter(i=>state[c.id+'/'+i.id]).length, tot=c.items.length;
+  document.getElementById('ck-count').textContent=`${done} / ${tot}`;
+  document.getElementById('ck-fill').style.width=(tot?done/tot*100:0)+'%';
+}
+
+/* jump from a checklist item to the full topic, opened */
+function openTopic(tid, section){
+  if(section==='before-semester'||section==='end-semester'){
+    // topics that live in a phase are shown in a section view of that phase
+    SECTION_META[section]={title:D.checklists.find(c=>c.id===section)?.title||section,
+      intro:'הנושאים המלאים ששייכים לשלב הזה.'};
+  }
+  go('#/section/'+section);
+  setTimeout(()=>{
+    const el=document.getElementById('t-'+tid);
+    if(el){ el.classList.add('open'); el.scrollIntoView({block:'center'}); }
+  },60);
+}
+
+/* ---- help ---- */
+function renderHelp(){
+  document.getElementById('help-body').innerHTML = D.support.map(s=>`
+    <div class="help-card">
+      <h3>${esc(s.name)}</h3>
+      <p class="scope">${esc(s.scope)}</p>
+      ${s.email?`<p class="contact"><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></p>`:''}
+      ${s.phone?`<p class="contact mono">${esc(s.phone)}</p>`:''}
+      ${!s.email&&!s.phone?`<p class="contact" style="color:var(--ink-3)">דרך מזכירות המחלקה</p>`:''}
+      ${s.hours?`<p class="hours">${esc(s.hours)}</p>`:''}
+    </div>`).join('');
+}
+
+/* ---- search ---- */
+function renderSearch(q){
+  document.getElementById('q-echo').textContent='"'+q+'"';
+  const n=q.trim().toLowerCase();
+  const box=document.getElementById('search-body');
+  if(n.length<2){ box.innerHTML='<p class="empty">כתבי לפחות שתי אותיות.</p>'; return; }
+  const hits=[];
+  D.topics.forEach(t=>{
+    const hay=[t.title,t.what,t.when,(t.how||[]).join(' '),t.highlight,t.warning].join(' ').toLowerCase();
+    if(hay.includes(n)) hits.push({title:t.title, where:'נושא', act:`openTopic('${t.id}','${t.section}')`});
+  });
+  D.checklists.forEach(c=>c.items.forEach(i=>{
+    if(i.text.toLowerCase().includes(n)) hits.push({title:i.text, where:c.title, act:`go('#/checklist/${c.id}')`});
+  }));
+  D.links.forEach(l=>{
+    if(l.title.toLowerCase().includes(n)) hits.push({title:l.title, where:'מערכת', act:`window.open('${l.url}','_blank')`});
+  });
+  box.innerHTML = hits.length
+    ? hits.map(h=>`<div class="hit"><button onclick="${h.act}">${esc(h.title)}</button><div class="where">${esc(h.where)}</div></div>`).join('')
+    : '<p class="empty">אין תוצאות. נסי מילה אחרת — למשל "כספת", "ערעור", "סילבוס".</p>';
+}
+const qi=document.getElementById('q');
+let qt;
+qi.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{
+  const v=qi.value.trim();
+  if(v.length>=2) go('#/search/'+encodeURIComponent(v)); else if(location.hash.startsWith('#/search')) go('#/');
+},260);});
+
+/* ---- boot ---- */
+fetch('content.json',{cache:'no-cache'})
+  .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d=>{
+    D=d;
+    document.getElementById('unit').textContent=d.meta.owner;
+    document.getElementById('foot-owner').textContent=d.meta.owner;
+    document.getElementById('foot-date').textContent='עודכן: '+d.meta.last_reviewed;
+    renderHome(); route();
+  })
+  .catch(()=>{ document.getElementById('railShell').style.display='none'; show('view-error'); });
+</script>
+</body>
+</html>

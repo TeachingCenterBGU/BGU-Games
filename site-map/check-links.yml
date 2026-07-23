@@ -1,0 +1,73 @@
+name: בדיקת קישורים שבועית
+
+on:
+  schedule:
+    - cron: '0 5 * * 0'      # כל יום ראשון, 05:00 UTC
+  workflow_dispatch:          # אפשר גם להריץ ידנית מהממשק
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: בדיקת כל הקישורים בקובץ התוכן
+        id: check
+        run: |
+          python3 - << 'PY' | tee report.txt
+          import json, urllib.request, ssl
+
+          ctx = ssl.create_default_context()
+          ctx.check_hostname = False
+          ctx.verify_mode = ssl.CERT_NONE
+
+          data = json.load(open('content.json', encoding='utf-8'))
+          bad = []
+
+          for l in data['links']:
+              url = l['url']
+              if url.startswith('mailto:'):
+                  continue
+              req = urllib.request.Request(url, method='GET', headers={
+                  'User-Agent': 'Mozilla/5.0 (link-checker; moreh-nevuchim)'
+              })
+              try:
+                  with urllib.request.urlopen(req, timeout=25, context=ctx) as r:
+                      code = r.status
+              except Exception as e:
+                  code = getattr(e, 'code', 0) or str(e)[:60]
+
+              ok = code == 200
+              flag = 'OK ' if ok else 'FAIL'
+              print(f"{flag} {code:>4}  [{l.get('fragility','?'):6}] {l['id']:20} {url}")
+              if not ok:
+                  bad.append((l['id'], code, url))
+
+          print()
+          if bad:
+              print(f"### {len(bad)} קישורים דורשים טיפול:")
+              for i, c, u in bad:
+                  print(f"  - {i} ({c}) — {u}")
+          else:
+              print("### כל הקישורים תקינים.")
+
+          open('bad_count.txt', 'w').write(str(len(bad)))
+          PY
+          echo "bad=$(cat bad_count.txt)" >> $GITHUB_OUTPUT
+
+      # מערכות מאחורי הזדהות יחזירו 302/403 גם כשהן תקינות —
+      # לכן זו התראה לבדיקה ידנית, לא כישלון בילד.
+      - name: פתיחת Issue אם משהו נשבר
+        if: steps.check.outputs.bad != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('report.txt', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `קישורים שבורים — ${new Date().toISOString().slice(0,10)}`,
+              body: '```\n' + body.slice(0, 60000) + '\n```',
+              labels: ['links']
+            });
