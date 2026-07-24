@@ -1,9 +1,15 @@
-name: בדיקת קישורים שבועית
+name: בדיקת קישורים
 
 on:
   schedule:
     - cron: '0 5 * * 0'      # כל יום ראשון, 05:00 UTC
   workflow_dispatch:          # אפשר גם להריץ ידנית מהממשק
+
+# למה שתי קטגוריות:
+# מערכת שדורשת הזדהות לעולם לא תחזיר 200 לבודק אוטומטי — היא תזרוק אותו לדף התחברות.
+# בדיקה נאיבית תדווח עליה כשבורה בכל שבוע, וההתראות יהפכו לרעש שמפסיקים להסתכל עליו.
+# לכן: קישור ציבורי נבדק ל-200 מלא; מערכת מאחורי הזדהות נבדקת רק לכך שהשרת חי ועונה.
+# קישור מסומן auth:true ב-content.json.
 
 jobs:
   check:
@@ -11,52 +17,84 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: בדיקת כל הקישורים בקובץ התוכן
+      - name: בדיקת הקישורים בקובץ התוכן
         id: check
         run: |
           python3 - << 'PY' | tee report.txt
-          import json, urllib.request, ssl
+          import json, ssl, urllib.request, urllib.error
 
           ctx = ssl.create_default_context()
           ctx.check_hostname = False
           ctx.verify_mode = ssl.CERT_NONE
 
-          data = json.load(open('content.json', encoding='utf-8'))
-          bad = []
+          UA = {'User-Agent': 'Mozilla/5.0 (link-checker; moreh-nevuchim)'}
 
-          for l in data['links']:
-              url = l['url']
-              if url.startswith('mailto:'):
-                  continue
-              req = urllib.request.Request(url, method='GET', headers={
-                  'User-Agent': 'Mozilla/5.0 (link-checker; moreh-nevuchim)'
-              })
+          def probe(url):
+              """מחזיר (קוד, שגיאה). מחזיר קוד HTTP גם כשהוא 4xx/5xx —
+                 עצם התשובה מוכיחה שהשרת חי, וזה מה שמעניין במערכות סגורות."""
+              req = urllib.request.Request(url, method='GET', headers=UA)
               try:
                   with urllib.request.urlopen(req, timeout=25, context=ctx) as r:
-                      code = r.status
+                      return r.status, None
+              except urllib.error.HTTPError as e:
+                  return e.code, None
               except Exception as e:
-                  code = getattr(e, 'code', 0) or str(e)[:60]
+                  return None, str(e)[:80]
 
-              ok = code == 200
-              flag = 'OK ' if ok else 'FAIL'
-              print(f"{flag} {code:>4}  [{l.get('fragility','?'):6}] {l['id']:20} {url}")
+          data  = json.load(open('content.json', encoding='utf-8'))
+          links = data['links']
+
+          public = [l for l in links if not l.get('auth') and not l['url'].startswith('mailto:')]
+          gated  = [l for l in links if l.get('auth')]
+
+          broken, unreachable = [], []
+
+          print("=" * 70)
+          print("קישורים ציבוריים — נדרש 200")
+          print("=" * 70)
+          for l in sorted(public, key=lambda x: x['id']):
+              code, err = probe(l['url'])
+              ok = (code == 200)
+              print(f"{'OK  ' if ok else 'FAIL'} {str(code or err):>10}  [{l.get('fragility','?'):6}] {l['id']:22} {l['url']}")
               if not ok:
-                  bad.append((l['id'], code, url))
+                  broken.append((l['id'], code or err, l['url']))
 
           print()
-          if bad:
-              print(f"### {len(bad)} קישורים דורשים טיפול:")
-              for i, c, u in bad:
+          print("=" * 70)
+          print("מערכות מאחורי הזדהות — נבדק רק שהשרת עונה")
+          print("=" * 70)
+          for l in sorted(gated, key=lambda x: x['id']):
+              code, err = probe(l['url'])
+              alive = code is not None          # כל תשובת HTTP מוכיחה שהשרת חי
+              print(f"{'UP  ' if alive else 'DOWN'} {str(code or err):>10}  [{l.get('fragility','?'):6}] {l['id']:22} {l['url']}")
+              if not alive:
+                  unreachable.append((l['id'], err, l['url']))
+
+          print()
+          print("=" * 70)
+          if broken:
+              print(f"### {len(broken)} קישורים ציבוריים שבורים — דורשים תיקון:")
+              for i, c, u in broken:
                   print(f"  - {i} ({c}) — {u}")
           else:
-              print("### כל הקישורים תקינים.")
+              print("### כל הקישורים הציבוריים תקינים.")
 
-          open('bad_count.txt', 'w').write(str(len(bad)))
+          if unreachable:
+              print()
+              print(f"### {len(unreachable)} מערכות לא ענו כלל — ייתכן שהכתובת השתנתה:")
+              for i, e, u in unreachable:
+                  print(f"  - {i} ({e}) — {u}")
+
+          print()
+          print("תזכורת:")
+          print("  FAIL בקישור ציבורי  = בעיה אמיתית, צריך לתקן.")
+          print("  DOWN במערכת סגורה   = השרת לא ענה בכלל, שווה בדיקה ידנית.")
+          print("  הפניה לדף התחברות   = תקין. לא מדווח.")
+
+          open('bad_count.txt', 'w').write(str(len(broken) + len(unreachable)))
           PY
           echo "bad=$(cat bad_count.txt)" >> $GITHUB_OUTPUT
 
-      # מערכות מאחורי הזדהות יחזירו 302/403 גם כשהן תקינות —
-      # לכן זו התראה לבדיקה ידנית, לא כישלון בילד.
       - name: פתיחת Issue אם משהו נשבר
         if: steps.check.outputs.bad != '0'
         uses: actions/github-script@v7

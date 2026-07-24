@@ -6,17 +6,21 @@
 <title>מורה נבוכים — מערכות מחשוב בהוראה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet"><style>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
 :root{
   --ink:#16181d;
   --ink-2:#4a5058;
   --ink-3:#7b838d;
   --paper:#ffffff;
-  --surface:#f1f4f6;
+  --surface:#f4f6f8;
   --line:#dde3e8;
   --navy:#16324f;
-  --orange:#e8730c;
-  --orange-soft:#fdf0e4;
+  --navy-2:#24486e;
+  --orange:#F0902B;
+  --orange-deep:#c96f13;
+  --orange-soft:#fef4e9;
+  --orange-line:#f6cfa2;
   --radius:3px;
   --wrap:1080px;
 }
@@ -29,63 +33,78 @@ body{
 }
 h1,h2,h3,h4{font-family:'Assistant',system-ui,sans-serif;font-weight:700;line-height:1.2;margin:0}
 a{color:var(--navy)}
-.mono{font-family:'Assistant',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.mono{font-variant-numeric:tabular-nums}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ---------- masthead ---------- */
 .masthead{border-bottom:1px solid var(--line);background:var(--paper)}
-.masthead .wrap{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
-.brand{font-family:'Assistant',system-ui,sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em;cursor:pointer}
-.brand span{color:var(--orange)}
-.masthead .unit{font-size:13px;color:var(--ink-3);margin-inline-start:auto}
-.searchbox{position:relative;flex:1 1 240px;max-width:320px}
+.mast-logo{padding:22px 0 18px}
+.mast-logo img{display:block;width:100%;max-width:560px;height:auto}
+.mast-bar{border-top:1px solid var(--line);background:var(--surface)}
+.mast-bar .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.brand{font-weight:800;font-size:21px;letter-spacing:-.01em;cursor:pointer;background:none;border:0;
+  font-family:inherit;color:var(--ink);padding:0;line-height:1.2}
+.brand span{color:var(--orange-deep)}
+.brand:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+.searchbox{position:relative;flex:1 1 220px;max-width:340px;margin-inline-start:auto}
 .searchbox input{
   width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:var(--radius);
-  font-family:inherit;font-size:15px;background:var(--surface);color:var(--ink);
+  font-family:inherit;font-size:15px;background:var(--paper);color:var(--ink);
 }
-.searchbox input:focus{outline:2px solid var(--navy);outline-offset:1px;background:var(--paper)}
+.searchbox input:focus{outline:2px solid var(--navy);outline-offset:1px}
 
-/* ---------- rail (signature) ---------- */
-.rail-shell{background:var(--navy);color:#fff;padding:34px 0 30px}
-.rail-lede{font-size:14px;color:#a8bdd2;margin:0 0 22px;letter-spacing:.02em}
+/* ---------- rail (signature: time axis) ---------- */
+.rail-shell{background:var(--navy);color:#fff;padding:32px 0 28px}
+.rail-lede{font-size:13.5px;color:#a8bdd2;margin:0 0 24px;letter-spacing:.02em}
 .rail{position:relative;display:flex;gap:0;align-items:stretch}
-.rail::before{
-  content:"";position:absolute;top:11px;right:0;left:0;height:2px;
-  background:linear-gradient(to left,#2e5f8e,#2e5f8e);
-}
-.phase{flex:1;position:relative;padding-top:30px;text-align:right;padding-inline-end:18px;cursor:pointer;background:none;border:0;color:inherit;font-family:inherit}
+.rail::before{content:"";position:absolute;top:11px;right:0;left:0;height:2px;background:#2e5f8e}
+.phase{flex:1;position:relative;padding-top:30px;text-align:right;padding-inline-end:18px;
+  cursor:pointer;background:none;border:0;color:inherit;font-family:inherit}
 .phase::before{
   content:"";position:absolute;top:5px;right:0;width:14px;height:14px;border-radius:50%;
   background:var(--navy);border:2px solid #5a86ae;transition:background .18s,border-color .18s;
 }
+.phase.full::before{background:var(--orange);border-color:var(--orange)}
 .phase:hover::before,.phase:focus-visible::before{background:#fff;border-color:#fff}
-.phase-name{font-family:'Assistant',system-ui,sans-serif;font-size:18px;font-weight:700;display:block}
+.phase-name{font-size:17px;font-weight:700;display:block}
 .phase-meta{font-size:12.5px;color:#9fb6cc;display:block;margin-top:2px}
 .phase-bar{height:3px;background:#28527d;margin-top:9px;max-width:88%}
 .phase-bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s ease}
 .phase:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 /* hard-deadline pins */
-.pins{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid #24486e}
-.pin{display:flex;align-items:center;gap:11px;background:#12293f;border:1px solid #24486e;border-radius:var(--radius);padding:9px 14px}
-.pin b{font-family:'Assistant',system-ui,sans-serif;font-size:22px;color:var(--orange);font-weight:600;line-height:1}
+.pins{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid var(--navy-2)}
+.pin{display:flex;align-items:center;gap:11px;background:#12293f;border:1px solid var(--navy-2);
+  border-radius:var(--radius);padding:9px 14px;text-decoration:none}
+.pin b{font-size:22px;color:var(--orange);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
 .pin span{font-size:13px;color:#c3d4e4;line-height:1.35}
+.pin:hover{border-color:var(--orange)}
 .pins-note{font-size:12.5px;color:#8aa6c1;margin:12px 0 0}
 
-/* ---------- tracks ---------- */
-.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin:38px 0 8px}
-.track{
+/* ---------- urgent (pinned, outside the axis) ---------- */
+.urgent-strip{background:var(--orange-soft);border-bottom:1px solid var(--orange-line)}
+.urgent-strip .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px}
+.urgent-strip p{margin:0;font-size:15px;color:var(--ink-2)}
+.urgent-btn{background:var(--orange);color:#fff;border:0;font-family:inherit;font-size:16px;font-weight:700;
+  padding:11px 22px;border-radius:var(--radius);cursor:pointer;margin-inline-start:auto}
+.urgent-btn:hover{background:var(--orange-deep)}
+.urgent-btn:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+
+/* ---------- home: responsibility groups ---------- */
+.home-head{margin:38px 0 18px}
+.home-head h2{font-size:23px}
+.home-head p{margin:6px 0 0;color:var(--ink-2);font-size:15.5px;max-width:64ch}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:20px}
+.group{
   display:block;text-align:right;background:var(--paper);border:1px solid var(--line);
-  border-radius:var(--radius);padding:20px 20px 18px;cursor:pointer;font-family:inherit;
-  transition:border-color .15s,transform .15s;position:relative;
+  border-top:3px solid var(--orange);border-radius:var(--radius);padding:19px 20px 17px;
+  cursor:pointer;font-family:inherit;transition:border-color .15s,transform .15s;
 }
-.track:hover{border-color:var(--navy);transform:translateY(-2px)}
-.track:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
-.track-label{font-family:'Assistant',system-ui,sans-serif;font-size:19px;font-weight:700;display:block;color:var(--ink)}
-.track-sub{font-size:13.5px;color:var(--ink-3);display:block;margin-top:5px}
-.track.urgent{background:var(--orange-soft);border-color:#f2c99e}
-.track.urgent:hover{border-color:var(--orange)}
+.group:hover{border-color:var(--navy);border-top-color:var(--orange);transform:translateY(-2px)}
+.group:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.group-label{font-size:18px;font-weight:700;display:block;color:var(--ink)}
+.group-list{font-size:13.5px;color:var(--ink-3);display:block;margin-top:7px;line-height:1.5}
 
 /* ---------- generic view ---------- */
 main{padding:0 0 90px}
@@ -96,11 +115,12 @@ main{padding:0 0 90px}
   font-size:14px;color:var(--ink-3);cursor:pointer;padding:0;margin:30px 0 14px}
 .crumb:hover{color:var(--navy)}
 .view-head{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px}
-.view-head h2{font-size:32px}
+.view-head h2{font-size:31px}
 .view-head p{margin:8px 0 0;color:var(--ink-2);font-size:16px;max-width:62ch}
 
 /* ---------- topic cards ---------- */
 .topic{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;background:var(--paper)}
+.topic.draft{border-style:dashed}
 .topic-head{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;
   font-family:inherit;text-align:right;padding:17px 20px;cursor:pointer}
 .topic-head h3{font-size:19px;flex:1}
@@ -109,9 +129,12 @@ main{padding:0 0 90px}
 .topic.open .chev{transform:rotate(180deg)}
 .topic-body{display:none;padding:0 20px 22px;border-top:1px solid var(--line);margin-top:-1px}
 .topic.open .topic-body{display:block}
+.badge{font-size:10.5px;letter-spacing:.06em;padding:3px 8px;border-radius:2px;font-weight:700;flex:none}
+.badge.draft{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
+.badge.hard{background:var(--orange);color:#fff}
 .field{margin-top:18px}
-.field-label{font-family:'Assistant',system-ui,sans-serif;font-size:11px;letter-spacing:.08em;
-  color:var(--orange);text-transform:uppercase;display:block;margin-bottom:5px}
+.field-label{font-size:11px;letter-spacing:.08em;color:var(--orange-deep);
+  text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700}
 .field p{margin:0;color:var(--ink-2)}
 .field ol{margin:0;padding-inline-start:20px;color:var(--ink-2)}
 .field ol li{margin-bottom:5px}
@@ -127,10 +150,12 @@ main{padding:0 0 90px}
 .btn.ghost:hover{border-color:var(--navy);background:var(--surface)}
 .support{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:14.5px;color:var(--ink-2)}
 .support b{color:var(--ink)}
+.appears{margin-top:14px;font-size:13.5px;color:var(--ink-3)}
+.appears b{color:var(--ink-2);font-weight:600}
 
 /* ---------- checklists ---------- */
 .ck-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-.ck-count{font-family:'Assistant',system-ui,sans-serif;font-size:14px;color:var(--ink-2)}
+.ck-count{font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .ck-track{flex:1;min-width:120px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden}
 .ck-track i{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
 .ck-tools{display:flex;gap:8px}
@@ -139,28 +164,28 @@ main{padding:0 0 90px}
 .ck-tools button:hover{border-color:var(--navy);color:var(--navy)}
 .item{display:flex;gap:13px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:flex-start}
 .item:last-child{border-bottom:0}
-.item input[type=checkbox]{width:19px;height:19px;margin-top:3px;flex:none;accent-color:var(--navy);cursor:pointer}
+.item input[type=checkbox]{width:19px;height:19px;margin-top:3px;flex:none;accent-color:var(--orange);cursor:pointer}
 .item-main{flex:1;min-width:0}
 .item-text{cursor:pointer;display:block}
 .item.done .item-text{color:var(--ink-3);text-decoration:line-through}
-.tag{display:inline-block;font-family:'Assistant',system-ui,sans-serif;font-size:10.5px;letter-spacing:.06em;
-  padding:2px 7px;border-radius:2px;vertical-align:2px;margin-inline-start:8px}
+.tag{display:inline-block;font-size:10.5px;letter-spacing:.06em;padding:2px 7px;border-radius:2px;
+  vertical-align:2px;margin-inline-start:8px}
 .tag.hard{background:var(--orange);color:#fff}
-.tag.cond{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
 .item-link{background:none;border:0;font-family:inherit;font-size:13.5px;color:var(--navy);
   cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
+.item-link:hover{color:var(--orange-deep)}
 
 /* ---------- help ---------- */
 .help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.help-card{border:1px solid var(--line);border-radius:var(--radius);padding:19px}
+.help-card{border:1px solid var(--line);border-top:3px solid var(--orange);border-radius:var(--radius);padding:19px}
 .help-card h3{font-size:17px;margin-bottom:6px}
 .help-card .scope{font-size:14.5px;color:var(--ink-2);margin:0 0 12px}
 .help-card .contact{font-size:15px;margin:3px 0}
 .help-card .hours{font-size:13px;color:var(--ink-3);margin-top:9px}
 
-/* ---------- search results ---------- */
+/* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
-.hit button{background:none;border:0;font-family:'Assistant',system-ui,sans-serif;font-size:17px;font-weight:700;
+.hit button{background:none;border:0;font-family:inherit;font-size:17px;font-weight:700;
   color:var(--ink);cursor:pointer;padding:0;text-align:right}
 .hit button:hover{color:var(--navy)}
 .hit .where{font-size:13px;color:var(--ink-3);margin-top:2px}
@@ -172,13 +197,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media(max-width:720px){
   .rail{flex-direction:column;gap:16px}
   .rail::before{top:0;bottom:0;right:6px;left:auto;width:2px;height:auto}
-  .phase{padding-top:0;padding-inline-end:0;padding-inline-start:0;padding-right:30px}
+  .phase{padding-top:0;padding-inline-end:0;padding-right:30px}
   .phase::before{top:4px;right:0}
   .phase-bar{max-width:100%}
-  .view-head h2{font-size:26px}
+  .view-head h2{font-size:25px}
+  .mast-logo img{max-width:100%}
+  .urgent-btn{margin-inline-start:0;width:100%}
+  .searchbox{margin-inline-start:0;max-width:100%}
 }
 @media print{
-  .masthead,.rail-shell,.tracks,.crumb,.ck-tools,footer,.topic-head .chev{display:none!important}
+  .mast-bar,.rail-shell,.urgent-strip,.groups,.home-head,.crumb,.ck-tools,footer,.chev{display:none!important}
   .view{display:none!important}
   .view.on{display:block!important}
   body{font-size:12pt}
@@ -192,17 +220,27 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <body>
 
 <header class="masthead">
-  <div class="wrap">
-    <div class="brand" onclick="go('#/')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')go('#/')">
-      מורה <span>נבוכים</span>
+  <div class="wrap mast-logo">
+    <img src="logo-unit.jpg" alt="היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן-גוריון בנגב">
+  </div>
+  <div class="mast-bar">
+    <div class="wrap">
+      <button class="brand" onclick="go('#/')">מורה <span>נבוכים</span></button>
+      <div class="searchbox">
+        <label class="sr" for="q">חיפוש בנושאים ובמערכות</label>
+        <input id="q" type="search" placeholder="חיפוש: כספת, ערעור, סילבוס…" autocomplete="off">
+      </div>
     </div>
-    <div class="searchbox">
-      <label class="sr" for="q">חיפוש בנושאים ובמערכות</label>
-      <input id="q" type="search" placeholder="חיפוש: כספת, ערעור, סילבוס…" autocomplete="off">
-    </div>
-    <div class="unit" id="unit"></div>
   </div>
 </header>
+
+<!-- pinned, outside the time axis -->
+<section class="urgent-strip">
+  <div class="wrap">
+    <p><b>משהו תקוע ואין זמן לחפש?</b> כל גורמי התמיכה, לפי סוג הבעיה.</p>
+    <button class="urgent-btn" id="urgentBtn" onclick="go('#/section/help')">יש לי בעיה דחופה — למי פונים?</button>
+  </div>
+</section>
 
 <!-- SIGNATURE: ציר הסמסטר -->
 <section class="rail-shell" id="railShell">
@@ -217,7 +255,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <main class="wrap">
 
   <section id="view-home" class="view on">
-    <div class="tracks" id="tracks"></div>
+    <div class="home-head">
+      <h2>לפי מי אחראי</h2>
+      <p>הציר למעלה עונה על "מה עושים ומתי". כאן נמצא כל ההסבר על כל מערכת — מסודר לפי הגורם שאליו פונים, לא לפי שלב בסמסטר.</p>
+    </div>
+    <div class="groups" id="groups"></div>
   </section>
 
   <section id="view-section" class="view">
@@ -270,7 +312,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <script>
 'use strict';
-const KEY='mn-checklist-v1';
+const KEY='mn-checklist-v2';
 let D=null, state=load();
 
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
@@ -279,6 +321,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const link=id=>D.links.find(l=>l.id===id);
 const topic=id=>D.topics.find(t=>t.id===id);
 const supp=id=>D.support.find(s=>s.id===id);
+const section=id=>D.sections.find(s=>s.id===id);
 
 /* ---- analytics hook ----------------------------------------------------
    כל קליק יוצא מדווח לפי מזהה הקישור (link_id) ולא לפי הכתובת.
@@ -303,70 +346,73 @@ function route(){
   const h=(location.hash||'#/').replace(/^#\//,'');
   const [kind,id]=h.split('/');
   document.getElementById('railShell').style.display = (kind==='')?'':'none';
-  if(kind==='') { show('view-home'); }
+  if(kind==='') { renderHome(); show('view-home'); }
   else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
   else if(kind==='section'){ renderSection(id); show('view-section'); }
   else if(kind==='checklist'){ renderChecklist(id); show('view-checklist'); }
   else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
-  else { show('view-home'); }
+  else { renderHome(); show('view-home'); }
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', route);
 
-/* ---- home ---- */
+/* ---- the time axis: built from tracks, no hard-coded list ---- */
 function phaseStats(ckId){
   const c=D.checklists.find(x=>x.id===ckId); if(!c) return null;
   const done=c.items.filter(i=>state[ckId+'/'+i.id]).length;
   return {done, total:c.items.length};
 }
 function renderRail(){
-  const order=[
-    {ck:'before-semester', name:'לפני הסמסטר'},
-    {ck:'first-week',      name:'השבוע הראשון'},
-    {ck:'during-semester', name:'במהלך הסמסטר'},
-    {ck:'end-semester',    name:'סיום הסמסטר'}
-  ];
-  document.getElementById('rail').innerHTML = order.map(p=>{
-    const s=phaseStats(p.ck)||{done:0,total:0};
+  const phases = D.tracks.filter(t=>!t.pinned && t.target.startsWith('checklist:'));
+  document.getElementById('rail').innerHTML = phases.map(t=>{
+    const ck=t.target.split(':')[1];
+    const s=phaseStats(ck)||{done:0,total:0};
     const pct = s.total? Math.round(s.done/s.total*100):0;
-    return `<button class="phase" onclick="go('#/checklist/${p.ck}')">
-      <span class="phase-name">${esc(p.name)}</span>
+    return `<button class="phase ${pct===100?'full':''}" onclick="go('#/checklist/${esc(ck)}')">
+      <span class="phase-name">${esc(t.short||t.label)}</span>
       <span class="phase-meta mono">${s.done}/${s.total} הושלמו</span>
       <span class="phase-bar"><i style="width:${pct}%"></i></span>
     </button>`;
   }).join('');
 
-  const hard=[];
+  /* hard deadlines — each pin jumps to the checklist that actually contains it */
+  const pins=[];
   D.topics.forEach(t=>{
-    if(t.deadline && t.deadline.type==='relative'){
-      hard.push({n:Math.abs(t.deadline.offset_hours), unit:'שעות', label:t.deadline.label, id:t.id, title:t.title});
-    }
+    if(!t.deadline || t.deadline.type!=='relative') return;
+    let target=null;
+    D.checklists.forEach(c=>c.items.forEach(i=>{ if(i.topic_id===t.id && !target) target='#/checklist/'+c.id; }));
+    pins.push({n:Math.abs(t.deadline.offset_hours), label:t.deadline.label, title:t.title,
+               href: target || ('#/section/'+t.section)});
   });
-  document.getElementById('pins').innerHTML = hard.map(p=>
-    `<a class="pin" href="#/checklist/${p.id==='exam-deposit'?'end-semester':'end-semester'}" style="text-decoration:none">
-       <b>${p.n}</b><span>${esc(p.title)}<br>${esc(p.label)}</span></a>`).join('');
+  document.getElementById('pins').innerHTML = pins.map(p=>
+    `<a class="pin" href="${esc(p.href)}"><b>${p.n}</b><span>${esc(p.title)}<br>${esc(p.label)}</span></a>`).join('');
 }
+
+/* ---- home: responsibility groups ---- */
 function renderHome(){
-  document.getElementById('tracks').innerHTML = D.tracks.map(t=>{
-    const [kind,id]=t.target.split(':');
-    let sub='';
-    if(kind==='checklist'){ const s=phaseStats(id); sub = s? `${s.done} מתוך ${s.total} הושלמו`:''; }
-    if(kind==='section' && id==='start-here'){ sub = D.topics.filter(x=>x.section==='start-here').length+' נושאים'; }
-    if(id==='help'){ sub='מדור בחינות, מודל, פדגוגיה'; }
-    return `<button class="track ${t.id==='urgent'?'urgent':''}" onclick="go('#/${kind}/${id}')">
-      <span class="track-label">${esc(t.label)}</span>
-      <span class="track-sub">${esc(sub)}</span></button>`;
+  document.getElementById('groups').innerHTML = D.sections.map(s=>{
+    const ts=D.topics.filter(t=>t.section===s.id);
+    return `<button class="group" onclick="go('#/section/${esc(s.id)}')">
+      <span class="group-label">${esc(s.title)}</span>
+      <span class="group-list">${ts.map(t=>esc(t.title)).join(' · ')}</span>
+    </button>`;
   }).join('');
   renderRail();
 }
 
 /* ---- topic card ---- */
 function topicHTML(t){
-  const pl=link(t.primary_link), sp=supp(t.support_id);
+  const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
   const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
-  return `<article class="topic" id="t-${t.id}">
+  /* where this cube is referenced from — so the reader sees when it matters */
+  const where=[];
+  D.checklists.forEach(c=>{ if(c.items.some(i=>i.topic_id===t.id)) where.push(c.title); });
+  return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
     <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
-      <h3>${esc(t.title)}</h3><span class="chev">▾</span>
+      <h3>${esc(t.title)}</h3>
+      ${t.critical?'<span class="badge hard">דדליין קשיח</span>':''}
+      ${t.draft?'<span class="badge draft">בהכנה</span>':''}
+      <span class="chev">▾</span>
     </button>
     <div class="topic-body">
       <div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>
@@ -374,12 +420,13 @@ function topicHTML(t){
       <div class="field"><span class="field-label">איך</span><ol>${t.how.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
       ${t.highlight?`<div class="callout">${esc(t.highlight)}</div>`:''}
       ${t.warning?`<div class="callout warn"><b>שימו לב:</b> ${esc(t.warning)}</div>`:''}
-      <div class="actions">
+      ${(pl||secs.length)?`<div class="actions">
         ${pl?`<a class="btn" href="${esc(pl.url)}" target="_blank" rel="noopener"
               data-link-id="${esc(pl.id)}" data-link-title="${esc(pl.title)}">${esc(pl.title)} ↗</a>`:''}
         ${secs.map(l=>`<a class="btn ghost" href="${esc(l.url)}" target="_blank" rel="noopener"
               data-link-id="${esc(l.id)}" data-link-title="${esc(l.title)}">${esc(l.title)} ↗</a>`).join('')}
-      </div>
+      </div>`:''}
+      ${where.length?`<p class="appears"><b>מופיע בצ'קליסט:</b> ${where.map(esc).join(' · ')}</p>`:''}
       ${sp?`<p class="support">נתקעת? <b>${esc(sp.name)}</b>
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
@@ -387,17 +434,14 @@ function topicHTML(t){
     </div></article>`;
 }
 
-/* ---- section view ---- */
-const SECTION_META={
-  'start-here':{title:'מתחילים כאן',intro:'ארבעת הדברים שצריך לסדר לפני שנוגעים בתוכן הקורס: הרשאות, גישה למערכות, מודל, והשנתון שמגדיר מה מותר להניח שהסטודנטים כבר יודעים.'}
-};
+/* ---- section view (a responsibility group) ---- */
 function renderSection(id){
-  const meta=SECTION_META[id]||{title:id,intro:''};
+  const meta=section(id)||{title:id,intro:''};
   document.getElementById('sec-title').textContent=meta.title;
-  document.getElementById('sec-intro').textContent=meta.intro;
+  document.getElementById('sec-intro').textContent=meta.intro||'';
   const ts=D.topics.filter(t=>t.section===id);
   document.getElementById('sec-body').innerHTML = ts.length? ts.map(topicHTML).join('')
-    : '<p class="empty">אין עדיין נושאים בפרק הזה.</p>';
+    : '<p class="empty">אין עדיין נושאים בתחום הזה.</p>';
 }
 
 /* ---- checklist view ---- */
@@ -413,9 +457,8 @@ function renderChecklist(id){
       <div class="item-main">
         <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
           ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
-          ${i.conditional?`<span class="tag cond">${esc(i.conditional)}</span>`:''}
         </label>
-        ${t?`<button class="item-link" onclick="openTopic('${esc(t.id)}','${esc(t.section)}')">איך עושים את זה →</button>`:''}
+        ${t?`<button class="item-link" onclick="openTopic('${esc(t.id)}')">איך עושים את זה →</button>`:''}
       </div></div>`;
   }).join('');
   document.getElementById('ck-body').querySelectorAll('input[type=checkbox]').forEach(cb=>{
@@ -437,14 +480,10 @@ function tally(c){
   document.getElementById('ck-fill').style.width=(tot?done/tot*100:0)+'%';
 }
 
-/* jump from a checklist item to the full topic, opened */
-function openTopic(tid, section){
-  if(section==='before-semester'||section==='end-semester'){
-    // topics that live in a phase are shown in a section view of that phase
-    SECTION_META[section]={title:D.checklists.find(c=>c.id===section)?.title||section,
-      intro:'הנושאים המלאים ששייכים לשלב הזה.'};
-  }
-  go('#/section/'+section);
+/* jump from a checklist item straight to the cube, opened */
+function openTopic(tid){
+  const t=topic(tid); if(!t) return;
+  go('#/section/'+t.section);
   setTimeout(()=>{
     const el=document.getElementById('t-'+tid);
     if(el){ el.classList.add('open'); el.scrollIntoView({block:'center'}); }
@@ -473,7 +512,7 @@ function renderSearch(q){
   const hits=[];
   D.topics.forEach(t=>{
     const hay=[t.title,t.what,t.when,(t.how||[]).join(' '),t.highlight,t.warning].join(' ').toLowerCase();
-    if(hay.includes(n)) hits.push({title:t.title, where:'נושא', act:`openTopic('${t.id}','${t.section}')`});
+    if(hay.includes(n)) hits.push({title:t.title, where:section(t.section)?.title||'נושא', act:`openTopic('${t.id}')`});
   });
   D.checklists.forEach(c=>c.items.forEach(i=>{
     if(i.text.toLowerCase().includes(n)) hits.push({title:i.text, where:c.title, act:`go('#/checklist/${c.id}')`});
@@ -492,17 +531,26 @@ qi.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{
   if(v.length>=2) go('#/search/'+encodeURIComponent(v)); else if(location.hash.startsWith('#/search')) go('#/');
 },260);});
 
+/* ---- urgent button label comes from the data, not from the markup ---- */
+function applyPinned(){
+  const p=D.tracks.find(t=>t.pinned);
+  if(p) document.getElementById('urgentBtn').textContent=p.label;
+}
+
 /* ---- boot ---- */
 fetch('content.json',{cache:'no-cache'})
   .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(d=>{
     D=d;
-    document.getElementById('unit').textContent=d.meta.owner;
     document.getElementById('foot-owner').textContent=d.meta.owner;
     document.getElementById('foot-date').textContent='עודכן: '+d.meta.last_reviewed;
-    renderHome(); route();
+    applyPinned(); renderHome(); route();
   })
-  .catch(()=>{ document.getElementById('railShell').style.display='none'; show('view-error'); });
+  .catch(()=>{
+    document.getElementById('railShell').style.display='none';
+    document.querySelector('.urgent-strip').style.display='none';
+    show('view-error');
+  });
 </script>
 </body>
 </html>
