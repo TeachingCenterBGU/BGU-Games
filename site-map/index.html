@@ -150,6 +150,7 @@ main{padding:0 0 90px}
 .btn.ghost:hover{border-color:var(--navy);background:var(--surface)}
 .support{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:14.5px;color:var(--ink-2)}
 .support b{color:var(--ink)}
+.support-note{margin-top:8px;font-size:13.5px;color:var(--ink-3);line-height:1.5}
 .appears{margin-top:14px;font-size:13.5px;color:var(--ink-3)}
 .appears b{color:var(--ink-2);font-weight:600}
 
@@ -182,6 +183,9 @@ main{padding:0 0 90px}
 .help-card .scope{font-size:14.5px;color:var(--ink-2);margin:0 0 12px}
 .help-card .contact{font-size:15px;margin:3px 0}
 .help-card .hours{font-size:13px;color:var(--ink-3);margin-top:9px}
+.help-card .sub-note{font-size:13px;color:var(--ink-2);margin-top:11px;padding-top:10px;
+  border-top:1px dashed var(--line);line-height:1.5}
+.help-card .contact.mono{font-size:19px;font-weight:700;color:var(--orange-deep)}
 
 /* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
@@ -426,11 +430,13 @@ function topicHTML(t){
         ${secs.map(l=>`<a class="btn ghost" href="${esc(l.url)}" target="_blank" rel="noopener"
               data-link-id="${esc(l.id)}" data-link-title="${esc(l.title)}">${esc(l.title)} ↗</a>`).join('')}
       </div>`:''}
+      ${t.tomasafe_contact?`<div class="callout warn">${esc(t.tomasafe_contact)}</div>`:''}
       ${where.length?`<p class="appears"><b>מופיע בצ'קליסט:</b> ${where.map(esc).join(' · ')}</p>`:''}
       ${sp?`<p class="support">נתקעת? <b>${esc(sp.name)}</b>
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
         ${sp.hours?`<br><span style="color:var(--ink-3);font-size:13px">${esc(sp.hours)}</span>`:''}</p>`:''}
+      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}
     </div></article>`;
 }
 
@@ -500,6 +506,7 @@ function renderHelp(){
       ${s.phone?`<p class="contact mono">${esc(s.phone)}</p>`:''}
       ${!s.email&&!s.phone?`<p class="contact" style="color:var(--ink-3)">דרך מזכירות המחלקה</p>`:''}
       ${s.hours?`<p class="hours">${esc(s.hours)}</p>`:''}
+      ${s.sub_note?`<p class="sub-note">${esc(s.sub_note)}</p>`:''}
     </div>`).join('');
 }
 
