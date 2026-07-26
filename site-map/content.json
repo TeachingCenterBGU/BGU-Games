@@ -538,7 +538,7 @@
       "primary_link": "syllabus-system",
       "secondary_links": ["syllabus-guide", "course-catalog"],
       "support_id": "department",
-"     deadline": { "order": 1, "value": 4, "unit": "ימים", "title": "שינוי דרישות הקורס",
+      "deadline": { "order": 1, "value": 4, "unit": "ימים", "title": "שינוי דרישות הקורס",
                     "phrase": "לפני תום תקופת השינויים",
                     "type": "relative", "offset_hours": -96, "anchor": "changes_period_end" }, 
       
@@ -619,7 +619,7 @@
         { "id": "n2", "text": "יש לי משתמש אוניברסיטאי, ואני נכנס/ת איתו למודל ולזום", "topic_id": "accounts" },
         { "id": "n3", "text": "הכרתי את תכנית הלימודים במחלקה דרך השנתון", "topic_id": "yearbook" },
         { "id": "n4", "text": "קראתי את נהלי ההוראה והלמידה של האוניברסיטה", "topic_id": "teaching-duties" }
-
+      ]
       },
     {
       "id": "before-semester",
