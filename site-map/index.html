@@ -142,6 +142,8 @@ main{padding:0 0 90px}
 .badge.draft{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
 .badge.hard{background:var(--orange);color:#fff}
 .field{margin-top:18px}
+.field.bare{margin-top:0}
+.field.bare p{color:var(--ink)}
 .field-label{font-size:11px;letter-spacing:.08em;color:var(--orange-deep);
   text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700}
 .field p{margin:0;color:var(--ink-2)}
@@ -172,8 +174,16 @@ main{padding:0 0 90px}
 .ck-tools button{background:none;border:1px solid var(--line);border-radius:var(--radius);
   font-family:inherit;font-size:13.5px;color:var(--ink-2);padding:6px 12px;cursor:pointer}
 .ck-tools button:hover{border-color:var(--navy);color:var(--navy)}
+.zone{margin-bottom:30px}
+.zone:last-child{margin-bottom:0}
+.zone-head{padding-bottom:9px;border-bottom:2px solid var(--navy)}
+.zone-head h3{font-size:14px;letter-spacing:.03em;margin:0}
+.zone-head p{font-size:13px;color:var(--ink-3);margin:4px 0 0;line-height:1.45}
+.zone-recommended{background:var(--surface);border-radius:var(--radius);padding:18px 18px 6px}
+.zone-recommended .zone-head{border-bottom-color:var(--orange)}
+.zone-recommended .item{border-bottom-color:#e3e8ec}
 .item{display:flex;gap:13px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:flex-start}
-.item:last-child{border-bottom:0}
+.zone .item:last-child{border-bottom:0}
 .item input[type=checkbox]{width:19px;height:19px;margin-top:3px;flex:none;accent-color:var(--orange);cursor:pointer}
 .item-main{flex:1;min-width:0}
 .item-text{cursor:pointer;display:block}
@@ -445,9 +455,11 @@ function topicHTML(t){
       <span class="chev">▾</span>
     </button>
     <div class="topic-body">
-      <div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>
-      <div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>
-      <div class="field"><span class="field-label">איך</span><ol>${t.how.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
+      ${t.what?(t.how&&t.how.length
+        ? `<div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>`
+        : `<div class="field bare"><p>${esc(t.what)}</p></div>`):''}
+      ${t.when?`<div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>`:''}
+      ${(t.how&&t.how.length)?`<div class="field"><span class="field-label">איך</span><ol>${t.how.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>`:''}
       ${t.highlight?`<div class="callout">${esc(t.highlight)}</div>`:''}
       ${t.warning?`<div class="callout warn"><b>שימו לב:</b> ${esc(t.warning)}</div>`:''}
       ${(pl||secs.length)?`<div class="actions">
@@ -482,7 +494,8 @@ function renderChecklist(id){
   if(!c){ go('#/'); return; }
   document.getElementById('ck-title').textContent=c.title;
   document.getElementById('ck-intro').textContent=c.intro||'';
-  document.getElementById('ck-body').innerHTML = c.items.map(i=>{
+  const zones = (D.zones && D.zones.length) ? D.zones : [{id:null,label:'',note:''}];
+  const itemHTML = i => {
     const k=c.id+'/'+i.id, done=!!state[k], t=i.topic_id?topic(i.topic_id):null;
     return `<div class="item ${done?'done':''}" data-k="${esc(k)}">
       <input type="checkbox" id="cb-${esc(k)}" ${done?'checked':''} aria-label="${esc(i.text)}">
@@ -492,6 +505,15 @@ function renderChecklist(id){
         </label>
         ${t?`<button class="item-link" onclick="openTopic('${esc(t.id)}')">איך עושים את זה →</button>`:''}
       </div></div>`;
+  };
+  /* items with no zone fall into the first zone */
+  document.getElementById('ck-body').innerHTML = zones.map((z,idx)=>{
+    const mine = c.items.filter(i => (i.zone || zones[0].id) === z.id);
+    if(!mine.length) return '';
+    return `<section class="zone zone-${esc(z.id||'all')}">
+      ${z.label?`<div class="zone-head"><h3>${esc(z.label)}</h3>${z.note?`<p>${esc(z.note)}</p>`:''}</div>`:''}
+      ${mine.map(itemHTML).join('')}
+    </section>`;
   }).join('');
   document.getElementById('ck-body').querySelectorAll('input[type=checkbox]').forEach(cb=>{
     cb.addEventListener('change',()=>{
