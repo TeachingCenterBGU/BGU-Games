@@ -162,8 +162,6 @@ main{padding:0 0 90px}
 .support{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:15.5px;color:var(--ink-2)}
 .support b{color:var(--ink)}
 .support-note{margin-top:8px;font-size:14.5px;color:var(--ink-3);line-height:1.5}
-.appears{margin-top:14px;font-size:14.5px;color:var(--ink-3)}
-.appears b{color:var(--ink-2);font-weight:600}
 
 /* ---------- checklists ---------- */
 .ck-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
@@ -444,9 +442,6 @@ function renderHome(){
 function topicHTML(t){
   const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
   const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
-  /* where this cube is referenced from — so the reader sees when it matters */
-  const where=[];
-  D.checklists.forEach(c=>{ if(c.items.some(i=>i.topic_id===t.id)) where.push(c.title); });
   return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
     <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
       <h3>${esc(t.title)}</h3>
