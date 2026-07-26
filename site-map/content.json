@@ -448,6 +448,14 @@
       "critical": true,
       "warning": "בקשת TomaSafe שמוגשת מאוחר לא תמיד ניתנת לאישור. אם יש סיכוי שתרצי בחינה מעורבלת — עדיף לשאול את דבורה זק מוקדם, כבר בתכנון הסמסטר."
     },
+        {
+      "id": "teaching-duties",
+      "section": "department",
+      "title": "נהלי ההוראה המחייבים",
+      "what": "נוהל חובות הוראה ולמידה הוא המסמך המחייב של האוניברסיטה בכל מה שנוגע לניהול הקורס — מאורך השיעור ועד שעות הקבלה.",
+      "primary_link": "duties-guide",
+      "support_id": "department"
+    },
     {
       "id": "nitzan",
       "section": "department",
@@ -530,8 +538,10 @@
       "primary_link": "syllabus-system",
       "secondary_links": ["syllabus-guide", "course-catalog"],
       "support_id": "department",
-      "deadline": { "order": 1, "value": 14, "unit": "ימים", "phrase": "לפני פתיחת הרישום",
-                    "type": "relative", "offset_hours": -336, "anchor": "registration_start" },
+"     deadline": { "order": 1, "value": 4, "unit": "ימים", "title": "שינוי דרישות הקורס",
+                    "phrase": "לפני תום תקופת השינויים",
+                    "type": "relative", "offset_hours": -96, "anchor": "changes_period_end" }, 
+      
       "critical": true,
       "warning": "פער בין רכיבי הציון בסילבוס לבין המודל הוא העילה הנפוצה ביותר לערעור מוצדק בסוף הסמסטר."
     },
@@ -607,15 +617,16 @@
       "items": [
         { "id": "n1", "text": "הכרתי את היחידה לקידום איכות ההוראה והלמידה", "topic_id": "pedagogy-support" },
         { "id": "n2", "text": "יש לי משתמש אוניברסיטאי, ואני נכנס/ת איתו למודל ולזום", "topic_id": "accounts" },
-        { "id": "n3", "text": "הכרתי את תכנית הלימודים במחלקה דרך השנתון", "topic_id": "yearbook" }
-      ]
-    },
+        { "id": "n3", "text": "הכרתי את תכנית הלימודים במחלקה דרך השנתון", "topic_id": "yearbook" },
+        { "id": "n4", "text": "קראתי את נהלי ההוראה והלמידה של האוניברסיטה", "topic_id": "teaching-duties" }
+
+      },
     {
       "id": "before-semester",
       "title": "לפני תחילת הסמסטר",
       "intro": "רוב הפריטים כאן לוקחים דקות. שווה לעבור עליהם לפני שהסמסטר מתחיל והלחץ מתחיל איתו.",
       "items": [
-        { "id": "b1", "text": "עדכנתי את הסילבוס במערכת הסילבוסים", "topic_id": "syllabus", "critical": true },
+        { "id": "b1", "text": "עדכנתי את הסילבוס במערכת הסילבוסים", "topic_id": "syllabus"},
         { "id": "b2", "text": "בדקתי את לוח השנה האקדמי", "topic_id": "calendar" },
         { "id": "b3", "text": "נפגשתי עם צוות ההוראה בקורס", "topic_id": "teaching-team" },
         { "id": "b4", "text": "עדכנתי את אתר המודל", "topic_id": "moodle" },
@@ -636,7 +647,8 @@
         { "id": "f3", "text": "בדקתי שהסטודנטים מצליחים להיכנס למערכות", "topic_id": "moodle" },
         { "id": "f4", "text": "טיפלתי בבעיות רישום ובהתאמות", "topic_id": "gezer-admin" },
         { "id": "f5", "text": "יצרתי ערוץ תקשורת ברור והודעתי עליו" },
-        { "id": "f6", "text": "במידת הצורך — תיאמתי עם מזכירות המחלקה / ועד הכיתה תאריך לבוחן אמצע" }
+        { "id": "f6", "text": "אם שיניתי דרישות או רכיבי ציון — עדכנתי את הסילבוס והודעתי בכתב", "topic_id": "syllabus", "critical": true },
+        { "id": "f7", "text": "במידת הצורך — תיאמתי עם מזכירות המחלקה / ועד הכיתה תאריך לבוחן אמצע" }
       ]
     },
     {
