@@ -488,7 +488,7 @@
       "primary_link": "appeals",
       "secondary_links": ["gezer"],
       "support_id": "department",
-      "deadline": { "order": 4, "value": 72, "unit": "שעות", "phrase": "לאחר פרסום הציונים",
+      "deadline": { "order": 4, "value": 3, "unit": "ימים", "phrase": "לפני המועד הבא",
                     "type": "relative", "offset_hours": 72, "anchor": "grades_published" },
       "critical": true
     },
