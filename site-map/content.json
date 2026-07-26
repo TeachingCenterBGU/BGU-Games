@@ -380,7 +380,7 @@
     {
       "id": "tomagrade",
       "section": "elearn",
-      "title": "טומגרייד — בדיקת בחינות סרוקות",
+      "title": "בדיקת בחינות ",
       "what": "בחינות שנסרקו נבדקות בטומגרייד. הבדיקה מקוונת, מאפשרת חלוקת עבודה בין בודקים, ושומרת את כל הסימונים לצורך הערעורים בהמשך.",
       "when": "מיד לאחר סריקת הבחינות.",
       "how": [
@@ -392,9 +392,6 @@
       "primary_link": "tomagrade",
       "secondary_links": ["tomagrade-guide"],
       "support_id": "elearn",
-      "deadline": { "order": 3, "value": 14, "unit": "ימים", "phrase": "מיום הבחינה לסיום הבדיקה",
-                    "type": "relative", "offset_hours": 336, "anchor": "exam_date" },
-      "critical": true,
       "warning": "טומגרייד עובד בכרום בלבד. בדפדפנים אחרים הממשק ייראה תקין אבל הסימונים לא תמיד נשמרים."
     },
     {
@@ -406,8 +403,8 @@
       "how": [
         "לאתר את הכיתה שלך במיפוי הכיתות",
         "לבדוק איזה ציוד קיים בה ומה צריך להביא",
-        "אם מתוכננת הוראה היברידית או הקלטה — לתאם מראש מול elearn",
         "להגיע לכיתה פעם אחת לפני הסמסטר ולנסות את הציוד"
+        "בכל כיתה יש מספר טלפון עם מוקד תמיכה לבעיות תפעול מיידיות"
       ],
       "primary_link": "hybrid-classes",
       "support_id": "elearn"
@@ -471,6 +468,10 @@
       "primary_link": "nitzan",
       "support_id": "department",
       "support_note": "התמיכה באחריות מזכירות המחלקה. לתמיכה טכנית — מספרי הטלפון מופיעים בעמוד הראשון של חוברת ההדרכה של ניצן. הם מתחלפים מדי פעם, ולכן לא מופיעים כאן קבועים.",
+      "deadline": { "order": 3, "value": 14, "unit": "ימים", "title": "פרסום ציוני הבחינה",
+                    "phrase": "קלנדריים מיום הבחינה",
+                    "type": "relative", "offset_hours": 336, "anchor": "exam_date" },
+      "critical": true,
       "highlight": "אישור הציונים הוא מה שמפעיל את שעון הערעורים. לא לאשר לפני שסיימת לעבור על ההתפלגות."
     },
     {
@@ -673,8 +674,8 @@
       "items": [
         { "id": "x1", "text": "פרסמתי הנחיות ברורות למטלות ולבחינות" },
         { "id": "x2", "text": "הפקדתי את הבחינה בכספת", "topic_id": "exam-deposit", "critical": true },
-        { "id": "x3", "text": "בדקתי את הבחינות", "topic_id": "tomagrade", "critical": true },
-        { "id": "x4", "text": "פרסמתי ואישרתי את הציונים", "topic_id": "nitzan" },
+        { "id": "x3", "text": "בדקתי את הבחינות", "topic_id": "tomagrade" },
+        { "id": "x4", "text": "פרסמתי ואישרתי את הציונים", "topic_id": "nitzan", "critical": true },
         { "id": "x5", "text": "בדקתי ערעורים", "topic_id": "appeals-handling", "critical": true },
         { "id": "x6", "text": "שמרתי תיעוד מתאים", "topic_id": "documentation" },
         { "id": "x7", "text": "בתום תקופת הבחינות — עברתי על סקר שביעות הרצון ורשמתי שינויים מומלצים לפעם הבאה", "topic_id": "surveys" }

@@ -406,7 +406,7 @@ function renderRail(){
       n: dl.value!=null?dl.value:Math.abs(dl.offset_hours),
       unit: dl.unit||'שעות',
       phrase: dl.phrase||dl.label||'',
-      title: t.title,
+      title: dl.title || t.title,
       href: target || fallback || ('#/section/'+t.section)
     });
   });
