@@ -469,7 +469,6 @@ function topicHTML(t){
               data-link-id="${esc(l.id)}" data-link-title="${esc(l.title)}">${esc(l.title)} ↗</a>`).join('')}
       </div>`:''}
       ${t.tomasafe_contact?`<div class="callout warn">${esc(t.tomasafe_contact)}</div>`:''}
-      ${where.length?`<p class="appears"><b>מופיע בצ'קליסט:</b> ${where.map(esc).join(' · ')}</p>`:''}
       ${sp?`<p class="support">נתקעת? <b>${esc(sp.name)}</b>
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
