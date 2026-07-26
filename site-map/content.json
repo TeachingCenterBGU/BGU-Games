@@ -8,7 +8,7 @@
     "source": "חולץ מתוך: מערכות מחשוב בהוראה - מורה נבוכים - מעודכן 2025.pdf, ועודכן במיפוי ידני ביולי 2026.",
     "logo_link": "unit-home",
     "rail_lede": "ציר הסמסטר — ההתקדמות שלך נשמרת במכשיר הזה בלבד",
-    "deadlines_note": "ארבעה מועדים מחייבים. כל יתר ההמלצות באתר גמישות וניתנות להזזה.",
+    "deadlines_note": "שימו לב למועדים הקשיחים!.",
     "urgent_lede": "משהו תקוע ואין זמן לחפש?",
     "urgent_sub": "כל גורמי התמיכה, לפי סוג הבעיה.",
     "home_title": "מערכות ותחומי אחריות",
@@ -539,7 +539,7 @@
       "primary_link": "syllabus-system",
       "secondary_links": ["syllabus-guide", "course-catalog"],
       "support_id": "department",
-      "deadline": { "order": 1, "value": 4, "unit": "ימים", "title": "שינוי דרישות הקורס",
+      "deadline": { "order": 1, "value": 4, "unit": "ימים", "title": "סילבוס - שינוי דרישות הקורס",
                     "phrase": "לפני תום תקופת השינויים",
                     "type": "relative", "offset_hours": -96, "anchor": "changes_period_end" }, 
       
