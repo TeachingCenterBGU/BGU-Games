@@ -39,8 +39,12 @@ a{color:var(--navy)}
 
 /* ---------- masthead ---------- */
 .masthead{border-bottom:1px solid var(--line);background:var(--paper)}
-.mast-logo{padding:22px 0 18px}
-.mast-logo img{display:block;width:100%;max-width:560px;height:auto}
+.mast-logo{padding:22px 0 18px;text-align:center}
+.mast-logo a{display:inline-block;max-width:560px;width:100%;border-radius:var(--radius);
+  transition:opacity .15s}
+.mast-logo a:hover{opacity:.82}
+.mast-logo a:focus-visible{outline:2px solid var(--navy);outline-offset:6px}
+.mast-logo img{display:block;width:100%;height:auto}
 .mast-bar{border-top:1px solid var(--line);background:var(--surface)}
 .mast-bar .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .brand{font-weight:800;font-size:21px;letter-spacing:-.01em;cursor:pointer;background:none;border:0;
@@ -74,11 +78,15 @@ a{color:var(--navy)}
 .phase:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 /* hard-deadline pins */
-.pins{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid var(--navy-2)}
-.pin{display:flex;align-items:center;gap:11px;background:#12293f;border:1px solid var(--navy-2);
-  border-radius:var(--radius);padding:9px 14px;text-decoration:none}
-.pin b{font-size:22px;color:var(--orange);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:12px;
+  margin-top:26px;padding-top:20px;border-top:1px solid var(--navy-2)}
+.pin{display:flex;align-items:center;gap:12px;background:#12293f;border:1px solid var(--navy-2);
+  border-radius:var(--radius);padding:10px 14px;text-decoration:none}
+.pin-num{flex:none;display:flex;flex-direction:column;align-items:center;line-height:1;min-width:38px}
+.pin-num b{font-size:23px;color:var(--orange);font-weight:600;font-variant-numeric:tabular-nums}
+.pin-num i{font-style:normal;font-size:10.5px;color:#8aa6c1;letter-spacing:.05em;margin-top:4px}
 .pin span{font-size:13px;color:#c3d4e4;line-height:1.35}
+.pin span b{font-weight:700;color:#e6eef6;font-size:13px}
 .pin:hover{border-color:var(--orange)}
 .pins-note{font-size:12.5px;color:#8aa6c1;margin:12px 0 0}
 
@@ -95,7 +103,8 @@ a{color:var(--navy)}
 .home-head{margin:38px 0 18px}
 .home-head h2{font-size:23px}
 .home-head p{margin:6px 0 0;color:var(--ink-2);font-size:15.5px;max-width:64ch}
-.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:20px}
+.groups{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+@media (max-width:640px){.groups{grid-template-columns:1fr}}
 .group{
   display:block;text-align:right;background:var(--paper);border:1px solid var(--line);
   border-top:3px solid var(--orange);border-radius:var(--radius);padding:19px 20px 17px;
@@ -225,7 +234,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <header class="masthead">
   <div class="wrap mast-logo">
-    <img src="logo-unit.jpg" alt="היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן-גוריון בנגב">
+    <a id="logoLink" href="#" target="_blank" rel="noopener">
+      <img src="logo-unit.jpg" alt="היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן-גוריון בנגב">
+    </a>
   </div>
   <div class="mast-bar">
     <div class="wrap">
@@ -238,21 +249,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </header>
 
-<!-- pinned, outside the time axis -->
-<section class="urgent-strip">
-  <div class="wrap">
-    <p><b>משהו תקוע ואין זמן לחפש?</b> כל גורמי התמיכה, לפי סוג הבעיה.</p>
-    <button class="urgent-btn" id="urgentBtn" onclick="go('#/section/help')">יש לי בעיה דחופה — למי פונים?</button>
-  </div>
-</section>
-
 <!-- SIGNATURE: ציר הסמסטר -->
 <section class="rail-shell" id="railShell">
   <div class="wrap">
-    <p class="rail-lede">ציר הסמסטר — ההתקדמות שלך נשמרת במכשיר הזה בלבד</p>
+    <p class="rail-lede" id="railLede"></p>
     <nav class="rail" id="rail" aria-label="שלבי הסמסטר"></nav>
     <div class="pins" id="pins"></div>
-    <p class="pins-note">שני אלה הם הדדליינים הקשיחים היחידים. כל השאר — המלצות שאפשר להזיז.</p>
+    <p class="pins-note" id="pinsNote"></p>
+  </div>
+</section>
+
+<!-- pinned, outside the time axis -->
+<section class="urgent-strip">
+  <div class="wrap">
+    <p><b id="urgentLede"></b> <span id="urgentSub"></span></p>
+    <button class="urgent-btn" id="urgentBtn" onclick="go('#/section/help')">יש לי בעיה דחופה — למי פונים?</button>
   </div>
 </section>
 
@@ -260,8 +271,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   <section id="view-home" class="view on">
     <div class="home-head">
-      <h2>לפי מי אחראי</h2>
-      <p>הציר למעלה עונה על "מה עושים ומתי". כאן נמצא כל ההסבר על כל מערכת — מסודר לפי הגורם שאליו פונים, לא לפי שלב בסמסטר.</p>
+      <h2 id="homeTitle"></h2>
+      <p id="homeLede"></p>
     </div>
     <div class="groups" id="groups"></div>
   </section>
@@ -379,17 +390,32 @@ function renderRail(){
     </button>`;
   }).join('');
 
-  /* hard deadlines — each pin jumps to the checklist that actually contains it */
+  /* hard deadlines — order comes from deadline.order in the data, not from topic order */
   const pins=[];
   D.topics.forEach(t=>{
-    if(!t.deadline || t.deadline.type!=='relative') return;
-    let target=null;
-    D.checklists.forEach(c=>c.items.forEach(i=>{ if(i.topic_id===t.id && !target) target='#/checklist/'+c.id; }));
-    pins.push({n:Math.abs(t.deadline.offset_hours), label:t.deadline.label, title:t.title,
-               href: target || ('#/section/'+t.section)});
+    const dl=t.deadline; if(!dl) return;
+    /* prefer the checklist item that is itself flagged critical; otherwise the first mention */
+    let target=null, fallback=null;
+    D.checklists.forEach(c=>c.items.forEach(i=>{
+      if(i.topic_id!==t.id) return;
+      if(i.critical && !target) target='#/checklist/'+c.id;
+      if(!fallback) fallback='#/checklist/'+c.id;
+    }));
+    pins.push({
+      order: dl.order==null?99:dl.order,
+      n: dl.value!=null?dl.value:Math.abs(dl.offset_hours),
+      unit: dl.unit||'שעות',
+      phrase: dl.phrase||dl.label||'',
+      title: t.title,
+      href: target || fallback || ('#/section/'+t.section)
+    });
   });
+  pins.sort((a,b)=>a.order-b.order);
   document.getElementById('pins').innerHTML = pins.map(p=>
-    `<a class="pin" href="${esc(p.href)}"><b>${p.n}</b><span>${esc(p.title)}<br>${esc(p.label)}</span></a>`).join('');
+    `<a class="pin" href="${esc(p.href)}">
+       <span class="pin-num"><b>${esc(p.n)}</b><i>${esc(p.unit)}</i></span>
+       <span><b>${esc(p.title)}</b><br>${esc(p.phrase)}</span>
+     </a>`).join('');
 }
 
 /* ---- home: responsibility groups ---- */
@@ -549,8 +575,18 @@ fetch('content.json',{cache:'no-cache'})
   .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(d=>{
     D=d;
-    document.getElementById('foot-owner').textContent=d.meta.owner;
-    document.getElementById('foot-date').textContent='עודכן: '+d.meta.last_reviewed;
+    const m=d.meta||{};
+    const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt||''; };
+    set('foot-owner', m.owner);
+    set('foot-date', 'עודכן: '+m.last_reviewed);
+    set('railLede',   m.rail_lede);
+    set('pinsNote',   m.deadlines_note);
+    set('urgentLede', m.urgent_lede);
+    set('urgentSub',  m.urgent_sub);
+    set('homeTitle',  m.home_title);
+    set('homeLede',   m.welcome);
+    const lg=link(m.logo_link), a=document.getElementById('logoLink');
+    if(a){ if(lg){ a.href=lg.url; a.title=lg.title; } else { a.removeAttribute('href'); a.removeAttribute('target'); } }
     applyPinned(); renderHome(); route();
   })
   .catch(()=>{

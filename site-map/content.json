@@ -6,7 +6,13 @@
     "schema_version": 2,
     "last_reviewed": "2026-07-24",
     "source": "חולץ מתוך: מערכות מחשוב בהוראה - מורה נבוכים - מעודכן 2025.pdf, ועודכן במיפוי ידני ביולי 2026.",
-    "welcome": "הציר למעלה מסודר לפי זמן — מה עושים ומתי. הקוביות למטה מסודרות לפי הגורם האחראי — כל ההסברים על כל מערכת, במקום אחד."
+    "logo_link": "unit-home",
+    "rail_lede": "ציר הסמסטר — ההתקדמות שלך נשמרת במכשיר הזה בלבד",
+    "deadlines_note": "ארבעה מועדים מחייבים. כל יתר ההמלצות באתר גמישות וניתנות להזזה.",
+    "urgent_lede": "משהו תקוע ואין זמן לחפש?",
+    "urgent_sub": "כל גורמי התמיכה, לפי סוג הבעיה.",
+    "home_title": "מערכות ותחומי אחריות",
+    "welcome": "הציר שלמעלה עונה על השאלה מה עושים ומתי. החלוקה שלהלן מסודרת לפי הגורם האחראי: כל מערכת, ההסבר המלא עליה וכתובת הפנייה בעניינה — במקום אחד."
   },
 
   "_comment_schema_v2": "שינויי גרסה 2: (1) topics.section מציין גורם אחראי ולא שלב בזמן. (2) הצ'קליסטים מכילים משימות בלבד — כל הסבר יושב בקוביה. (3) הציר נבנה מ-tracks ולא מקוד קשיח ב-JS. (4) links.auth מסמן מערכות שדורשות הזדהות, ולכן בודק הקישורים לא מצפה מהן ל-200.",
@@ -56,6 +62,15 @@
       "fragility": "low",
       "auth": false,
       "note": "נקודת הכניסה המרכזית. רוב הקישורים למרצה נמצאים כאן תחת הכותרת \"הוראה\"."
+    },
+    {
+      "id": "unit-home",
+      "title": "היחידה לקידום איכות ההוראה והלמידה",
+      "url": "https://www.bgu.ac.il/u/academic-affairs/academicdev/",
+      "verified": "ok",
+      "fragility": "low",
+      "auth": false,
+      "note": "אתר הבית של היחידה. זהו היעד של הסמל בראש העמוד (meta.logo_link)."
     },
     {
       "id": "teaching-center-site",
@@ -263,6 +278,15 @@
       "fragility": "high",
       "auth": false,
       "note": "תבנית media/<hash>/ מתחלפת בכל העלאה מחדש של הקובץ."
+    },
+    {
+      "id": "duties-guide",
+      "title": "נוהל חובות הוראה",
+      "url": "https://www.bgu.ac.il/media/f43nzhky/duties.pdf",
+      "verified": "unverified",
+      "fragility": "high",
+      "auth": false,
+      "note": "תבנית media/<hash>/ מתחלפת בכל העלאה מחדש של הקובץ."
     }
   ],
 
@@ -368,6 +392,9 @@
       "primary_link": "tomagrade",
       "secondary_links": ["tomagrade-guide"],
       "support_id": "elearn",
+      "deadline": { "order": 3, "value": 14, "unit": "ימים", "phrase": "מיום הבחינה לסיום הבדיקה",
+                    "type": "relative", "offset_hours": 336, "anchor": "exam_date" },
+      "critical": true,
       "warning": "טומגרייד עובד בכרום בלבד. בדפדפנים אחרים הממשק ייראה תקין אבל הסימונים לא תמיד נשמרים."
     },
     {
@@ -416,7 +443,8 @@
       "secondary_links": ["safes-guide", "tomasafe", "tomasafe-guide", "exam-procedure", "exams-unit"],
       "support_id": "exams-office",
       "tomasafe_contact": "בחינות רב-ברירה מעורבלות (TomaSafe): הפנייה לדבורה זק במדור בחינות, באותו מספר טלפון.",
-      "deadline": { "type": "relative", "offset_hours": -96, "anchor": "exam_start", "label": "96 שעות לפני הבחינה" },
+      "deadline": { "order": 2, "value": 96, "unit": "שעות", "phrase": "לפני תחילת הבחינה",
+                    "type": "relative", "offset_hours": -96, "anchor": "exam_start" },
       "critical": true,
       "warning": "בקשת TomaSafe שמוגשת מאוחר לא תמיד ניתנת לאישור. אם יש סיכוי שתרצי בחינה מעורבלת — עדיף לשאול את דבורה זק מוקדם, כבר בתכנון הסמסטר."
     },
@@ -452,7 +480,8 @@
       "primary_link": "appeals",
       "secondary_links": ["gezer"],
       "support_id": "department",
-      "deadline": { "type": "relative", "offset_hours": 72, "anchor": "grades_published", "label": "כ-72 שעות לאחר פרסום הציונים" },
+      "deadline": { "order": 4, "value": 72, "unit": "שעות", "phrase": "לאחר פרסום הציונים",
+                    "type": "relative", "offset_hours": 72, "anchor": "grades_published" },
       "critical": true
     },
     {
@@ -501,6 +530,9 @@
       "primary_link": "syllabus-system",
       "secondary_links": ["syllabus-guide", "course-catalog"],
       "support_id": "department",
+      "deadline": { "order": 1, "value": 14, "unit": "ימים", "phrase": "לפני פתיחת הרישום",
+                    "type": "relative", "offset_hours": -336, "anchor": "registration_start" },
+      "critical": true,
       "warning": "פער בין רכיבי הציון בסילבוס לבין המודל הוא העילה הנפוצה ביותר לערעור מוצדק בסוף הסמסטר."
     },
     {
@@ -583,7 +615,7 @@
       "title": "לפני תחילת הסמסטר",
       "intro": "רוב הפריטים כאן לוקחים דקות. שווה לעבור עליהם לפני שהסמסטר מתחיל והלחץ מתחיל איתו.",
       "items": [
-        { "id": "b1", "text": "עדכנתי את הסילבוס במערכת הסילבוסים", "topic_id": "syllabus" },
+        { "id": "b1", "text": "עדכנתי את הסילבוס במערכת הסילבוסים", "topic_id": "syllabus", "critical": true },
         { "id": "b2", "text": "בדקתי את לוח השנה האקדמי", "topic_id": "calendar" },
         { "id": "b3", "text": "נפגשתי עם צוות ההוראה בקורס", "topic_id": "teaching-team" },
         { "id": "b4", "text": "עדכנתי את אתר המודל", "topic_id": "moodle" },
@@ -629,7 +661,7 @@
       "items": [
         { "id": "x1", "text": "פרסמתי הנחיות ברורות למטלות ולבחינות" },
         { "id": "x2", "text": "הפקדתי את הבחינה בכספת", "topic_id": "exam-deposit", "critical": true },
-        { "id": "x3", "text": "בדקתי את הבחינות", "topic_id": "tomagrade" },
+        { "id": "x3", "text": "בדקתי את הבחינות", "topic_id": "tomagrade", "critical": true },
         { "id": "x4", "text": "פרסמתי ואישרתי את הציונים", "topic_id": "nitzan" },
         { "id": "x5", "text": "בדקתי ערעורים", "topic_id": "appeals-handling", "critical": true },
         { "id": "x6", "text": "שמרתי תיעוד מתאים", "topic_id": "documentation" },
