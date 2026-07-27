@@ -78,16 +78,17 @@ a{color:var(--navy)}
 .phase:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 /* hard-deadline pins */
-.pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:12px;
+.pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;
   margin-top:26px;padding-top:20px;border-top:1px solid var(--navy-2)}
-.pin{display:flex;align-items:center;gap:12px;background:#12293f;border:1px solid var(--navy-2);
-  border-radius:var(--radius);padding:10px 14px;text-decoration:none}
-.pin-num{flex:none;display:flex;flex-direction:column;align-items:center;line-height:1;min-width:38px}
-.pin-num b{font-size:24.5px;color:var(--orange);font-weight:600;font-variant-numeric:tabular-nums}
-.pin-num i{font-style:normal;font-size:11.5px;color:#8aa6c1;letter-spacing:.05em;margin-top:4px}
-.pin span{font-size:14px;color:#c3d4e4;line-height:1.35}
-.pin span b{font-weight:700;color:#e6eef6;font-size:14px}
+.pin{display:block;background:#12293f;border:1px solid var(--navy-2);
+  border-radius:var(--radius);padding:12px 14px 13px;text-decoration:none}
+.pin-title{display:block;font-size:14px;font-weight:700;color:#e6eef6;line-height:1.3;
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--navy-2)}
+.pin-when{display:block;font-size:13.5px;color:#c3d4e4;line-height:1.5}
+.pin-when b{font-size:21px;font-weight:600;color:var(--orange);
+  font-variant-numeric:tabular-nums;margin-inline-end:2px}
 .pin:hover{border-color:var(--orange)}
+.pin:hover .pin-title{color:#fff}
 .pins-note{font-size:13.5px;color:#8aa6c1;margin:12px 0 0}
 
 /* ---------- urgent (pinned, outside the axis) ---------- */
@@ -421,8 +422,8 @@ function renderRail(){
   pins.sort((a,b)=>a.order-b.order);
   document.getElementById('pins').innerHTML = pins.map(p=>
     `<a class="pin" href="${esc(p.href)}">
-       <span class="pin-num"><b>${esc(p.n)}</b><i>${esc(p.unit)}</i></span>
-       <span><b>${esc(p.title)}</b><br>${esc(p.phrase)}</span>
+       <span class="pin-title">${esc(p.title)}</span>
+       <span class="pin-when"><b>${esc(p.n)}</b> ${esc(p.unit)} ${esc(p.phrase)}</span>
      </a>`).join('');
 }
 

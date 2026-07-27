@@ -666,7 +666,7 @@
         "value": 10,
         "unit": "ימים",
         "title": "הגשת סילבוס לאישור",
-        "phrase": "עשרה ימים לפני תחילת הרישום במחלקה",
+        "phrase": "לפני תחילת הרישום במחלקה",
         "type": "relative",
         "offset_hours": -240,
         "anchor": "syllabus"
