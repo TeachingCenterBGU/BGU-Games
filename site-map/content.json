@@ -551,7 +551,7 @@
         "exams-unit"
       ],
       "support_id": "exams-office",
-      "deadline": { "order": 2, "value": 96, "unit": "שעות", "phrase": "לפני תחילת הבחינה", "type": "relative", "offset_hours": -96, "anchor": "exam_start" },
+      "deadline": { "order": 3, "value": 96, "unit": "שעות", "phrase": "לפני תחילת הבחינה", "type": "relative", "offset_hours": -96, "anchor": "exam_start" },
       "critical": true,
       "warning": "בקשת TomaSafe שמוגשת מאוחר לא תמיד ניתנת לאישור. אם יש סיכוי שתרצו בחינה מעורבלת — עדיף לשאול  מוקדם, כבר בתכנון הסמסטר."
     },
@@ -579,7 +579,7 @@
       "primary_link": "nitzan",
       "support_id": "department",
       "deadline": {
-        "order": 3,
+        "order": 4,
         "value": 14,
         "unit": "ימים",
         "title": "פרסום ציוני הבחינה",
@@ -610,7 +610,7 @@
         "gezer"
       ],
       "support_id": "department",
-      "deadline": { "order": 4, "value": 3, "unit": "ימים", "phrase": "לפני המועד הבא", "type": "relative", "offset_hours": 72, "anchor": "grades_published" },
+      "deadline": { "order": 5, "value": 3, "unit": "ימים", "phrase": "לפני המועד הבא", "type": "relative", "offset_hours": 72, "anchor": "grades_published" },
       "critical": true
     },
     {
@@ -662,14 +662,14 @@
       ],
       "support_id": "department",
       "deadline": {
-        "order": 0,
+        "order": 1,
         "value": 10,
         "unit": "ימים",
         "title": "הגשת סילבוס לאישור",
         "phrase": "עשרה ימים לפני תחילת הרישום במחלקה",
         "type": "relative",
         "offset_hours": -240,
-        "anchor": "syllabus_end"
+        "anchor": "syllabus"
       },
       "critical": true,
       "warning": "פער בין רכיבי הציון בסילבוס לבין המודל הוא העילה הנפוצה ביותר לערעור מוצדק בסוף הסמסטר."
@@ -690,7 +690,7 @@
       "support_id": "department"
             "support_id": "department",
       "deadline": {
-        "order": 1,
+        "order": 2,
         "value": 4,
         "unit": "ימים",
         "title": "סילבוס - שינוי דרישות הקורס",
