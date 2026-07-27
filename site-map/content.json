@@ -687,8 +687,7 @@
         "מומלץ להתייעץ עם המרצים והמרצות של הקורסים הקשורים על מנת לתאם את התכנים"
       ],
       "primary_link": "yearbooks",
-      "support_id": "department"
-            "support_id": "department",
+      "support_id": "department",
       "deadline": {
         "order": 2,
         "value": 4,
@@ -699,7 +698,7 @@
         "offset_hours": -96,
         "anchor": "changes_period_end"
       },
-      "critical": true,
+      "critical": true
     },
     {
       "id": "calendar",
