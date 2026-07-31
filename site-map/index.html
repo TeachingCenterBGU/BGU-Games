@@ -193,6 +193,14 @@ main{padding:0 0 90px}
 .item-link{display:inline-block;background:none;border:0;font-family:inherit;font-size:14.5px;
   color:var(--navy);cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
 .item-link:hover{color:var(--orange-deep)}
+/* a topic opened in place, inside the checklist row */
+.item-detail{display:none;margin-top:11px;padding:14px 17px 18px;background:var(--paper);
+  border:1px solid var(--line);border-inline-start:3px solid var(--navy);border-radius:var(--radius)}
+.item.open .item-detail{display:block}
+.item-detail>.field:first-child{margin-top:0}
+.item-detail .full-link{display:block;margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:14.5px;color:var(--ink-3);text-decoration:none}
+.item-detail .full-link:hover{color:var(--navy);text-decoration:underline}
 @keyframes flashRow{0%{background:#fdf0e2}100%{background:transparent}}
 .item.flash{animation:flashRow 2.2s ease-out}
 .topic.flash>.topic-head{animation:flashRow 2.2s ease-out}
@@ -236,6 +244,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .view.on{display:block!important}
   body{font-size:12pt}
   .item{break-inside:avoid}
+  .item-link,.item-detail{display:none!important}
   .topic-body{display:block!important}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555;word-break:break-all}
 }
@@ -405,11 +414,30 @@ function route(){
   if(kind==='') { renderHome(); show('view-home'); }
   else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
   else if(kind==='section'){ renderSection(id, q.get('t')); show('view-section'); }
-  else if(kind==='checklist'){ renderChecklist(id, q.get('i')); show('view-checklist'); }
+  else if(kind==='checklist'){ renderChecklist(id, q.get('i'), q.get('open')); show('view-checklist'); }
   else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
   else { renderHome(); show('view-home'); }
   window.scrollTo(0,0);
 }
+/* checklist row that opens in place */
+function setItemOpen(row, open){
+  const btn=row&&row.querySelector('.item-link'); if(!btn) return;
+  if(open) document.getElementById('ck-body').querySelectorAll('.item.open')
+    .forEach(o=>{ if(o!==row) setItemOpen(o,false); });
+  row.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open?'true':'false');
+  btn.textContent = open ? 'סגירה ▴' : 'איך עושים את זה ▾';
+}
+/* keep the address bar in step without adding a history entry: Back still
+   returns where the reader came from, and a copied link reopens the item. */
+function markOpenInURL(ckId, itemId){
+  const from=new URLSearchParams(location.hash.split('?')[1]||'').get('from');
+  const qs=[itemId?'open='+encodeURIComponent(itemId):'', from?'from='+encodeURIComponent(from):'']
+    .filter(Boolean).join('&');
+  const h='#/checklist/'+ckId+(qs?'?'+qs:'');
+  if(location.hash!==h) history.replaceState(null,'',location.pathname+location.search+h);
+}
+
 /* bring a row/cube into view and blink it once, so the eye finds the place */
 function reveal(el, open){
   if(!el) return;
@@ -480,8 +508,6 @@ function renderHome(){
 
 /* ---- topic card ---- */
 function topicHTML(t){
-  const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
-  const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
   return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
     <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
       <h3>${esc(t.title)}</h3>
@@ -489,8 +515,15 @@ function topicHTML(t){
       ${t.draft?'<span class="badge draft">בהכנה</span>':''}
       <span class="chev">▾</span>
     </button>
-    <div class="topic-body">
-      ${t.what?(t.how&&t.how.length
+    <div class="topic-body">${topicBodyHTML(t)}</div></article>`;
+}
+
+/* the guts of a topic. shared by the cube above and by opening a topic in
+   place inside a checklist row, so the text has one source of truth only. */
+function topicBodyHTML(t){
+  const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
+  const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
+  return `      ${t.what?(t.how&&t.how.length
         ? `<div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>`
         : `<div class="field bare"><p>${esc(t.what)}</p></div>`):''}
       ${t.when?`<div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>`:''}
@@ -508,8 +541,7 @@ function topicHTML(t){
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
         ${sp.hours?`<br><span style="color:var(--ink-3);font-size:14px">${esc(sp.hours)}</span>`:''}</p>`:''}
-      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}
-    </div></article>`;
+      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}`;
 }
 
 /* ---- section view (a responsibility group) ---- */
@@ -527,7 +559,7 @@ function renderSection(id, openTid){
 }
 
 /* ---- checklist view ---- */
-function renderChecklist(id, focusItem){
+function renderChecklist(id, focusItem, openItem){
   const c=D.checklists.find(x=>x.id===id);
   if(!c){ go('#/'); return; }
   document.getElementById('ck-title').textContent=c.title;
@@ -535,13 +567,16 @@ function renderChecklist(id, focusItem){
   const zones = (D.zones && D.zones.length) ? D.zones : [{id:null,label:'',note:''}];
   const itemHTML = i => {
     const k=c.id+'/'+i.id, done=!!state[k], t=i.topic_id?topic(i.topic_id):null;
-    return `<div class="item ${done?'done':''}" data-k="${esc(k)}">
+    return `<div class="item ${done?'done':''}" data-k="${esc(k)}" data-i="${esc(i.id)}">
       <input type="checkbox" id="cb-${esc(k)}" ${done?'checked':''} aria-label="${esc(i.text)}">
       <div class="item-main">
         <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
           ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
         </label>
-        ${t?`<a class="item-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">איך עושים את זה →</a>`:''}
+        ${t?`<button class="item-link" type="button" aria-expanded="false" aria-controls="d-${esc(k)}">איך עושים את זה ▾</button>
+        <div class="item-detail" id="d-${esc(k)}">${topicBodyHTML(t)}
+          <a class="full-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">לעמוד המלא של הנושא, עם שאר הנושאים בתחום →</a>
+        </div>`:''}
       </div></div>`;
   };
   /* items with no zone fall into the first zone */
@@ -564,10 +599,25 @@ function renderChecklist(id, focusItem){
     if(!confirm('לאפס את כל הסימונים בצ׳קליסט "'+c.title+'"?')) return;
     c.items.forEach(i=>delete state[c.id+'/'+i.id]); save(); renderChecklist(c.id);
   };
+
+  /* open the explanation in place: the checklist itself never leaves the
+     screen, and only one item is open at a time so the list stays short. */
+  document.getElementById('ck-body').querySelectorAll('.item-link').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const row=btn.closest('.item'), open=!row.classList.contains('open');
+      setItemOpen(row,open);
+      if(open) row.scrollIntoView({block:'nearest'});
+      markOpenInURL(c.id, open?row.dataset.i:null);
+    });
+  });
   tally(c);
   if(focusItem) setTimeout(()=>{
     const row=document.getElementById('ck-body').querySelector(`.item[data-k="${CSS.escape(c.id+'/'+focusItem)}"]`);
     reveal(row,false);
+  },40);
+  if(openItem) setTimeout(()=>{
+    const row=document.getElementById('ck-body').querySelector(`.item[data-i="${CSS.escape(openItem)}"]`);
+    if(row){ setItemOpen(row,true); reveal(row,false); }
   },40);
 }
 function tally(c){
