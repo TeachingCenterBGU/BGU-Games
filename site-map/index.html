@@ -190,9 +190,12 @@ main{padding:0 0 90px}
 .tag{display:inline-block;font-size:11.5px;letter-spacing:.06em;padding:2px 7px;border-radius:2px;
   vertical-align:2px;margin-inline-start:8px}
 .tag.hard{background:var(--orange);color:#fff}
-.item-link{background:none;border:0;font-family:inherit;font-size:14.5px;color:var(--navy);
-  cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
+.item-link{display:inline-block;background:none;border:0;font-family:inherit;font-size:14.5px;
+  color:var(--navy);cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
 .item-link:hover{color:var(--orange-deep)}
+@keyframes flashRow{0%{background:#fdf0e2}100%{background:transparent}}
+.item.flash{animation:flashRow 2.2s ease-out}
+.topic.flash>.topic-head{animation:flashRow 2.2s ease-out}
 
 /* ---------- help ---------- */
 .help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
@@ -207,9 +210,9 @@ main{padding:0 0 90px}
 
 /* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
-.hit button{background:none;border:0;font-family:inherit;font-size:18px;font-weight:700;
-  color:var(--ink);cursor:pointer;padding:0;text-align:right}
-.hit button:hover{color:var(--navy)}
+.hit a{display:inline-block;background:none;border:0;font-family:inherit;font-size:18px;font-weight:700;
+  color:var(--ink);cursor:pointer;padding:0;text-align:right;text-decoration:none}
+.hit a:hover{color:var(--navy);text-decoration:underline}
 .hit .where{font-size:14px;color:var(--ink-3);margin-top:2px}
 .empty{color:var(--ink-3);padding:26px 0}
 
@@ -287,13 +290,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </section>
 
   <section id="view-section" class="view">
-    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <button class="crumb"></button>
     <div class="view-head"><h2 id="sec-title"></h2><p id="sec-intro"></p></div>
     <div id="sec-body"></div>
   </section>
 
   <section id="view-checklist" class="view">
-    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <button class="crumb"></button>
     <div class="view-head"><h2 id="ck-title"></h2><p id="ck-intro"></p></div>
     <div class="ck-bar">
       <span class="ck-count" id="ck-count"></span>
@@ -307,7 +310,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </section>
 
   <section id="view-help" class="view">
-    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <button class="crumb"></button>
     <div class="view-head">
       <h2>למי פונים</h2>
       <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
@@ -316,7 +319,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </section>
 
   <section id="view-search" class="view">
-    <button class="crumb" onclick="go('#/')">→ חזרה לדף הפתיחה</button>
+    <button class="crumb"></button>
     <div class="view-head"><h2>תוצאות חיפוש</h2><p id="q-echo"></p></div>
     <div id="search-body"></div>
   </section>
@@ -365,18 +368,54 @@ document.addEventListener('click', e=>{
 function go(hash){ if(location.hash===hash) route(); else location.hash=hash; }
 function show(id){ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id===id)); }
 
+/* origin trail: every internal jump carries ?from=<kind>:<id>[:<anchor>]
+   so the crumb can send the reader back exactly where they were. */
+function crumbTarget(from){
+  const def={hash:'#/', label:'חזרה לדף הפתיחה'};
+  if(!from) return def;
+  const [k,v,anchor]=from.split(':');
+  if(k==='checklist'){
+    const c=D.checklists.find(x=>x.id===v); if(!c) return def;
+    return {hash:'#/checklist/'+v+(anchor?'?i='+encodeURIComponent(anchor):''), label:'חזרה ל'+c.title};
+  }
+  if(k==='section'){
+    const s=section(v); if(!s) return def;
+    return {hash:'#/section/'+v, label:'חזרה ל'+s.title};
+  }
+  if(k==='search') return {hash:'#/search/'+encodeURIComponent(v||''), label:'חזרה לתוצאות החיפוש'};
+  return def;
+}
+function setCrumbs(from){
+  const t=crumbTarget(from);
+  document.querySelectorAll('.crumb').forEach(b=>{
+    b.textContent='→ '+t.label;
+    b.onclick=()=>go(t.hash);
+  });
+}
+
 function route(){
   if(!D) return;
-  const h=(location.hash||'#/').replace(/^#\//,'');
-  const [kind,id]=h.split('/');
+  const raw=(location.hash||'#/').replace(/^#\//,'');
+  const qi=raw.indexOf('?');
+  const path=qi<0?raw:raw.slice(0,qi);
+  const q=new URLSearchParams(qi<0?'':raw.slice(qi+1));
+  const [kind,id]=path.split('/');
   document.getElementById('railShell').style.display = (kind==='')?'':'none';
+  setCrumbs(q.get('from'));
   if(kind==='') { renderHome(); show('view-home'); }
   else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
-  else if(kind==='section'){ renderSection(id); show('view-section'); }
-  else if(kind==='checklist'){ renderChecklist(id); show('view-checklist'); }
+  else if(kind==='section'){ renderSection(id, q.get('t')); show('view-section'); }
+  else if(kind==='checklist'){ renderChecklist(id, q.get('i')); show('view-checklist'); }
   else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
   else { renderHome(); show('view-home'); }
   window.scrollTo(0,0);
+}
+/* bring a row/cube into view and blink it once, so the eye finds the place */
+function reveal(el, open){
+  if(!el) return;
+  if(open) el.classList.add('open');
+  el.scrollIntoView({block:'center'});
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 window.addEventListener('hashchange', route);
 
@@ -474,17 +513,21 @@ function topicHTML(t){
 }
 
 /* ---- section view (a responsibility group) ---- */
-function renderSection(id){
+function renderSection(id, openTid){
   const meta=section(id)||{title:id,intro:''};
   document.getElementById('sec-title').textContent=meta.title;
   document.getElementById('sec-intro').textContent=meta.intro||'';
   const ts=D.topics.filter(t=>t.section===id);
   document.getElementById('sec-body').innerHTML = ts.length? ts.map(topicHTML).join('')
     : '<p class="empty">אין עדיין נושאים בתחום הזה.</p>';
+  if(openTid) setTimeout(()=>{
+    const el=document.getElementById('t-'+openTid);
+    if(el){ reveal(el,true); el.querySelector('.topic-head')?.setAttribute('aria-expanded','true'); }
+  },40);
 }
 
 /* ---- checklist view ---- */
-function renderChecklist(id){
+function renderChecklist(id, focusItem){
   const c=D.checklists.find(x=>x.id===id);
   if(!c){ go('#/'); return; }
   document.getElementById('ck-title').textContent=c.title;
@@ -498,7 +541,7 @@ function renderChecklist(id){
         <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
           ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
         </label>
-        ${t?`<button class="item-link" onclick="openTopic('${esc(t.id)}')">איך עושים את זה →</button>`:''}
+        ${t?`<a class="item-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">איך עושים את זה →</a>`:''}
       </div></div>`;
   };
   /* items with no zone fall into the first zone */
@@ -522,6 +565,10 @@ function renderChecklist(id){
     c.items.forEach(i=>delete state[c.id+'/'+i.id]); save(); renderChecklist(c.id);
   };
   tally(c);
+  if(focusItem) setTimeout(()=>{
+    const row=document.getElementById('ck-body').querySelector(`.item[data-k="${CSS.escape(c.id+'/'+focusItem)}"]`);
+    reveal(row,false);
+  },40);
 }
 function tally(c){
   const done=c.items.filter(i=>state[c.id+'/'+i.id]).length, tot=c.items.length;
@@ -530,13 +577,9 @@ function tally(c){
 }
 
 /* jump from a checklist item straight to the cube, opened */
-function openTopic(tid){
+function openTopic(tid, from){
   const t=topic(tid); if(!t) return;
-  go('#/section/'+t.section);
-  setTimeout(()=>{
-    const el=document.getElementById('t-'+tid);
-    if(el){ el.classList.add('open'); el.scrollIntoView({block:'center'}); }
-  },60);
+  go('#/section/'+t.section+'?t='+encodeURIComponent(tid)+(from?'&from='+encodeURIComponent(from):''));
 }
 
 /* ---- help ---- */
@@ -562,16 +605,18 @@ function renderSearch(q){
   const hits=[];
   D.topics.forEach(t=>{
     const hay=[t.title,t.what,t.when,(t.how||[]).join(' '),t.highlight,t.warning].join(' ').toLowerCase();
-    if(hay.includes(n)) hits.push({title:t.title, where:section(t.section)?.title||'נושא', act:`openTopic('${t.id}')`});
+    if(hay.includes(n)) hits.push({title:t.title, where:section(t.section)?.title||'נושא',
+      href:`#/section/${t.section}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('search:'+q)}`});
   });
   D.checklists.forEach(c=>c.items.forEach(i=>{
-    if(i.text.toLowerCase().includes(n)) hits.push({title:i.text, where:c.title, act:`go('#/checklist/${c.id}')`});
+    if(i.text.toLowerCase().includes(n)) hits.push({title:i.text, where:c.title,
+      href:`#/checklist/${c.id}?i=${encodeURIComponent(i.id)}&from=${encodeURIComponent('search:'+q)}`});
   }));
   D.links.forEach(l=>{
-    if(l.title.toLowerCase().includes(n)) hits.push({title:l.title, where:'מערכת', act:`window.open('${l.url}','_blank')`});
+    if(l.title.toLowerCase().includes(n)) hits.push({title:l.title, where:'מערכת', href:l.url, ext:true});
   });
   box.innerHTML = hits.length
-    ? hits.map(h=>`<div class="hit"><button onclick="${h.act}">${esc(h.title)}</button><div class="where">${esc(h.where)}</div></div>`).join('')
+    ? hits.map(h=>`<div class="hit"><a href="${esc(h.href)}"${h.ext?' target="_blank" rel="noopener"':''}>${esc(h.title)}</a><div class="where">${esc(h.where)}</div></div>`).join('')
     : '<p class="empty">אין תוצאות. נסי מילה אחרת — למשל "כספת", "ערעור", "סילבוס".</p>';
 }
 const qi=document.getElementById('q');
