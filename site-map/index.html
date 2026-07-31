@@ -215,6 +215,11 @@ main{padding:0 0 90px}
 .help-card .sub-note{font-size:14px;color:var(--ink-2);margin-top:11px;padding-top:10px;
   border-top:1px dashed var(--line);line-height:1.5}
 .help-card .contact.mono{font-size:20.5px;font-weight:700;color:var(--orange-deep)}
+/* a way in that isn't a problem: feedback, questions, ideas */
+.help-note{margin-top:22px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);
+  border-inline-start:3px solid var(--navy);border-radius:var(--radius);font-size:16.5px;color:var(--ink-2)}
+.help-note b{color:var(--ink)}
+.help-note a{font-weight:600}
 
 /* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
@@ -325,6 +330,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
     </div>
     <div class="help-grid" id="help-body"></div>
+    <p class="help-note" id="help-note" hidden></p>
   </section>
 
   <section id="view-search" class="view">
@@ -644,6 +650,16 @@ function renderHelp(){
       ${s.hours?`<p class="hours">${esc(s.hours)}</p>`:''}
       ${s.sub_note?`<p class="sub-note">${esc(s.sub_note)}</p>`:''}
     </div>`).join('');
+
+  /* the note under the grid. everything here comes from meta, so the wording
+     and the address behind it are editable without touching this file. */
+  const note=document.getElementById('help-note'), m=D.meta||{};
+  const hs=m.help_note_support?supp(m.help_note_support):null;
+  if(m.help_note){
+    note.innerHTML=(m.help_note_lede?`<b>${esc(m.help_note_lede)}</b> `:'')+esc(m.help_note)+
+      (hs&&hs.email?` <a href="mailto:${esc(hs.email)}">${esc(hs.email)}</a>`:'');
+    note.hidden=false;
+  } else note.hidden=true;
 }
 
 /* ---- search ---- */
