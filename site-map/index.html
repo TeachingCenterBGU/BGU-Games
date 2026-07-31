@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Google tag (gtag.js) — נכס: G-EZ4EEMW6C2 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EZ4EEMW6C2');
+</script>
 <title>מורה נבוכים — מערכות מחשוב בהוראה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -193,14 +202,6 @@ main{padding:0 0 90px}
 .item-link{display:inline-block;background:none;border:0;font-family:inherit;font-size:14.5px;
   color:var(--navy);cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
 .item-link:hover{color:var(--orange-deep)}
-/* a topic opened in place, inside the checklist row */
-.item-detail{display:none;margin-top:11px;padding:14px 17px 18px;background:var(--paper);
-  border:1px solid var(--line);border-inline-start:3px solid var(--navy);border-radius:var(--radius)}
-.item.open .item-detail{display:block}
-.item-detail>.field:first-child{margin-top:0}
-.item-detail .full-link{display:block;margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);
-  font-size:14.5px;color:var(--ink-3);text-decoration:none}
-.item-detail .full-link:hover{color:var(--navy);text-decoration:underline}
 @keyframes flashRow{0%{background:#fdf0e2}100%{background:transparent}}
 .item.flash{animation:flashRow 2.2s ease-out}
 .topic.flash>.topic-head{animation:flashRow 2.2s ease-out}
@@ -215,11 +216,6 @@ main{padding:0 0 90px}
 .help-card .sub-note{font-size:14px;color:var(--ink-2);margin-top:11px;padding-top:10px;
   border-top:1px dashed var(--line);line-height:1.5}
 .help-card .contact.mono{font-size:20.5px;font-weight:700;color:var(--orange-deep)}
-/* a way in that isn't a problem: feedback, questions, ideas */
-.help-note{margin-top:22px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);
-  border-inline-start:3px solid var(--navy);border-radius:var(--radius);font-size:16.5px;color:var(--ink-2)}
-.help-note b{color:var(--ink)}
-.help-note a{font-weight:600}
 
 /* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
@@ -249,7 +245,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .view.on{display:block!important}
   body{font-size:12pt}
   .item{break-inside:avoid}
-  .item-link,.item-detail{display:none!important}
   .topic-body{display:block!important}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555;word-break:break-all}
 }
@@ -330,7 +325,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
     </div>
     <div class="help-grid" id="help-body"></div>
-    <p class="help-note" id="help-note" hidden></p>
   </section>
 
   <section id="view-search" class="view">
@@ -369,14 +363,16 @@ const section=id=>D.sections.find(s=>s.id===id);
    כל קליק יוצא מדווח לפי מזהה הקישור (link_id) ולא לפי הכתובת.
    כשהאוניברסיטה תחליף URL — הרצף ההיסטורי בדוחות נשמר.
    להפעלה: הוסיפי סקריפט של GoatCounter / Plausible / Umami ובטלי את ההערה. */
-function trackLinkClick(linkId, title){
-  // if (window.goatcounter) goatcounter.count({path:'link/'+linkId, title:title, event:true});
-  // if (window.plausible)   plausible('link', {props:{id:linkId}});
+function gaEvent(name, params){
+  if (typeof gtag === 'function') { try { gtag('event', name, params||{}); } catch(e){} }
+}
+function trackLinkClick(linkId, title, href){
+  gaEvent('link_click', {link_id: linkId, link_title: title||'', link_url: href||''});
   if (window.__mnDebug) console.log('[link]', linkId, title);
 }
 document.addEventListener('click', e=>{
   const a = e.target.closest('a[data-link-id]');
-  if (a) trackLinkClick(a.dataset.linkId, a.dataset.linkTitle||'');
+  if (a) trackLinkClick(a.dataset.linkId, a.dataset.linkTitle||'', a.href||'');
 });
 
 /* ---- routing ---- */
@@ -420,30 +416,11 @@ function route(){
   if(kind==='') { renderHome(); show('view-home'); }
   else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
   else if(kind==='section'){ renderSection(id, q.get('t')); show('view-section'); }
-  else if(kind==='checklist'){ renderChecklist(id, q.get('i'), q.get('open')); show('view-checklist'); }
+  else if(kind==='checklist'){ renderChecklist(id, q.get('i')); show('view-checklist'); }
   else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
   else { renderHome(); show('view-home'); }
   window.scrollTo(0,0);
 }
-/* checklist row that opens in place */
-function setItemOpen(row, open){
-  const btn=row&&row.querySelector('.item-link'); if(!btn) return;
-  if(open) document.getElementById('ck-body').querySelectorAll('.item.open')
-    .forEach(o=>{ if(o!==row) setItemOpen(o,false); });
-  row.classList.toggle('open', open);
-  btn.setAttribute('aria-expanded', open?'true':'false');
-  btn.textContent = open ? 'סגירה ▴' : 'איך עושים את זה ▾';
-}
-/* keep the address bar in step without adding a history entry: Back still
-   returns where the reader came from, and a copied link reopens the item. */
-function markOpenInURL(ckId, itemId){
-  const from=new URLSearchParams(location.hash.split('?')[1]||'').get('from');
-  const qs=[itemId?'open='+encodeURIComponent(itemId):'', from?'from='+encodeURIComponent(from):'']
-    .filter(Boolean).join('&');
-  const h='#/checklist/'+ckId+(qs?'?'+qs:'');
-  if(location.hash!==h) history.replaceState(null,'',location.pathname+location.search+h);
-}
-
 /* bring a row/cube into view and blink it once, so the eye finds the place */
 function reveal(el, open){
   if(!el) return;
@@ -452,6 +429,18 @@ function reveal(el, open){
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 window.addEventListener('hashchange', route);
+
+/* ---- GA4: מסך פנימי = צפייה בעמוד ----------------------------------------
+   האתר מנווט דרך #hash, ולכן גוגל סופר רק את הכניסה הראשונה.
+   כאן אנחנו מדווחים ידנית על כל מעבר מסך, כדי שיהיו נתונים גם לעמודים פנימיים.
+   הכניסה הראשונה כבר נספרת אוטומטית ע"י gtag('config'), לכן שומרים אותה כדי לא לספור פעמיים. */
+let __gaLastPath = location.pathname + location.search + location.hash;
+window.addEventListener('hashchange', ()=>{
+  const p = location.pathname + location.search + location.hash;
+  if (p === __gaLastPath) return;
+  __gaLastPath = p;
+  gaEvent('page_view', {page_location: location.href, page_path: p, page_title: document.title});
+});
 
 /* ---- the time axis: built from tracks, no hard-coded list ---- */
 function phaseStats(ckId){
@@ -514,6 +503,8 @@ function renderHome(){
 
 /* ---- topic card ---- */
 function topicHTML(t){
+  const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
+  const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
   return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
     <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
       <h3>${esc(t.title)}</h3>
@@ -521,15 +512,8 @@ function topicHTML(t){
       ${t.draft?'<span class="badge draft">בהכנה</span>':''}
       <span class="chev">▾</span>
     </button>
-    <div class="topic-body">${topicBodyHTML(t)}</div></article>`;
-}
-
-/* the guts of a topic. shared by the cube above and by opening a topic in
-   place inside a checklist row, so the text has one source of truth only. */
-function topicBodyHTML(t){
-  const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
-  const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
-  return `      ${t.what?(t.how&&t.how.length
+    <div class="topic-body">
+      ${t.what?(t.how&&t.how.length
         ? `<div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>`
         : `<div class="field bare"><p>${esc(t.what)}</p></div>`):''}
       ${t.when?`<div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>`:''}
@@ -547,7 +531,8 @@ function topicBodyHTML(t){
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
         ${sp.hours?`<br><span style="color:var(--ink-3);font-size:14px">${esc(sp.hours)}</span>`:''}</p>`:''}
-      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}`;
+      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}
+    </div></article>`;
 }
 
 /* ---- section view (a responsibility group) ---- */
@@ -565,7 +550,7 @@ function renderSection(id, openTid){
 }
 
 /* ---- checklist view ---- */
-function renderChecklist(id, focusItem, openItem){
+function renderChecklist(id, focusItem){
   const c=D.checklists.find(x=>x.id===id);
   if(!c){ go('#/'); return; }
   document.getElementById('ck-title').textContent=c.title;
@@ -573,16 +558,13 @@ function renderChecklist(id, focusItem, openItem){
   const zones = (D.zones && D.zones.length) ? D.zones : [{id:null,label:'',note:''}];
   const itemHTML = i => {
     const k=c.id+'/'+i.id, done=!!state[k], t=i.topic_id?topic(i.topic_id):null;
-    return `<div class="item ${done?'done':''}" data-k="${esc(k)}" data-i="${esc(i.id)}">
+    return `<div class="item ${done?'done':''}" data-k="${esc(k)}">
       <input type="checkbox" id="cb-${esc(k)}" ${done?'checked':''} aria-label="${esc(i.text)}">
       <div class="item-main">
         <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
           ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
         </label>
-        ${t?`<button class="item-link" type="button" aria-expanded="false" aria-controls="d-${esc(k)}">איך עושים את זה ▾</button>
-        <div class="item-detail" id="d-${esc(k)}">${topicBodyHTML(t)}
-          <a class="full-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">לעמוד המלא של הנושא, עם שאר הנושאים בתחום →</a>
-        </div>`:''}
+        ${t?`<a class="item-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">איך עושים את זה →</a>`:''}
       </div></div>`;
   };
   /* items with no zone fall into the first zone */
@@ -605,25 +587,10 @@ function renderChecklist(id, focusItem, openItem){
     if(!confirm('לאפס את כל הסימונים בצ׳קליסט "'+c.title+'"?')) return;
     c.items.forEach(i=>delete state[c.id+'/'+i.id]); save(); renderChecklist(c.id);
   };
-
-  /* open the explanation in place: the checklist itself never leaves the
-     screen, and only one item is open at a time so the list stays short. */
-  document.getElementById('ck-body').querySelectorAll('.item-link').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const row=btn.closest('.item'), open=!row.classList.contains('open');
-      setItemOpen(row,open);
-      if(open) row.scrollIntoView({block:'nearest'});
-      markOpenInURL(c.id, open?row.dataset.i:null);
-    });
-  });
   tally(c);
   if(focusItem) setTimeout(()=>{
     const row=document.getElementById('ck-body').querySelector(`.item[data-k="${CSS.escape(c.id+'/'+focusItem)}"]`);
     reveal(row,false);
-  },40);
-  if(openItem) setTimeout(()=>{
-    const row=document.getElementById('ck-body').querySelector(`.item[data-i="${CSS.escape(openItem)}"]`);
-    if(row){ setItemOpen(row,true); reveal(row,false); }
   },40);
 }
 function tally(c){
@@ -650,16 +617,6 @@ function renderHelp(){
       ${s.hours?`<p class="hours">${esc(s.hours)}</p>`:''}
       ${s.sub_note?`<p class="sub-note">${esc(s.sub_note)}</p>`:''}
     </div>`).join('');
-
-  /* the note under the grid. everything here comes from meta, so the wording
-     and the address behind it are editable without touching this file. */
-  const note=document.getElementById('help-note'), m=D.meta||{};
-  const hs=m.help_note_support?supp(m.help_note_support):null;
-  if(m.help_note){
-    note.innerHTML=(m.help_note_lede?`<b>${esc(m.help_note_lede)}</b> `:'')+esc(m.help_note)+
-      (hs&&hs.email?` <a href="mailto:${esc(hs.email)}">${esc(hs.email)}</a>`:'');
-    note.hidden=false;
-  } else note.hidden=true;
 }
 
 /* ---- search ---- */
