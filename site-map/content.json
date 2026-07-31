@@ -268,13 +268,31 @@
       "note": "הוחלף בגרסה 2 מ-tomaxauth.bgu.ac.il/my.policy. עובד בכרום בלבד."
     },
     {
-      "id": "tomagrade-guide",
-      "title": "מדריך טומגרייד",
-      "url": "https://in.bgu.ac.il/acadsec/exams/DocLib/Pages/4lecturer/Tomagrade.pdf",
+      "id": "syllabus-bot",
+      "title": "בוט הסילבוס — עזרה בכתיבה ובניסוח",
+      "url": "https://chatgpt.com/g/g-6a4642e1328881918845eef119158506-sylbvt",
+      "verified": "unverified",
+      "fragility": "medium",
+      "auth": true,
+      "note": "בוט של היחידה. דורש חשבון ChatGPT."
+    },
+    {
+      "id": "moodle-manage",
+      "title": "ניהול אתר המודל (PDF)",
+      "url": "https://moodle.bgu.ac.il/moodle/pluginfile.php/4239616/mod_resource/content/2/%D7%A0%D7%99%D7%94%D7%95%D7%9C%20%D7%90%D7%AA%D7%A8%20%D7%94%D7%9E%D7%95%D7%93%D7%9C.pdf",
       "verified": "unverified",
       "fragility": "high",
-      "auth": false,
-      "note": "בגרסה 1 חסרה האות f בסיומת הקובץ — תוקן. in.bgu.ac.il הוא האתר הישן."
+      "auth": true,
+      "note": "כתובת pluginfile — מזהה הקובץ משתנה בכל העלאה מחדש. פתרון זמני עד שייכתב הסבר משלנו."
+    },
+    {
+      "id": "tomagrade-guide",
+      "title": "מדריך טומגרייד של מדור בחינות — כולל העברת ציונים לניצן",
+      "url": "https://portal.bgu.ac.il/media/fdgjuczf/tomagrade.pdf",
+      "verified": "unverified",
+      "fragility": "high",
+      "auth": true,
+      "note": "המדריך של מדור בחינות. auth=true לא בגלל הזדהות אלא כי portal.bgu.ac.il חוסם בודקים אוטומטיים — בלי זה הבדיקה השבועית תתריע לשווא."
     },
     {
       "id": "nitzan",
@@ -488,6 +506,7 @@
       "primary_link": "moodle",
       "secondary_links": [
         "moodle-guide",
+        "moodle-manage",
         "moodle-feedback-guide"
       ],
       "support_id": "elearn",
@@ -551,7 +570,7 @@
         "exams-unit"
       ],
       "support_id": "exams-office",
-      "deadline": { "order": 3, "value": 96, "unit": "שעות", "phrase": "לפני תחילת הבחינה", "type": "relative", "offset_hours": -96, "anchor": "exam_start" },
+      "deadline": { "order": 3, "value": 96, "unit": "שעות", "phrase": "לפני תחילת הבחינה", "type": "relative", "offset_hours": -96, "anchor": "exam_start", "target": "exam-period:x2" },
       "critical": true,
       "warning": "בקשת TomaSafe שמוגשת מאוחר לא תמיד ניתנת לאישור. אם יש סיכוי שתרצו בחינה מעורבלת — עדיף לשאול  מוקדם, כבר בתכנון הסמסטר."
     },
@@ -586,11 +605,12 @@
         "phrase": "קלנדריים מיום הבחינה",
         "type": "relative",
         "offset_hours": 336,
-        "anchor": "exam_date"
+        "anchor": "exam_date",
+        "target": "exam-period:x4"
       },
       "critical": true,
       "support_note": "התמיכה באחריות מזכירות המחלקה. לתמיכה טכנית — מספרי הטלפון מופיעים בעמוד הראשון של חוברת ההדרכה של ניצן.",
-      "highlight": "מומלץ לברר מול המחלקה מהם נהלי אישור הציונים - מתי יש צורך באישורים ובאיזה סוג של אישורים (אישור רמ\"ח, סבב אישורים במזכירות)."
+      "highlight": "אישור ציוני הבחינה במחלקה הוא מה שמפעיל את שעון הערעורים. כדאי לברר מול מזכירות המחלקה איזה אישור נדרש בפועל — רמ\"ח, סבב אישורים במזכירות או נוהל אחר. זה משתנה ממחלקה למחלקה."
     },
     {
       "id": "appeals-handling",
@@ -610,7 +630,7 @@
         "gezer"
       ],
       "support_id": "department",
-      "deadline": { "order": 5, "value": 3, "unit": "ימים", "phrase": "לפני המועד הבא", "type": "relative", "offset_hours": 72, "anchor": "grades_published" },
+      "deadline": { "order": 5, "value": 3, "unit": "ימים", "phrase": "לפני המועד הבא", "type": "relative", "offset_hours": 72, "anchor": "grades_published", "target": "exam-period:x5" },
       "critical": true
     },
     {
@@ -658,6 +678,7 @@
       "primary_link": "syllabus-system",
       "secondary_links": [
         "syllabus-guide",
+        "syllabus-bot",
         "course-catalog"
       ],
       "support_id": "department",
@@ -669,7 +690,8 @@
         "phrase": "לפני הרישום לקורסים",
         "type": "relative",
         "offset_hours": -240,
-        "anchor": "syllabus"
+        "anchor": "syllabus",
+        "target": "before-semester:b1"
       },
       "critical": true,
       "warning": "פער בין רכיבי הציון בסילבוס לבין המודל הוא העילה הנפוצה ביותר לערעור מוצדק בסוף הסמסטר."
@@ -696,7 +718,8 @@
         "phrase": "לפני תום תקופת השינויים",
         "type": "relative",
         "offset_hours": -96,
-        "anchor": "changes_period_end"
+        "anchor": "changes_period_end",
+        "target": "first-week:f5"
       },
       "critical": true
     },
