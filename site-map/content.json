@@ -931,7 +931,7 @@
         { "id": "x4", "text": "פרסמתי ואישרתי את ציוני הבחינה", "topic_id": "nitzan", "critical": true, "zone": "required" },
         { "id": "x4b", "text": "הגשתי ואישרתי את הציונים הסופיים", "topic_id": "final-grades", "zone": "required" },
         { "id": "x5", "text": "בדקתי ערעורים", "topic_id": "appeals-handling", "critical": true, "zone": "required" },
-
+        { "id": "x6", "text": "שמרתי תיעוד מתאים", "topic_id": "documentation", "hidden": true, "zone": "recommended" },
         { "id": "x7", "text": "בתום תקופת הבחינות - עברתי על סקר שביעות הרצון ורשמתי שינויים מומלצים לפעם הבאה", "topic_id": "surveys", "zone": "recommended" }
       ]
     }
@@ -943,6 +943,5 @@
     "קישורי in.bgu.ac.il (מדריכי כספות, TomaSafe, טומגרייד, אתר מדור בחינות) - לבדוק אם עברו לכתובות www.bgu.ac.il/u/ החדשות.",
     "נוהל בחינות - כתובת media/<hash>/ שמתחלפת בכל העלאה. לבדוק אם יש כתובת קבועה.",
     "ציונים סופיים - לברר אם יש מועד מחייב להגשתם (בנפרד מ-14 הימים לפרסום ציוני הבחינה). אם כן - להוסיף דדליין לקוביה."
-            { "id": "x6", "text": "שמרתי תיעוד מתאים", "topic_id": "documentation", "zone": "recommended" }
   ]
 }
