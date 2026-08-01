@@ -202,6 +202,12 @@ main{padding:0 0 90px}
 .item-link{display:inline-block;background:none;border:0;font-family:inherit;font-size:14.5px;
   color:var(--navy);cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
 .item-link:hover{color:var(--orange-deep)}
+.item-panel{margin:12px 0 8px;padding:16px 18px;background:var(--paper);
+  border:1px solid var(--line);border-inline-start:3px solid var(--navy-2);border-radius:var(--radius)}
+.item-panel .field:first-child{margin-top:0}
+.panel-more{display:inline-block;margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);
+  width:100%;font-size:14.5px;color:var(--navy);text-decoration:underline;text-underline-offset:2px}
+.panel-more:hover{color:var(--orange-deep)}
 @keyframes flashRow{0%{background:#fdf0e2}100%{background:transparent}}
 .item.flash{animation:flashRow 2.2s ease-out}
 .topic.flash>.topic-head{animation:flashRow 2.2s ease-out}
@@ -216,6 +222,11 @@ main{padding:0 0 90px}
 .help-card .sub-note{font-size:14px;color:var(--ink-2);margin-top:11px;padding-top:10px;
   border-top:1px dashed var(--line);line-height:1.5}
 .help-card .contact.mono{font-size:20.5px;font-weight:700;color:var(--orange-deep)}
+.help-note{margin-top:24px;padding:17px 19px;background:var(--surface);
+  border-inline-start:3px solid var(--navy-2);border-radius:var(--radius)}
+.help-note-lede{display:block;font-weight:700;color:var(--ink);font-size:16.5px}
+.help-note p{margin:4px 0 0;color:var(--ink-2);font-size:16px;line-height:1.6;white-space:pre-line}
+.help-note a{color:var(--navy-2);word-break:break-word;overflow-wrap:anywhere}
 
 /* ---------- search ---------- */
 .hit{border-bottom:1px solid var(--line);padding:13px 2px}
@@ -240,7 +251,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .searchbox{margin-inline-start:0;max-width:100%}
 }
 @media print{
-  .mast-bar,.rail-shell,.urgent-strip,.groups,.home-head,.crumb,.ck-tools,footer,.chev{display:none!important}
+  .mast-bar,.rail-shell,.urgent-strip,.groups,.home-head,.crumb,.ck-tools,footer,.chev,
+  .item-link,.item-panel{display:none!important}
   .view{display:none!important}
   .view.on{display:block!important}
   body{font-size:12pt}
@@ -325,6 +337,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
     </div>
     <div class="help-grid" id="help-body"></div>
+    <div class="help-note" id="help-note" hidden></div>
   </section>
 
   <section id="view-search" class="view">
@@ -416,7 +429,7 @@ function route(){
   if(kind==='') { renderHome(); show('view-home'); }
   else if(kind==='section' && id==='help'){ renderHelp(); show('view-help'); }
   else if(kind==='section'){ renderSection(id, q.get('t')); show('view-section'); }
-  else if(kind==='checklist'){ renderChecklist(id, q.get('i')); show('view-checklist'); }
+  else if(kind==='checklist'){ renderChecklist(id, q.get('i'), q.get('open')); show('view-checklist'); }
   else if(kind==='search'){ renderSearch(decodeURIComponent(id||'')); show('view-search'); }
   else { renderHome(); show('view-home'); }
   window.scrollTo(0,0);
@@ -502,18 +515,12 @@ function renderHome(){
 }
 
 /* ---- topic card ---- */
-function topicHTML(t){
+/* the body is shared: the cube on a section page and the panel inside a checklist
+   render from the same function, so content.json is never duplicated. */
+function topicBodyHTML(t){
   const pl=t.primary_link?link(t.primary_link):null, sp=supp(t.support_id);
   const secs=(t.secondary_links||[]).map(id=>link(id)).filter(Boolean);
-  return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
-    <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
-      <h3>${esc(t.title)}</h3>
-      ${t.critical?'<span class="badge hard">דדליין קשיח</span>':''}
-      ${t.draft?'<span class="badge draft">בהכנה</span>':''}
-      <span class="chev">▾</span>
-    </button>
-    <div class="topic-body">
-      ${t.what?(t.how&&t.how.length
+  return `${t.what?(t.how&&t.how.length
         ? `<div class="field"><span class="field-label">מה צריך לעשות</span><p>${esc(t.what)}</p></div>`
         : `<div class="field bare"><p>${esc(t.what)}</p></div>`):''}
       ${t.when?`<div class="field"><span class="field-label">מתי</span><p class="when">${esc(t.when)}</p></div>`:''}
@@ -531,8 +538,17 @@ function topicHTML(t){
         ${sp.email?` · <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}
         ${sp.phone?` · <span class="mono">${esc(sp.phone)}</span>`:''}
         ${sp.hours?`<br><span style="color:var(--ink-3);font-size:14px">${esc(sp.hours)}</span>`:''}</p>`:''}
-      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}
-    </div></article>`;
+      ${t.support_note?`<p class="support-note">${esc(t.support_note)}</p>`:''}`;
+}
+function topicHTML(t){
+  return `<article class="topic ${t.draft?'draft':''}" id="t-${esc(t.id)}">
+    <button class="topic-head" onclick="this.parentNode.classList.toggle('open')" aria-expanded="false">
+      <h3>${esc(t.title)}</h3>
+      ${t.critical?'<span class="badge hard">דדליין קשיח</span>':''}
+      ${t.draft?'<span class="badge draft">בהכנה</span>':''}
+      <span class="chev">▾</span>
+    </button>
+    <div class="topic-body">${topicBodyHTML(t)}</div></article>`;
 }
 
 /* ---- section view (a responsibility group) ---- */
@@ -550,7 +566,7 @@ function renderSection(id, openTid){
 }
 
 /* ---- checklist view ---- */
-function renderChecklist(id, focusItem){
+function renderChecklist(id, focusItem, openItem){
   const c=D.checklists.find(x=>x.id===id);
   if(!c){ go('#/'); return; }
   document.getElementById('ck-title').textContent=c.title;
@@ -564,7 +580,9 @@ function renderChecklist(id, focusItem){
         <label class="item-text" for="cb-${esc(k)}">${esc(i.text)}
           ${i.critical?'<span class="tag hard">דדליין קשיח</span>':''}
         </label>
-        ${t?`<a class="item-link" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+c.id+':'+i.id)}">איך עושים את זה →</a>`:''}
+        ${t?`<button class="item-link" type="button" aria-expanded="false"
+              onclick="toggleItemPanel(this,'${esc(t.id)}','${esc(c.id)}','${esc(i.id)}')">איך עושים את זה ▾</button>
+          <div class="item-panel" hidden></div>`:''}
       </div></div>`;
   };
   /* items with no zone fall into the first zone */
@@ -592,6 +610,39 @@ function renderChecklist(id, focusItem){
     const row=document.getElementById('ck-body').querySelector(`.item[data-k="${CSS.escape(c.id+'/'+focusItem)}"]`);
     reveal(row,false);
   },40);
+  if(openItem) setTimeout(()=>{
+    const row=document.getElementById('ck-body').querySelector(`.item[data-k="${CSS.escape(c.id+'/'+openItem)}"]`);
+    const btn=row&&row.querySelector('.item-link');
+    /* idempotent on purpose: a deep link should only ever open, never toggle shut */
+    if(btn && btn.getAttribute('aria-expanded')!=='true'){ btn.click(); row.scrollIntoView({block:'center'}); }
+  },50);
+}
+
+/* open the cube content in place, under the checklist row.
+   only one panel is open at a time, so the list never grows unmanageable. */
+function toggleItemPanel(btn, tid, ckId, itemId){
+  const panel = btn.nextElementSibling;
+  const wasOpen = !panel.hasAttribute('hidden');
+  document.querySelectorAll('#ck-body .item-panel:not([hidden])').forEach(p=>{
+    p.setAttribute('hidden',''); p.innerHTML='';
+    const b=p.previousElementSibling;
+    if(b){ b.setAttribute('aria-expanded','false'); b.textContent='איך עושים את זה ▾'; }
+  });
+  if(wasOpen){ setOpenParam(ckId,null); return; }
+  const t=topic(tid); if(!t) return;
+  panel.innerHTML = topicBodyHTML(t) +
+    `<a class="panel-more" href="#/section/${esc(t.section)}?t=${encodeURIComponent(t.id)}&from=${encodeURIComponent('checklist:'+ckId+':'+itemId)}">לעמוד המלא של הנושא, עם שאר הנושאים בתחום ←</a>`;
+  panel.removeAttribute('hidden');
+  btn.setAttribute('aria-expanded','true');
+  btn.textContent='סגירה ▴';
+  setOpenParam(ckId,itemId);
+  gaEvent('open_topic_panel',{topic_id:tid, checklist_id:ckId});
+}
+/* keep the address bar shareable, without piling up history entries -
+   so the browser's back button still returns where the reader came from. */
+function setOpenParam(ckId, itemId){
+  const h = '#/checklist/'+ckId + (itemId?'?open='+encodeURIComponent(itemId):'');
+  try{ history.replaceState(null,'',location.pathname+location.search+h); }catch(e){}
 }
 function tally(c){
   const done=c.items.filter(i=>state[c.id+'/'+i.id]).length, tot=c.items.length;
@@ -617,6 +668,16 @@ function renderHelp(){
       ${s.hours?`<p class="hours">${esc(s.hours)}</p>`:''}
       ${s.sub_note?`<p class="sub-note">${esc(s.sub_note)}</p>`:''}
     </div>`).join('');
+  /* the feedback line: not a problem, just a way to reach us */
+  const m=D.meta||{}, box=document.getElementById('help-note');
+  if(!box) return;
+  if(m.help_note){
+    const sp=m.help_note_support?supp(m.help_note_support):null;
+    box.innerHTML =
+      (m.help_note_lede?`<span class="help-note-lede">${esc(m.help_note_lede)}</span>`:'')+
+      `<p>${esc(m.help_note)}${sp&&sp.email?` <a href="mailto:${esc(sp.email)}">${esc(sp.email)}</a>`:''}</p>`;
+    box.hidden=false;
+  } else { box.hidden=true; box.innerHTML=''; }
 }
 
 /* ---- search ---- */
