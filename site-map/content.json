@@ -748,6 +748,7 @@
         "מומלץ להתייעץ עם המרצים והמרצות של הקורסים הקשורים על מנת לתאם את התכנים"
       ],
       "primary_link": "yearbooks",
+      "secondary_links": "course-catalog",
       "support_id": "department",
       "deadline": {
         "order": 2,
