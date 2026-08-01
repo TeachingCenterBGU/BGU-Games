@@ -852,7 +852,7 @@
         { "id": "b2", "text": "בדקתי את לוח השנה האקדמי", "topic_id": "calendar", "zone": "recommended" },
         { "id": "b3", "text": "נפגשתי עם צוות ההוראה בקורס", "topic_id": "teaching-team", "zone": "recommended" },
         { "id": "b4", "text": "עדכנתי את אתר המודל", "topic_id": "moodle", "zone": "required" },
-        { "id": "b5", "text": "פרסמתי דרכי התקשרות ושעות קבלה", "zone": "required" },
+        { "id": "b5", "text": "פרסמתי דרכי התקשרות ושעות קבלה", "topic_id": "contact-details","zone": "required" },
         { "id": "b6", "text": "בדקתי את רשימת הסטודנטים בגזר", "topic_id": "gezer-admin", "zone": "recommended" },
         { "id": "b7", "text": "בדקתי את הכיתה ואת הציוד הנדרש", "topic_id": "hybrid-classes", "zone": "recommended" },
         { "id": "b8", "text": "שלחתי הודעת פתיחה לסטודנטים", "topic_id": "opening-message", "zone": "recommended" },
