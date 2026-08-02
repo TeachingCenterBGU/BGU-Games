@@ -190,6 +190,12 @@ main{padding:0 0 90px}
 .zone-recommended{background:var(--surface);border-radius:var(--radius);padding:18px 18px 6px}
 .zone-recommended .zone-head{border-bottom-color:var(--orange)}
 .zone-recommended .item{border-bottom-color:#e3e8ec}
+.tgroup{margin-bottom:34px}
+.tgroup:last-child{margin-bottom:0}
+.tgroup-head{padding-bottom:9px;border-bottom:2px solid var(--navy);margin-bottom:16px}
+.tgroup-head h3{font-size:15px;letter-spacing:.03em;margin:0}
+.tgroup-head p{font-size:14px;color:var(--ink-3);margin:4px 0 0;line-height:1.45}
+.tgroup-unit-tips .tgroup-head{border-bottom-color:var(--orange)}
 .item{display:flex;gap:13px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:flex-start}
 .zone .item:last-child{border-bottom:0}
 .item input[type=checkbox]{width:19px;height:19px;margin-top:3px;flex:none;accent-color:var(--orange);cursor:pointer}
@@ -557,7 +563,16 @@ function renderSection(id, openTid){
   document.getElementById('sec-title').textContent=meta.title;
   document.getElementById('sec-intro').textContent=meta.intro||'';
   const ts=D.topics.filter(t=>t.section===id);
-  document.getElementById('sec-body').innerHTML = ts.length? ts.map(topicHTML).join('')
+  /* optional sub-bands inside a section. topics with no group render first, unlabelled */
+  const gs=(D.topic_groups||[]).filter(g=>ts.some(t=>t.group===g.id));
+  const loose=ts.filter(t=>!gs.some(g=>g.id===t.group));
+  const body = !gs.length ? ts.map(topicHTML).join('')
+    : (loose.length?`<div class="tgroup">${loose.map(topicHTML).join('')}</div>`:'')
+      + gs.map(g=>`<section class="tgroup tgroup-${esc(g.id)}">
+        <div class="tgroup-head"><h3>${esc(g.label)}</h3>${g.note?`<p>${esc(g.note)}</p>`:''}</div>
+        ${ts.filter(t=>t.group===g.id).map(topicHTML).join('')}
+      </section>`).join('');
+  document.getElementById('sec-body').innerHTML = ts.length? body
     : '<p class="empty">אין עדיין נושאים בתחום הזה.</p>';
   if(openTid) setTimeout(()=>{
     const el=document.getElementById('t-'+openTid);
